@@ -1,0 +1,17 @@
+
+plugin.tx_pitsdownloadcenter {
+	view {
+		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template root (FE)
+		templateRootPath = EXT:pits_downloadcenter/Resources/Private/Templates/
+		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template partials (FE)
+		partialRootPath = EXT:pits_downloadcenter/Resources/Private/Partials/
+		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template layouts (FE)
+		layoutRootPath = EXT:pits_downloadcenter/Resources/Private/Layouts/
+		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=css file
+		skinFile = EXT:pits_downloadcenter/Resources/Private/Layouts/
+	}
+	persistence {
+		# cat=plugin.tx_pitsdownloadcenter//a; type=string; label=Default storage PID
+		storagePid =
+	}
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-02-10T14:07:22Z" product-name="pits_downloadcenter">
+		<header/>
+		<body>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download">
+				<source>Download</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download_category">
+				<source>Categories</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download_filetype">
+				<source>File Type</source>
+			</trans-unit>	
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download_categoryname">
+				<source>Category Name</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download_parentcategory">
+				<source>Parent Category</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download_filetypelabel">
+				<source>File Type Label</source>
+			</trans-unit>			
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.ascending">
+				<source>Ascending</source>
+			</trans-unit>	
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.descending">
+				<source>Descending</source>
+			</trans-unit>	 
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.order">
+				<source>Order</source>
+			</trans-unit>	
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.paginationcount">
+				<source>Pagination Count</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download_translatedfile">
+				<source>Translated File</source>
+			</trans-unit>	
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.showthumbnail">
+				<source>Show Preview Thumb</source>
+			</trans-unit>		
+		</body>
+	</file>
+</xliff>

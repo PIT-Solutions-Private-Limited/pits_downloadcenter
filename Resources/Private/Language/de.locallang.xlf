@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2015-02-10T14:07:22Z" product-name="pits_downloadcenter">
+		<header/>
+		<body>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download">
+				<source>Download</source>
+				<target>Download</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.keywordsearch">
+				<source>Keyword Search</source>
+				<target>Stichwortsuche</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.searchkey">
+				<source>Search Keyword</source>
+				<target>Downloads suchen</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.filterbyarea">
+				<source>Filter by Area</source>
+				<target>Filtern nach Bereich</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.categoryplaceholder">
+				<source>-- Select a category - -</source>
+				<target>-- Bereich/Thema auswählen --</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.searchbytype">
+				<source>Filter by file types</source>
+				<target>Filtern nach Dateitypen</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.resultsfound">
+				<source>Results Found</source>
+				<target>Resultate gefunden</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.tabletitle">
+				<source>Title</source>
+				<target>Titel</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.tablesize">
+				<source>Size</source>
+				<target>Grösse</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.tabletype">
+				<source>Type</source>
+				<target>Typ</target>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.tabledownload">
+				<source>Download</source>
+				<target>Download</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,0 +1,41 @@
+<T3DataStructure>
+ <sheets>
+  <sDEF>
+   <ROOT>
+	 <TCEforms>
+	  <sheetTitle>General</sheetTitle>
+	 </TCEforms>
+	 <type>array</type>
+	 <el>
+	  	<settings.showthumbnail>
+			<TCEforms>
+				<label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download.showthumbnail</label>
+				<config>
+					<type>check</type>									
+				</config>
+			</TCEforms>
+		</settings.showthumbnail>
+	  	 <settings.paginationcount>
+			<TCEforms>
+				<label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download.paginationcount</label>
+				<config>
+					<type>input</type>
+					<size>15</size>
+					<eval>int</eval>
+					<default>10</default>									
+				</config>
+			</TCEforms>
+		</settings.paginationcount>
+		<settings.fileStorage>
+            <TCEforms> <label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang.xlf:tx_pitsdownloadcenter_domain_model_download.filestoragepath</label>
+                <config>
+                    <type>select</type>
+                    <foreign_table>sys_file_storage</foreign_table>
+                </config>
+            </TCEforms>
+        </settings.fileStorage>
+	</el>
+   </ROOT>
+  </sDEF>
+ </sheets>
+</T3DataStructure>

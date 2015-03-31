@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-02-10T14:07:22Z" product-name="pits_downloadcenter">
+		<header/>
+		<body>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download">
+				<source>Download</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.keywordsearch">
+				<source>Keyword Search</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.searchkey">
+				<source>Search Keyword</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.filterbyarea">
+				<source>Filter by Area</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.categoryplaceholder">
+				<source>-- Select a category - -</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.searchbytype">
+				<source>Filter by file types</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.resultsfound">
+				<source>Results Found</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.tabletitle">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.tablesize">
+				<source>Size</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.tabletype">
+				<source>Type</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.tabledownload">
+				<source>Download</source>
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.filestoragepath">
+				<source>Select Filestorage Path</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

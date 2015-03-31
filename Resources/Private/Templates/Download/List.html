@@ -1,0 +1,128 @@
+
+<f:layout name="Default" />
+
+This Template is responsible for creating a table of domain objects. If
+you modify this template, do not forget to change the overwrite settings
+in /Configuration/ExtensionBuilder/settings.yaml: Resources: Private:
+Templates: List.html: keep Otherwise your changes will be overwritten
+the next time you save the extension in the extension builder
+
+<f:section name="main">
+	<f:if condition="{showError}">
+		not configured storage path. Default "fileadmin/" mount point is not supported.
+	</f:if>
+	<f:else>
+	<div class="wrap filter43" ng-app="filterApp">
+		<div id="loader">
+			<img
+				src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif"
+				alt="Loader-Image">
+		</div>
+		<h1>Frontend Filter</h1>
+		<div class="filter-wrapper" ng-controller="filterCtrl">
+			<div class="filter-wrap">
+				<form action="javascript:;" class="filter">
+					<div class="row">
+						<label class="control-label">{{items.transilations.keywordsearch}}</label>
+						<div class="input-group">
+							<input type="text" class="form-control" ng-model="search"
+								ng-change="filter()"
+								placeholder="{{items.transilations.searchkey}}"> <span
+								class="input-group-addon" ng-click="search = ''"></span>
+						</div>
+					</div>
+					<div class="row">
+						<label class="control-label">{{items.transilations.filterbyarea}}</label>
+						<div class="input-group">
+							<custom-select ng-repeat="cat in categories track by $index"
+								class="cust-select"></custom-select>
+						</div>
+					</div>
+					<div class="row">
+						<label class="control-label">{{items.transilations.searchbytype}}</label>
+						<div ng-repeat="type in items.types">
+							<label class="control-label"> <input type="checkbox"
+								ng-model="checkFilter[type.id]" value="{{type.id}}">
+								{{type.title}}
+							</label>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="result-wrap">
+				<h3>
+					<span id="total-count"></span> {{items.transilations.resultsfound}}
+				</h3>
+				<table id="data-results" class="results">
+					<thead>
+						<tr>
+						<f:if condition="{showPreview}">
+							<f:then>
+								<th></th>	
+							</f:then>
+						</f:if>							
+							<th class="item-title"><a href=""
+								ng-click="orderByField='title'; reverseSort = !reverseSort">
+									{{items.transilations.tabletitle}} <span
+									ng-show="orderByField == 'title'"> <span
+										ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
+										ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
+								</span>
+							</a></th>
+							<th><a href=""
+								ng-click="orderByField='size'; reverseSort = !reverseSort">
+									{{items.transilations.tablesize}} <span
+									ng-show="orderByField == 'size'"> <span
+										ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
+										ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
+								</span>
+							</a></th>
+							<th><a href=""
+								ng-click="orderByField='fileType'; reverseSort = !reverseSort">
+									{{items.transilations.tabletype}} <span
+									ng-show="orderByField == 'fileType'"> <span
+										ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
+										ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
+								</span>
+							</a></th>
+							<th class="download">{{items.transilations.tabledownload}}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr
+							dir-paginate="file in items.files | newFilter:dummyCategory | filter:byTypes | filter:search |  orderBy:orderByField:reverseSort | offset:0 | itemsPerPage: pageSize"
+							current-page="currentPage">
+							<f:if condition="{showPreview}">
+								<f:then>
+									<td class="item-image" data-th="Image"><img
+								class="img-thumbnail" ng-src="{{base}}{{file.imageUrl}}"></td>
+								</f:then>
+							</f:if>
+							
+							<td class="item-title"
+								data-th="{{items.transilations.tabletitle}}">{{file.title}}</td>
+							<td data-th="{{items.transilations.tablesize}}">{{file.size}}</td>
+							<td data-th="{{items.transilations.tabletype}}">{{file.fileType}}</td>
+							<td class="download"
+								data-th="{{items.transilations.tabledownload}}"><a
+								target="_blank" ng-href="{baseURL}{{file.url}}"><img
+									src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/save.png" /></a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="other-controller">
+				<div class="text-center">
+
+					<dir-pagination-controls boundary-links="true"
+						on-page-change="pageChangeHandler(newPageNumber)"
+						template-url="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Scripts/js/Pagination.html">
+					</dir-pagination-controls>
+				</div>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" id="baseURL" value="{baseURL}">
+	<input type="hidden" id="actionURL" value="{actionUrl}">
+	</f:else>
+</f:section>

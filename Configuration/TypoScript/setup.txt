@@ -1,0 +1,78 @@
+
+plugin.tx_pitsdownloadcenter {
+	view {
+		templateRootPath = {$plugin.tx_pitsdownloadcenter.view.templateRootPath}
+		partialRootPath = {$plugin.tx_pitsdownloadcenter.view.partialRootPath}
+		layoutRootPath = {$plugin.tx_pitsdownloadcenter.view.layoutRootPath}
+	}
+	persistence {
+		storagePid = {$plugin.tx_pitsdownloadcenter.persistence.storagePid}
+	}
+	features {
+		# uncomment the following line to enable the new Property Mapper.
+		# rewrittenPropertyMapper = 1
+	}
+}
+
+plugin.tx_pitsdownloadcenter._CSS_DEFAULT_STYLE (
+	textarea.f3-form-error {
+		background-color:#FF9F9F;
+		border: 1px #FF0000 solid;
+	}
+
+	input.f3-form-error {
+		background-color:#FF9F9F;
+		border: 1px #FF0000 solid;
+	}
+
+	.tx-pits-downloadcenter table {
+		border-collapse:separate;
+		border-spacing:10px;
+	}
+
+	.tx-pits-downloadcenter table th {
+		font-weight:bold;
+	}
+
+	.tx-pits-downloadcenter table td {
+		vertical-align:top;
+	}
+
+	.typo3-messages .message-error {
+		color:red;
+	}
+
+	.typo3-messages .message-ok {
+		color:green;
+	}
+
+)
+
+page.includeCSS {
+    file70001 =EXT:pits_downloadcenter/Resources/Public/Styles/theme.css
+    file70001.title = Default CSS
+    file70001.media = screen
+    file70002=http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css
+    file70002.external=1
+}
+page.includeJS {
+    file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/angular.min.js
+    file70001.type = text/javascript
+    file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/js/paginator.js
+    file70002.type = text/javascript
+    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/js/jquery.js
+    file70003.type = text/javascript
+    file70004 = EXT:pits_downloadcenter/Resources/Public/Scripts/js/download_center_main.js
+    file70004.type = text/javascript
+  	
+}
+
+config.tx_extbase.persistence.classes {
+ PITS\PitsDownloadcenter\Domain\Model{
+  tableName = tx_pitsdownloadcenter_domain_model_categoryrecordmm
+  columns {
+    	uid_local.mapOnProperty = uidLocal
+    	uid_foreign.mapOnProperty = uidForeign
+   }
+ }
+}
