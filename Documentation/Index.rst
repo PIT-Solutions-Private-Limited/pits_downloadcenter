@@ -37,10 +37,10 @@ EXT: Download Center
       FAL,Download Center,Download Manager,File Listing,Angular JS 
 
 :Author:
-      Azeef A.S
+      HOJA.M.A
 
 :Email:
-      azeef@pitsolutions.com
+      hoja.ma@pitsolutions.com
 
 :Language:
       en
