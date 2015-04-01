@@ -15,32 +15,32 @@
 .. role::   php(code)
 
 ===========================
-EXT: Name of your Extension
+EXT: Download Center
 ===========================
 
 :Author:
-      Christopher
+      HOJA.M.A
 
 :Created:
-      2010-12-18 19::5:7:
+      2015-03-31 19::5:7:
 
 :Changed:
       2015-03-31 21::3:3:
 
 :Classification:
-      extension key
+      pits_downloadcenter
 
 :Description:
-      The keywords help with categorizing and tagging of the manuals. You can combine two or more keywords and add additional keywords yourself. Please use at least one keyword from both lists. If your manual is NOT in english, see next tab "language" ---- forEditors (use this for editors / german "Redakteure") forAdmins (use this for Administrators) forDevelopers (use this for Developers) forBeginners (manuals covering TYPO3 basics) forIntermediates (manuals going into more depth) forAdvanced (covering the most advanced TYPO3 topics) ----
+      Download Center Sponsored by TNT Graphics AG ----
 
 :Keywords:
-      keywords comma-separated
+      FAL,Download Center,Download Manager,File Listing,Angular JS 
 
 :Author:
-      Documentation Team
+      Azeef A.S
 
 :Email:
-      documentation@typo3.org
+      azeef@pitsolutions.com
 
 :Language:
       en
