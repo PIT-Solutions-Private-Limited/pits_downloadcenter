@@ -97,14 +97,14 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         	$pageUid    =   $GLOBALS['TSFE']->id;
         	//Uri for JSON Call
         	$urlArguments = array(
-        						array(
+                                array(
                                     'tx_pitsdownloadcenter_pitsdownloadcenter' =>
                                     array(
                                         'controller' => 'Download',
                                         'action' => 'show',
                                     )
-        						)
-        					);
+                                )
+                            );
         	$actionUrl  =   $this   ->uriBuilder->reset()
                                     ->setTargetPageUid($pageUid)
                                     ->setCreateAbsoluteUri(TRUE)
