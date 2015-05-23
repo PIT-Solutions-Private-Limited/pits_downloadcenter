@@ -22,4 +22,6 @@ There seems only one constraint that on initial page load there will
 be slight performance hiccup while fetching large number of files >
 4000.
 
+If you find any issues please report in https://forge.typo3.org/projects/extension-pits_downloadcenter.
+
 

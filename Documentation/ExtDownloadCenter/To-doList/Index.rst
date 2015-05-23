@@ -18,11 +18,10 @@
 To-Do list
 ----------
 
-- Direct url for acessibility when category filters or file type filter
+- Direct url for accessibility when category filters or file type filter
   is selected
 
 - Jquery dependency removal.
 
-- Forge link for the extension.
 
 

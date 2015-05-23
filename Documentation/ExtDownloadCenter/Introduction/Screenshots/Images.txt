@@ -1,11 +1,11 @@
-﻿.. |img-3|      image:: ../../Images/manual_html_fd9b1c4.png
+﻿.. |img-3|      image:: /Images/manual_html_fd9b1c4.png
    :height: 646
    :width: 550
 .. :align: left
 .. :border: 0
 .. :name: Image1
 
-.. |img-4|      image:: ../../Images/manual_html_120520c4.gif
+.. |img-4|      image:: /Images/screenshots.png
    :height: 295
    :width: 586
 .. :align: left

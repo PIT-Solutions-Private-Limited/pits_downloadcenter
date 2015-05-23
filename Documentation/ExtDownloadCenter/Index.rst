@@ -15,8 +15,8 @@
 .. role::   php(code)
 
 
-|img-1| |img-2| EXT: Download Center
-====================================
+EXT: Download Center
+============================================
 
 Extension Key: pits\_downloadcenter
 
@@ -47,5 +47,6 @@ The content of this document is related to TYPO3
    Introduction/Index
    Configuration/Index
    KnownProblems/Index
+   ChangeLog/Index
    To-doList/Index
 

@@ -1,9 +1,8 @@
 <?php
-namespace PITS\PitsDownloadcenter\Domain\Repository;
 
+namespace PITS\PitsDownloadcenter\Tests\Unit\Domain\Model;
 
 /***************************************************************
- *
  *  Copyright notice
  *
  *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
@@ -13,7 +12,7 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
  *  This script is part of the TYPO3 project. The TYPO3 project is
  *  free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
+ *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
  *  The GNU General Public License can be found at
@@ -28,26 +27,31 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
  ***************************************************************/
 
 /**
- * The repository for Category
+ * Test case for class \PITS\PitsDownloadcenter\Domain\Model\Download.
+ *
+ * @copyright Copyright belongs to the respective authors
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ *
+ * @author HOJA <hoja.ma@pitsolutions.com>
  */
-class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
-	public function getSubCategories( $categoryID ){
-		$query = $this->createQuery();
-		$query->matching(	
-			$query->equals("parentcategory", "$categoryID") 
-		);
-		$query->setOrderings(array('categoryname' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
-		return $query->execute();
+class DownloadTest extends \TYPO3\CMS\Core\Tests\UnitTestCase {
+	/**
+	 * @var \PITS\PitsDownloadcenter\Domain\Model\Download
+	 */
+	protected $subject = NULL;
+
+	protected function setUp() {
+		$this->subject = new \PITS\PitsDownloadcenter\Domain\Model\Download();
 	}
 
-
-	public function getSubCategoriesCount( $categoryID ){
-		$query = $this->createQuery();
-		$query->matching(	
-			$query->equals("parentcategory", "$categoryID") 
-		);
-		$query->setOrderings(array('categoryname' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
-		return $query->count();
+	protected function tearDown() {
+		unset($this->subject);
 	}
-	
+
+	/**
+	 * @test
+	 */
+	public function dummyTestToNotLeaveThisFileEmpty() {
+		$this->markTestIncomplete();
+	}
 }

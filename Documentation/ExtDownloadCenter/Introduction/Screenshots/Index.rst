@@ -16,11 +16,13 @@
 
 
 Screenshots
-^^^^^^^^^^^
+-----------
 
 Here you see what the extension does:
 
-|img-3| |img-4| 
+|img-3| |img-4|
+
+
 Users manual
 ------------
 

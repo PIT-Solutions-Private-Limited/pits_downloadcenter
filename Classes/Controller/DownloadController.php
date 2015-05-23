@@ -1,6 +1,8 @@
 <?php
 namespace PITS\PitsDownloadcenter\Controller;
 use TYPO3\CMS\Core\Resource\Collection\FolderBasedFileCollection;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Core\Resource\FileRepository;
 /***************************************************************
  *
  *  Copyright notice
@@ -61,6 +63,14 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @inject
      */
     protected $categorymmRepository = NULL;
+
+    /**
+     * storageRepository
+     *
+     * @var \TYPO3\CMS\Core\Resource\StorageRepository 
+     * @inject
+     */
+    protected $storageRepository = NULL;
     
 	
     /**
@@ -69,20 +79,13 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @return void
      */
     public function listAction() {
-	   	$config 		= $this -> settings;
+        $config 		= $this -> settings;
         $transilations 	= $this -> getPageTranslations();
         $filetypesObject= $this -> filetypeRepository -> findAll();
         $fileTypes  	= $this->getFileTypes( $filetypesObject );
         $categoryTree 	= $this->doGetSubCategories(0);
         $storageuid 	= $this->settings['fileStorage'];
-        /**
-         * @var $storageRepository \TYPO3\CMS\Core\Ressources\StorageRepository 
-         **/
-        $storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::
-        						makeInstance(
-        						'TYPO3\\CMS\\Core\\Resource\\StorageRepository' 
-        					);
-        $storageRepository 		= $storageRepository->findByUid($storageuid);
+        $storageRepository 		= $this->storageRepository->findByUid($storageuid);
         $storageConfiguration 	= $storageRepository->getConfiguration();
         $basePath				= $storageConfiguration['basePath'];
         // Stop Execution if the path selected is fileadmin  
@@ -95,20 +98,36 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         	//Uri for JSON Call
         	$urlArguments = array(
         						array(
-        						  'tx_pitsdownloadcenter_pitsdownloadcenter' =>
-		        					array(
-		        							'controller' => 'Download',
-		        							'action' => 'show',
-		        					)
+                                    'tx_pitsdownloadcenter_pitsdownloadcenter' =>
+                                    array(
+                                        'controller' => 'Download',
+                                        'action' => 'show',
+                                    )
         						)
         					);
-        	$actionUrl  = $this	->uriBuilder->reset()
-        						->setTargetPageUid($pageUid)
-        						->setCreateAbsoluteUri(TRUE)
-        						->setArguments($urlArguments)
-        						->build();
+        	$actionUrl  =   $this   ->uriBuilder->reset()
+                                    ->setTargetPageUid($pageUid)
+                                    ->setCreateAbsoluteUri(TRUE)
+                                    ->setArguments($urlArguments)
+                                    ->build();
+            $downloadArguments = array(
+                                    array(
+                                        'tx_pitsdownloadcenter_pitsdownloadcenter' =>
+                                        array(
+                                            'controller' => 'Download',
+                                            'action' => 'forceDownload',
+                                        )
+                                    )
+                                );
+            $downloadUrl=   $this   ->uriBuilder->reset()
+                                    ->setTargetPageUid($pageUid)
+                                    ->setCreateAbsoluteUri(TRUE)
+                                    ->setArguments($downloadArguments)
+                                    ->setNoCache (TRUE)
+                                    ->build();
         	$this->view->assign('baseURL' , $baseUrl );
         	$this->view->assign('actionUrl' , $actionUrl );
+            $this->view->assign('downloadUrl' , $downloadUrl );
         	$this->view->assign('basePath' 	, $basePath);
         	$this->view->assign('showPreview', $showPreview);
         }
@@ -132,23 +151,23 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         $categoryTree = $this -> doGetSubCategories(0);
         $storageuid = $this->settings['fileStorage'];
         $showPreview= ($config['showthumbnail'] == 1)?TRUE:FALSE;
-        /**
-         * @var $storageRepository \TYPO3\CMS\Core\Ressources\StorageRepository 
-         **/
-        $storageRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-        		'TYPO3\\CMS\\Core\\Resource\\StorageRepository'
-        );
-        $storageRepository 		= $storageRepository->findByUid($storageuid);
+        $storageRepository 		= $this->storageRepository->findByUid($storageuid);
         $storageConfiguration 	= $storageRepository->getConfiguration();
-        $folder =  new \TYPO3\CMS\Core\Resource\Folder(
-        			$storageRepository,'',''
-        		);
-        $getfiles = $storageRepository->getFilesInFolder( $folder );
-		
+        $folder =   new \TYPO3\CMS\Core\Resource\Folder(    $storageRepository,
+                                                            '',
+                                                            ''
+                    );
+        $getfiles = $storageRepository->getFilesInFolder(   $folder ,
+                                                            $start = 0, 
+                                                            $maxNumberOfItems = 0, 
+                                                            $useFilters = TRUE, 
+                                                            $recursive = TRUE 
+                    );
         $basePath = $storageConfiguration['basePath'];
-        $files = $this -> generateFiles(
-        					$getfiles , $basePath ,$showPreview
-        		);
+        $files =    $this -> generateFiles( $getfiles , 
+                                            $basePath ,
+                                            $showPreview
+                    );
         $baseUrl = 	$GLOBALS['TSFE']->baseUrl;
         $response = array(
         				'baseURL' => $baseUrl ,
@@ -162,7 +181,111 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         exit;
     }
 
-   	
+    /**
+     * force download PHP Script
+     * @void 
+     */
+   	public function forceDownloadAction(){
+        $arguments          = $this->request->getArguments();
+        $fileID             = $arguments['fileid'];
+        $storageuid         = $this->settings['fileStorage'];
+        $fileDetails        = $this->downloadRepository->getFileDetails( $storageuid , $fileID  );
+        $fileIdentifier     =  (isset($fileDetails['identifier']))?$fileDetails['identifier']:FALSE;
+        $storageRepository  = $this->storageRepository->findByUid( $storageuid );
+        $sConfig            = $storageRepository->getConfiguration();
+        $fileName           = (isset($fileDetails['name']))?$fileDetails['name']:NULL;
+        $file               =  realpath( PATH_site.$sConfig['basePath'].$fileIdentifier ); 
+        if(is_file($file)) {
+            $fileLen    = filesize($file);          
+            $ext        = strtolower(substr(strrchr($fileName, '.'), 1));
+            switch($ext) {
+                case 'txt':
+                    $cType = 'text/plain'; 
+                break;              
+                case 'pdf':
+                    $cType = 'application/pdf'; 
+                break;
+                case 'exe':
+                    $cType = 'application/octet-stream';
+                break;
+                case 'zip':
+                    $cType = 'application/zip';
+                break;
+                case 'doc':
+                    $cType = 'application/msword';
+                break;
+                case 'xls':
+                    $cType = 'application/vnd.ms-excel';
+                break;
+                case 'ppt':
+                    $cType = 'application/vnd.ms-powerpoint';
+                break;
+                case 'gif':
+                    $cType = 'image/gif';
+                break;
+                case 'png':
+                    $cType = 'image/png';
+                break;
+                case 'jpeg':
+                case 'jpg':
+                    $cType = 'image/jpg';
+                break;
+                case 'mp3':
+                    $cType = 'audio/mpeg';
+                break;
+                case 'wav':
+                    $cType = 'audio/x-wav';
+                break;
+                case 'mpeg':
+                case 'mpg':
+                case 'mpe':
+                    $cType = 'video/mpeg';
+                break;
+                case 'mov':
+                    $cType = 'video/quicktime';
+                break;
+                case 'avi':
+                    $cType = 'video/x-msvideo';
+                break;
+
+                //forbidden filetypes
+                case 'inc':
+                case 'conf':
+                case 'sql':                 
+                case 'cgi':
+                case 'htaccess':
+                case 'php':
+                case 'php3':
+                case 'php4':                        
+                case 'php5':
+                exit;
+
+                default:
+                    $cType = 'application/force-download';
+                break;
+            }
+
+            $headers = array(
+                'Pragma'                    => 'public', 
+                'Expires'                   => 0, 
+                'Cache-Control'             => 'must-revalidate, post-check=0, pre-check=0',
+                'Cache-Control'             => 'public',
+                'Content-Description'       => 'File Transfer',
+                'Content-Type'              => $cType,
+                'Content-Disposition'       => 'attachment; filename="'. $fileName .'"',
+                'Content-Transfer-Encoding' => 'binary', 
+                'Content-Length'            => $fileLen         
+            );
+            foreach($headers as $header => $data)
+            $this->response->setHeader($header, $data); 
+            $this->response->sendHeaders();                 
+            @readfile($file);   
+        }   
+        //$fileObj            = $storageRepository->getFileInfoByIdentifier($fileIdentifier);
+        //DebuggerUtility::var_dump(  );
+        exit;
+    }
+
     /**
      * generate subcategories and return category tree
      *
@@ -203,23 +326,25 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         $processType                        = "Image.CropScaleMask";
         $i=0;
         foreach ($fileObject as $key => $value) {
-        	$key = $i++;
-            $fileProperty          = $value -> getProperties();
-            $response[$key]['id']  = (int)$fileProperty['uid'];
-            $response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
-            $response[$key]['title'] = (!empty($fileProperty['title'])) 	? $fileProperty['title'] : $value->getNameWithoutExtension();
-            $response[$key]['url']   =  $basePath . $fileProperty['identifier'];
-            $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
-            $response[$key]['fileType'] = $fileProperty['extension'];
-            $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
-            $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
-            if( $showPreview ){
-            	$response[$key]['processed']    = $this->processImage($response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
-            	$fileProcessingConf             = $this->downloadRepository->getProcessedFile($value) ;
-            	$processedFileConf              = $fileProcessingConf->getProperties() ;
-           		$response[$key]['imageUrl'] 	= $processedFileConf['identifier'] == '' ?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $basePath.$processedFileConf['identifier'];
+        	if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
+                $key = $i++;
+                $fileProperty          = $value -> getProperties();
+                $response[$key]['id']  = (int)$fileProperty['uid'];
+                //$response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
+                $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
+                //$response[$key]['url']   =  $basePath . $fileProperty['identifier'];
+                $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
+                $response[$key]['fileType'] = $fileProperty['extension'];
+                $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
+                $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
+                if( $showPreview ){
+                    //$response[$key]['processed']    = $this->processImage($response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
+                    $fileProcessingConf             = $this->downloadRepository->getProcessedFile($value) ;
+                    $processedFileConf              = $fileProcessingConf->getProperties() ;
+                    $response[$key]['imageUrl']     = ($processedFileConf['identifier'] == '' || !file_exists($basePath.$processedFileConf['identifier']))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $basePath.$processedFileConf['identifier'];
+                }
+                $idRel = $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
             }
-            $idRel 							= $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
         }
         return $response;
     }
@@ -230,14 +355,14 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @return Image
      **/
     public function processImage($file, $title, $size_w, $size_h) {
-        $cObj           = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tslib_cObj');
+        $cObj           = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
         $imgTSConfig    = array();
         $imgTSConfig['file'] = $file;
         $imgTSConfig['file.']['width'] = $size_w;
         $imgTSConfig['file.']['height'] = $size_h;
         $imgTSConfig['altText'] = empty($title) ? 'preview' : $title;
         $imgTSConfig['titleText'] = empty($title) ? 'preview' : $title;
-        return $cObj->IMG_RESOURCE($imgTSConfig);
+        return $cObj->IMAGE($imgTSConfig);
     }
 
        /**

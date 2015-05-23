@@ -1,4 +1,4 @@
-﻿.. |img-1|      image:: Images/manual_html_72264b4e.png
+﻿.. |img-1|      figure:: /Images/manual_html_72264b4e.png
    :height: 44
    :width: 161
 .. :align: left
@@ -6,6 +6,6 @@
 .. :name: graphics5
 .. :vspace: 57
 
-.. |img-2|      image:: Images/manual_html_m12b2d25f.gif
+.. |img-2|      figure:: /Images/manual_html_m12b2d25f.gif
 .. :align: left
 

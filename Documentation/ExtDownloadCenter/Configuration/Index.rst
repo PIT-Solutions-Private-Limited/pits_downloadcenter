@@ -24,10 +24,7 @@ List.html inside Resources/Private/Templates/Download/.
 
 The styles can be customized in Resources/Public/Styles/theme.css
 which is loaded through typoscript. Also a font theme css is also
-loaded by default when
-
-The plugin uses angular as well as jquery to function well in
-frontend; the main javascript files are present inside
+loaded by default when the plugin uses angular as well as jquery to function well in frontend; the main javascript files are present inside
 /Resources/Public/Scripts/js/ which is loaded through typoscript.
 
 

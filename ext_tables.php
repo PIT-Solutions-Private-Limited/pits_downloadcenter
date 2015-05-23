@@ -62,9 +62,9 @@ $GLOBALS['TCA']['tx_pitsdownloadcenter_domain_model_filetype'] = array(
 );
 
 /**
- * extend powermail fields sys_file_metadata
+ * extend sys_file_metadata fields sys_file_metadata
  */
-\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('sys_file_metadata');
+//\TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('sys_file_metadata');
 $tempColumns = array (
 	'tx_pitsdownloadcenter_domain_model_download_filetype' => array(
 		'exclude' => 1,		
@@ -152,3 +152,14 @@ $tempColumns = array (
 $pluginSignature = str_replace('_','',$_EXTKEY) . '_pitsdownloadcenter';
 $TCA['tt_content']['types']['list']['subtypes_addlist'][$pluginSignature] = 'pi_flexform';
 t3lib_extMgm::addPiFlexFormValue($pluginSignature, 'FILE:EXT:' . $_EXTKEY . '/Configuration/Flexforms/flexform.xml');
+
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+	$_EXTKEY, 'Configuration/TypoScript/Themes/Red',
+	'Download Center Red Theme'
+);
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+	$_EXTKEY, 'Configuration/TypoScript/Themes/Blue',
+	'Download Center Blue Theme'
+);

@@ -7,12 +7,12 @@ if (!defined('TYPO3_MODE')) {
 	'PITS.' . $_EXTKEY,
 	'Pitsdownloadcenter',
 	array(
-		'Download' => 'list, show'
+		'Download' => 'list, show , forceDownload '
 		
 	),
 	// non-cacheable actions
 	array(
-		'Download' => '',
+		'Download' => 'forceDownload',
 		
 	)
 );

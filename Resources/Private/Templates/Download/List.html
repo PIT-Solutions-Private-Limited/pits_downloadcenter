@@ -18,12 +18,11 @@ the next time you save the extension in the extension builder
 				src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif"
 				alt="Loader-Image">
 		</div>
-		<h1>Frontend Filter</h1>
 		<div class="filter-wrapper" ng-controller="filterCtrl">
-			<div class="filter-wrap">
+			<div class="filter-wrap clearfix">
 				<form action="javascript:;" class="filter">
 					<div class="row">
-						<label class="control-label">{{items.transilations.keywordsearch}}</label>
+						<label class="control-label subheading clearfix">{{items.transilations.keywordsearch}}</label>
 						<div class="input-group">
 							<input type="text" class="form-control" ng-model="search"
 								ng-change="filter()"
@@ -32,14 +31,14 @@ the next time you save the extension in the extension builder
 						</div>
 					</div>
 					<div class="row">
-						<label class="control-label">{{items.transilations.filterbyarea}}</label>
+						<label class="control-label subheading clearfix">{{items.transilations.filterbyarea}}</label>
 						<div class="input-group">
 							<custom-select ng-repeat="cat in categories track by $index"
 								class="cust-select"></custom-select>
 						</div>
 					</div>
 					<div class="row">
-						<label class="control-label">{{items.transilations.searchbytype}}</label>
+						<label class="control-label subheading clearfix">{{items.transilations.searchbytype}}</label>
 						<div ng-repeat="type in items.types">
 							<label class="control-label"> <input type="checkbox"
 								ng-model="checkFilter[type.id]" value="{{type.id}}">
@@ -103,10 +102,9 @@ the next time you save the extension in the extension builder
 								data-th="{{items.transilations.tabletitle}}">{{file.title}}</td>
 							<td data-th="{{items.transilations.tablesize}}">{{file.size}}</td>
 							<td data-th="{{items.transilations.tabletype}}">{{file.fileType}}</td>
-							<td class="download"
-								data-th="{{items.transilations.tabledownload}}"><a
-								target="_blank" ng-href="{baseURL}{{file.url}}"><img
-									src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/save.png" /></a></td>
+							<td class="download" data-th="{{items.transilations.tabledownload}}">
+								<a href="{downloadUrl}&tx_pitsdownloadcenter_pitsdownloadcenter%5Bfileid%5D={{file.id}}" target="_blank"></a>
+							</td>
 						</tr>
 					</tbody>
 				</table>

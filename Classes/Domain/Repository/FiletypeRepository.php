@@ -33,7 +33,7 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
 class FiletypeRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	public function findAll(){
 		$query = $this->createQuery();
-		$query->setOrderings(array('filetype' => \Tx_Extbase_Persistence_QueryInterface::ORDER_ASCENDING));
+		$query->setOrderings(array('filetype' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
 		return $query->execute();	
 	}
 	

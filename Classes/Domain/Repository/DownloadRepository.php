@@ -1,6 +1,6 @@
 <?php
 namespace PITS\PitsDownloadcenter\Domain\Repository;
-
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /***************************************************************
  *
@@ -49,7 +49,7 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	* @return void
 	*/
 	public function initializeObject() {
-		$querySettings = $this->objectManager->create('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+		$querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
 		$querySettings->setRespectStoragePage(FALSE);
 		$this->setDefaultQuerySettings($querySettings);
 	}
@@ -72,8 +72,7 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	 * 
 	 * @return array
 	 **/
-	public function getProcessedFile( $data )
-	{	
+	public function getProcessedFile( $data ){	
 		$processedFileRep = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository');
 		$storage = $data->getStorage();
 		$identifier = $data->getIdentifier() ;
@@ -89,5 +88,16 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$processedFile = new \TYPO3\CMS\Core\Resource\ProcessedFile( $fileDetails['fileObj'] , $fileDetails['processType'] , $fileDetails['processConfig'] );
 		$isProcessed = $processedFile->isProcessed();
 		return $isProcessed;
+	}
+
+	public function getFileDetails( $storageuid , $fileID ){
+		$response = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( "identifier,name", 
+																	"sys_file", 
+																	" storage = $storageuid AND uid = $fileID ", 
+																	$groupBy= '', 
+																	$orderBy= '', 
+																	$numIndex=FALSE
+					);
+		return $response;
 	}
 }
