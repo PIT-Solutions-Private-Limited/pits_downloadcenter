@@ -296,35 +296,35 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      *
      * @return structured array
      **/
-     public function generateFiles($fileObject , $basePath , $showPreview ) {
-       $response = array();
-       $pImgWidth                          = "150m";
-       $pImgHeight                         = "150m";
-       $processType                        = "Image.CropScaleMask";
-       $i=0;
-       foreach ($fileObject as $key => $value) {
-           if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
-            $key = $i++;
-            $fileProperty          = $value -> getProperties();
-            $response[$key]['id']  = (int)$fileProperty['uid'];
-            //$response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
-            $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
-            //$response[$key]['url']   =  $basePath . $fileProperty['identifier'];
-            $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
-            $response[$key]['fileType'] = $fileProperty['extension'];
-            $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
-            $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
-            if( $showPreview ){
-                //$response[$key]['processed']    = $this->processImage($response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
-                $fileProcessingConf             = $this->downloadRepository->getProcessedFile($value) ;
-                $processedFileConf              = $fileProcessingConf->getProperties() ;
-                $response[$key]['imageUrl']     = ($processedFileConf['identifier'] == '' || !file_exists($basePath.$processedFileConf['identifier']))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $basePath.$processedFileConf['identifier'];
+    public function generateFiles($fileObject , $basePath , $showPreview ){
+        $response = array();
+        $pImgWidth                          = "150m";
+        $pImgHeight                         = "150m";
+        $processType                        = "Image.CropScaleMask";
+        $i=0;
+        foreach ($fileObject as $key => $value) {
+            if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
+                $key = $i++;
+                $fileProperty          = $value -> getProperties();
+                $response[$key]['id']  = (int)$fileProperty['uid'];
+                //$response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
+                $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
+                //$response[$key]['url']   =  $basePath . $fileProperty['identifier'];
+                $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
+                $response[$key]['fileType'] = $fileProperty['extension'];
+                $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
+                $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
+                if( $showPreview ){
+                    //$response[$key]['processed']    = $this->processImage($response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
+                    $fileProcessingConf             = $this->downloadRepository->getProcessedFile($value) ;
+                    $processedFileConf              = $fileProcessingConf->getProperties() ;
+                    $response[$key]['imageUrl']     = ($processedFileConf['identifier'] == '' || !file_exists($basePath.$processedFileConf['identifier']))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $basePath.$processedFileConf['identifier'];
+                }
+                $idRel = $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
             }
-            $idRel = $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
         }
+        return $response;
     }
-    return $response;
-}
 
     /**
      * Processed Images
