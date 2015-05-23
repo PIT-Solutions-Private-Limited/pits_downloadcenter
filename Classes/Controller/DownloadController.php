@@ -274,18 +274,15 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      **/
     public function doGetSubCategories($parentID) {
         $categoryTree = array();
-        $subCategories = $this 	-> categoryRepository 
-        -> getSubCategories($parentID);
+        $subCategories = $this->categoryRepository->getSubCategories($parentID);
         $i = 0;
         foreach ($subCategories as $key => $value) {
             $catID = $value -> getUid();
             $catName = $value -> getCategoryname();
             $categoryTree[$key]['id'] = $catID;
             $categoryTree[$key]['title'] = $catName;
-
             $has_sub = NULL;
-            $has_sub = $this-> categoryRepository 
-            -> getSubCategoriesCount($catID);
+            $has_sub = $this->categoryRepository->getSubCategoriesCount($catID);
             if ($has_sub) {
                 $categoryTree[$key]['input'] = $this->doGetSubCategories($catID);
             }
@@ -310,15 +307,15 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
             $key = $i++;
             $fileProperty          = $value -> getProperties();
             $response[$key]['id']  = (int)$fileProperty['uid'];
-                //$response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
+            //$response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
             $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
-                //$response[$key]['url']   =  $basePath . $fileProperty['identifier'];
+            //$response[$key]['url']   =  $basePath . $fileProperty['identifier'];
             $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
             $response[$key]['fileType'] = $fileProperty['extension'];
             $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
             $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
             if( $showPreview ){
-                    //$response[$key]['processed']    = $this->processImage($response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
+                //$response[$key]['processed']    = $this->processImage($response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
                 $fileProcessingConf             = $this->downloadRepository->getProcessedFile($value) ;
                 $processedFileConf              = $fileProcessingConf->getProperties() ;
                 $response[$key]['imageUrl']     = ($processedFileConf['identifier'] == '' || !file_exists($basePath.$processedFileConf['identifier']))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $basePath.$processedFileConf['identifier'];
@@ -335,8 +332,8 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @return Image
      **/
     public function processImage($file, $title, $size_w, $size_h) {
-        $cObj           = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
-        $imgTSConfig    = array();
+        $cObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
+        $imgTSConfig = array();
         $imgTSConfig['file'] = $file;
         $imgTSConfig['file.']['width'] = $size_w;
         $imgTSConfig['file.']['height'] = $size_h;
