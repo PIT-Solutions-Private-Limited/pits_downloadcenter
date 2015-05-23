@@ -74,7 +74,7 @@ class Category extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
      */
     public function getParentcategory()
     {
-        return $this->parentcategory;
+    	return $this->parentcategory;
     }
 
     /**
@@ -86,8 +86,7 @@ class Category extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
      */
     public function setParentcategory($parentcategory)
     {
-        $this->parentcategory = $parentcategory;
-
-        return $this;
+    	$this->parentcategory = $parentcategory;
+    	return $this;
     }
 }
