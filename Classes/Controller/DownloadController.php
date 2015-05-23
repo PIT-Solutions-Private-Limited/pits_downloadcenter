@@ -92,11 +92,11 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         $isValid	= ($basePath === "fileadmin/")?FALSE:TRUE;
         $showPreview= ($config['showthumbnail'] == 1)?TRUE:FALSE;
         if($isValid){
-        	$baseUrl    = 	$GLOBALS['TSFE']->baseUrl;
-        	//You can also set an array of arguments if you need to:
-        	$pageUid    =   $GLOBALS['TSFE']->id;
-        	//Uri for JSON Call
-        	$urlArguments = array(
+            $baseUrl    = 	$GLOBALS['TSFE']->baseUrl;
+            //You can also set an array of arguments if you need to:
+            $pageUid    =   $GLOBALS['TSFE']->id;
+            //Uri for JSON Call
+            $urlArguments = array(
                 array(
                     'tx_pitsdownloadcenter_pitsdownloadcenter' =>
                     array(
