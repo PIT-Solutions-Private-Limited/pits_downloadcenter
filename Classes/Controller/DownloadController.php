@@ -115,12 +115,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
                     )
                 )
             );
-            $downloadUrl=   $this   ->uriBuilder->reset()
-            ->setTargetPageUid($pageUid)
-            ->setCreateAbsoluteUri(TRUE)
-            ->setArguments($downloadArguments)
-            ->setNoCache (TRUE)
-            ->build();
+            $downloadUrl = $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->setNoCache (TRUE)->build();
             $this->view->assign('baseURL' , $baseUrl );
             $this->view->assign('actionUrl' , $actionUrl );
             $this->view->assign('downloadUrl' , $downloadUrl );
@@ -149,21 +144,10 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         $showPreview= ($config['showthumbnail'] == 1)?TRUE:FALSE;
         $storageRepository 		= $this->storageRepository->findByUid($storageuid);
         $storageConfiguration 	= $storageRepository->getConfiguration();
-        $folder =   new \TYPO3\CMS\Core\Resource\Folder(    $storageRepository,
-            '',
-            ''
-            );
-        $getfiles = $storageRepository->getFilesInFolder(   $folder ,
-            $start = 0, 
-            $maxNumberOfItems = 0, 
-            $useFilters = TRUE, 
-            $recursive = TRUE 
-            );
+        $folder =   new \TYPO3\CMS\Core\Resource\Folder( $storageRepository,'','' );
+        $getfiles = $storageRepository->getFilesInFolder(   $folder , $start = 0, $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE );
         $basePath = $storageConfiguration['basePath'];
-        $files =    $this -> generateFiles( $getfiles , 
-            $basePath ,
-            $showPreview
-            );
+        $files =    $this -> generateFiles( $getfiles , $basePath ,$showPreview );
         $baseUrl = 	$GLOBALS['TSFE']->baseUrl;
         $response = array(
             'baseURL' => $baseUrl ,
@@ -172,7 +156,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
             'types' => $fileTypes,
             'config' => $config, 
             'transilations' => $transilations
-            );
+        );
         echo json_encode( $response );
         exit;
     }
