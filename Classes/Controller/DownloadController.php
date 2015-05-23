@@ -102,10 +102,10 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
                     array(
                         'controller' => 'Download',
                         'action' => 'show',
-                        )
                     )
-                );
-        	$actionUrl = $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($urlArguments)->build();
+                )   
+            );
+            $actionUrl = $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($urlArguments)->build();
             $downloadArguments = array(
                 array(
                     'tx_pitsdownloadcenter_pitsdownloadcenter' =>
