@@ -291,7 +291,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         return $categoryTree;
     }
 
-     /**
+    /**
      * Function for structured file result
      *
      * @return structured array
@@ -342,12 +342,12 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         return $cObj->IMAGE($imgTSConfig);
     }
 
-       /**
+    /**
      * Function Returns FileTypes
      *
      * @return array [object]
      **/
-       public function getFileTypes( $filetypesObject ){
+    public function getFileTypes( $filetypesObject ){
         $response = array();
         foreach ($filetypesObject as $key => $value) {
             $response[$key]['id']  =   $value->getUid();
