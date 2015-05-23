@@ -72,7 +72,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      */
     protected $storageRepository = NULL;
     
-	
+
     /**
      * action list
      *
@@ -85,7 +85,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         $fileTypes  	= $this->getFileTypes( $filetypesObject );
         $categoryTree 	= $this->doGetSubCategories(0);
         $storageuid 	= $this->settings['fileStorage'];
-        $storageRepository 		= $this->storageRepository->findByUid($storageuid);
+        $storageRepository = $this->storageRepository->findByUid($storageuid);
         $storageConfiguration 	= $storageRepository->getConfiguration();
         $basePath				= $storageConfiguration['basePath'];
         // Stop Execution if the path selected is fileadmin  
@@ -97,39 +97,35 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         	$pageUid    =   $GLOBALS['TSFE']->id;
         	//Uri for JSON Call
         	$urlArguments = array(
-                                array(
-                                    'tx_pitsdownloadcenter_pitsdownloadcenter' =>
-                                    array(
-                                        'controller' => 'Download',
-                                        'action' => 'show',
-                                    )
-                                )
-                            );
-        	$actionUrl  =   $this   ->uriBuilder->reset()
-                                    ->setTargetPageUid($pageUid)
-                                    ->setCreateAbsoluteUri(TRUE)
-                                    ->setArguments($urlArguments)
-                                    ->build();
+                array(
+                    'tx_pitsdownloadcenter_pitsdownloadcenter' =>
+                    array(
+                        'controller' => 'Download',
+                        'action' => 'show',
+                        )
+                    )
+                );
+        	$actionUrl = $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($urlArguments)->build();
             $downloadArguments = array(
-                                    array(
-                                        'tx_pitsdownloadcenter_pitsdownloadcenter' =>
-                                        array(
-                                            'controller' => 'Download',
-                                            'action' => 'forceDownload',
-                                        )
-                                    )
-                                );
+                array(
+                    'tx_pitsdownloadcenter_pitsdownloadcenter' =>
+                    array(
+                        'controller' => 'Download',
+                        'action' => 'forceDownload',
+                    )
+                )
+            );
             $downloadUrl=   $this   ->uriBuilder->reset()
-                                    ->setTargetPageUid($pageUid)
-                                    ->setCreateAbsoluteUri(TRUE)
-                                    ->setArguments($downloadArguments)
-                                    ->setNoCache (TRUE)
-                                    ->build();
-        	$this->view->assign('baseURL' , $baseUrl );
-        	$this->view->assign('actionUrl' , $actionUrl );
+            ->setTargetPageUid($pageUid)
+            ->setCreateAbsoluteUri(TRUE)
+            ->setArguments($downloadArguments)
+            ->setNoCache (TRUE)
+            ->build();
+            $this->view->assign('baseURL' , $baseUrl );
+            $this->view->assign('actionUrl' , $actionUrl );
             $this->view->assign('downloadUrl' , $downloadUrl );
-        	$this->view->assign('basePath' 	, $basePath);
-        	$this->view->assign('showPreview', $showPreview);
+            $this->view->assign('basePath' 	, $basePath);
+            $this->view->assign('showPreview', $showPreview);
         }
         else{
         	$this->view->assign('showError',TRUE);
@@ -154,29 +150,29 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         $storageRepository 		= $this->storageRepository->findByUid($storageuid);
         $storageConfiguration 	= $storageRepository->getConfiguration();
         $folder =   new \TYPO3\CMS\Core\Resource\Folder(    $storageRepository,
-                                                            '',
-                                                            ''
-                    );
+            '',
+            ''
+            );
         $getfiles = $storageRepository->getFilesInFolder(   $folder ,
-                                                            $start = 0, 
-                                                            $maxNumberOfItems = 0, 
-                                                            $useFilters = TRUE, 
-                                                            $recursive = TRUE 
-                    );
+            $start = 0, 
+            $maxNumberOfItems = 0, 
+            $useFilters = TRUE, 
+            $recursive = TRUE 
+            );
         $basePath = $storageConfiguration['basePath'];
         $files =    $this -> generateFiles( $getfiles , 
-                                            $basePath ,
-                                            $showPreview
-                    );
+            $basePath ,
+            $showPreview
+            );
         $baseUrl = 	$GLOBALS['TSFE']->baseUrl;
         $response = array(
-        				'baseURL' => $baseUrl ,
-        				'files' => $files, 
-        				'categories' => $categoryTree, 
-        				'types' => $fileTypes,
-        				'config' => $config, 
-        				'transilations' => $transilations
-			        );
+            'baseURL' => $baseUrl ,
+            'files' => $files, 
+            'categories' => $categoryTree, 
+            'types' => $fileTypes,
+            'config' => $config, 
+            'transilations' => $transilations
+            );
         echo json_encode( $response );
         exit;
     }
@@ -185,7 +181,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * force download PHP Script
      * @void 
      */
-   	public function forceDownloadAction(){
+    public function forceDownloadAction(){
         $arguments          = $this->request->getArguments();
         $fileID             = $arguments['fileid'];
         $storageuid         = $this->settings['fileStorage'];
@@ -200,52 +196,52 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
             $ext        = strtolower(substr(strrchr($fileName, '.'), 1));
             switch($ext) {
                 case 'txt':
-                    $cType = 'text/plain'; 
+                $cType = 'text/plain'; 
                 break;              
                 case 'pdf':
-                    $cType = 'application/pdf'; 
+                $cType = 'application/pdf'; 
                 break;
                 case 'exe':
-                    $cType = 'application/octet-stream';
+                $cType = 'application/octet-stream';
                 break;
                 case 'zip':
-                    $cType = 'application/zip';
+                $cType = 'application/zip';
                 break;
                 case 'doc':
-                    $cType = 'application/msword';
+                $cType = 'application/msword';
                 break;
                 case 'xls':
-                    $cType = 'application/vnd.ms-excel';
+                $cType = 'application/vnd.ms-excel';
                 break;
                 case 'ppt':
-                    $cType = 'application/vnd.ms-powerpoint';
+                $cType = 'application/vnd.ms-powerpoint';
                 break;
                 case 'gif':
-                    $cType = 'image/gif';
+                $cType = 'image/gif';
                 break;
                 case 'png':
-                    $cType = 'image/png';
+                $cType = 'image/png';
                 break;
                 case 'jpeg':
                 case 'jpg':
-                    $cType = 'image/jpg';
+                $cType = 'image/jpg';
                 break;
                 case 'mp3':
-                    $cType = 'audio/mpeg';
+                $cType = 'audio/mpeg';
                 break;
                 case 'wav':
-                    $cType = 'audio/x-wav';
+                $cType = 'audio/x-wav';
                 break;
                 case 'mpeg':
                 case 'mpg':
                 case 'mpe':
-                    $cType = 'video/mpeg';
+                $cType = 'video/mpeg';
                 break;
                 case 'mov':
-                    $cType = 'video/quicktime';
+                $cType = 'video/quicktime';
                 break;
                 case 'avi':
-                    $cType = 'video/x-msvideo';
+                $cType = 'video/x-msvideo';
                 break;
 
                 //forbidden filetypes
@@ -261,7 +257,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
                 exit;
 
                 default:
-                    $cType = 'application/force-download';
+                $cType = 'application/force-download';
                 break;
             }
 
@@ -275,9 +271,9 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
                 'Content-Disposition'       => 'attachment; filename="'. $fileName .'"',
                 'Content-Transfer-Encoding' => 'binary', 
                 'Content-Length'            => $fileLen         
-            );
+                );
             foreach($headers as $header => $data)
-            $this->response->setHeader($header, $data); 
+                $this->response->setHeader($header, $data); 
             $this->response->sendHeaders();                 
             @readfile($file);   
         }   
@@ -295,7 +291,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
     public function doGetSubCategories($parentID) {
         $categoryTree = array();
         $subCategories = $this 	-> categoryRepository 
-        						-> getSubCategories($parentID);
+        -> getSubCategories($parentID);
         $i = 0;
         foreach ($subCategories as $key => $value) {
             $catID = $value -> getUid();
@@ -305,7 +301,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 
             $has_sub = NULL;
             $has_sub = $this-> categoryRepository 
-            				-> getSubCategoriesCount($catID);
+            -> getSubCategoriesCount($catID);
             if ($has_sub) {
                 $categoryTree[$key]['input'] = $this->doGetSubCategories($catID);
             }
@@ -319,35 +315,35 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      *
      * @return structured array
      **/
-    public function generateFiles($fileObject , $basePath , $showPreview ) {
-    	$response = array();
-        $pImgWidth                          = "150m";
-        $pImgHeight                         = "150m";
-        $processType                        = "Image.CropScaleMask";
-        $i=0;
-        foreach ($fileObject as $key => $value) {
-        	if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
-                $key = $i++;
-                $fileProperty          = $value -> getProperties();
-                $response[$key]['id']  = (int)$fileProperty['uid'];
+     public function generateFiles($fileObject , $basePath , $showPreview ) {
+       $response = array();
+       $pImgWidth                          = "150m";
+       $pImgHeight                         = "150m";
+       $processType                        = "Image.CropScaleMask";
+       $i=0;
+       foreach ($fileObject as $key => $value) {
+           if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
+            $key = $i++;
+            $fileProperty          = $value -> getProperties();
+            $response[$key]['id']  = (int)$fileProperty['uid'];
                 //$response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
-                $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
+            $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
                 //$response[$key]['url']   =  $basePath . $fileProperty['identifier'];
-                $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
-                $response[$key]['fileType'] = $fileProperty['extension'];
-                $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
-                $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
-                if( $showPreview ){
+            $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
+            $response[$key]['fileType'] = $fileProperty['extension'];
+            $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
+            $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
+            if( $showPreview ){
                     //$response[$key]['processed']    = $this->processImage($response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
-                    $fileProcessingConf             = $this->downloadRepository->getProcessedFile($value) ;
-                    $processedFileConf              = $fileProcessingConf->getProperties() ;
-                    $response[$key]['imageUrl']     = ($processedFileConf['identifier'] == '' || !file_exists($basePath.$processedFileConf['identifier']))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $basePath.$processedFileConf['identifier'];
-                }
-                $idRel = $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
+                $fileProcessingConf             = $this->downloadRepository->getProcessedFile($value) ;
+                $processedFileConf              = $fileProcessingConf->getProperties() ;
+                $response[$key]['imageUrl']     = ($processedFileConf['identifier'] == '' || !file_exists($basePath.$processedFileConf['identifier']))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $basePath.$processedFileConf['identifier'];
             }
+            $idRel = $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
         }
-        return $response;
     }
+    return $response;
+}
 
     /**
      * Processed Images
@@ -370,7 +366,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      *
      * @return array [object]
      **/
-    public function getFileTypes( $filetypesObject ){
+       public function getFileTypes( $filetypesObject ){
         $response = array();
         foreach ($filetypesObject as $key => $value) {
             $response[$key]['id']  =   $value->getUid();
