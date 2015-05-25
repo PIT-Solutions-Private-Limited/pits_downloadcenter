@@ -23,5 +23,7 @@ To-Do list
 
 - Jquery dependency removal.
 
+- Upcoming Release of Stable Version
+
 
 

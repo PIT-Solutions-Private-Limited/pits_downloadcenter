@@ -33,5 +33,7 @@ loaded by default when the plugin uses angular as well as jquery to function wel
    :titlesonly:
    :glob:
 
+   ConfiguringTheme/Index
    Reference/Index
+
 

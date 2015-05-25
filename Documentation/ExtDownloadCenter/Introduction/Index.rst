@@ -29,4 +29,5 @@ Introduction
    AddingCategoryFilters/Index
    AddingMediaAsset/Index
    Faq/Index
+   ConfiguringTheme/Index
 
