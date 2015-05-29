@@ -72,7 +72,7 @@ $tempColumns = array (
 		"config" => Array (
 			"type" => "select",
 			"foreign_table" => "tx_pitsdownloadcenter_domain_model_filetype",
-			"foreign_table_where" => "AND tx_pitsdownloadcenter_domain_model_filetype.sys_language_uid=CAST('###REC_FIELD_sys_language_uid###' AS UNSIGNED) ",
+			"foreign_table_where" => "AND tx_pitsdownloadcenter_domain_model_filetype.sys_language_uid IN (-1,0) ",
 			"size" => 10,
 			"minitems" => 0,
 			"maxitems" => 100,
@@ -120,8 +120,10 @@ $tempColumns = array (
 			'internal_type' => 'file',
 			'allowed' => 'jpeg,jpg,doc,docx,pdf',
 			'size' => '5',
-			'maxitems' => '1',
+			'maxitems' => '1', 
 			'minitems' => '0',
+			'foreign_table' => 'sys_file',
+			'foreign_table_where' => ' AND sys_file_metadata.sys_language_uid = sys_file.sys_language_uid ',
 			'show_thumbs' => '1',
 			'wizards' => array(
 				'suggest' => array(

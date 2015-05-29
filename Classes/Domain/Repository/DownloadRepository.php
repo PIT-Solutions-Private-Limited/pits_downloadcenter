@@ -91,13 +91,35 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	}
 
 	public function getFileDetails( $storageuid , $fileID ){
-		$response = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( "identifier,name", 
-																	"sys_file", 
-																	" storage = $storageuid AND uid = $fileID ", 
-																	$groupBy= '', 
-																	$orderBy= '', 
-																	$numIndex=FALSE
+		$response = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 
+						"identifier,name", 
+						"sys_file", 
+						" storage = $storageuid AND uid = $fileID ", 
+						$groupBy= '', 
+						$orderBy= '', 
+						$numIndex=FALSE
 					);
+		return $response;
+	}
+	
+	public function checkTranslations( $file , $sys_language_uid ){
+		$file_uid = $file->getUid();
+		$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = 1;
+		$getTranslatedFile = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 
+								"uid,tx_pitsdownloadcenter_domain_model_download_translate as translated_file", 
+								"sys_file_metadata", 
+								" sys_language_uid = $sys_language_uid AND file = $file_uid ", 
+								$groupBy= '', 
+								$orderBy= '', 
+								$numIndex=FALSE 
+							 );
+		
+		// Query
+		if (is_array( $getTranslatedFile )):
+			$response = (!empty(array_filter( $getTranslatedFile )))?$getTranslatedFile:false;
+		else:
+			return  false;
+		endif;
 		return $response;
 	}
 }
