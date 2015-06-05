@@ -1,10 +1,15 @@
 .ng-scope{
 	 font-family: 'Open Sans', sans-serif;
 }
-.filter43{
-	padding: 15px;
+.filter43, #content .filter43{
+	padding: 0;
 	min-width:273px;
-	position: relative
+	position: relative;
+	font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+}
+.filter43{
+	padding: 15px
 }
 .filter43 #loader img{
 	position: absolute;
@@ -23,13 +28,18 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-.filter43 h1{
+.filter43 h1, #content .filter43 h1{
 	font-size: 28px;
 	font-weight: bold;
 	margin: 0 0 10px 0;
 }
-.filter43 .row{
+.filter43 .row, #content .filter43.ng-scope form .row{
 	margin-bottom:15px;
+	padding: 0
+}
+#content .filter43.ng-scope form{
+padding: 0;
+margin: 0
 }
 .filter43 .control-label{
 	font-size: 14px;
@@ -37,19 +47,28 @@
 	display: block;
 	margin-bottom: 5px; 
 }
-.filter43 .ng-scope .control-label.subheading{
+.filter43 .chk-box .ng-scope .control-label, #content .filter43.ng-scope form label.control-label{
+	width: 100%;
+	color:#666666;
+}
+#content  .filter43.ng-scope form:after{
+	display: none
+}
+.filter43 .ng-scope .control-label.subheading, #content .filter43.ng-scope form label.control-label.subheading{
 	font-size: 18px;
   border-left: 5px solid #b92025;
   padding: 10px;
   border-bottom: 0px solid #cccccc;
   margin-bottom: 10px;
+    float: none;
+  width: 100%;
 }
 .filter43 .input-group{
 	width: 100%;
 	display: table;
 	position: relative;
 }
-.filter43 .form-control {
+.filter43 .form-control, #content .filter43  form .form-control {
 	width: 92%;
 	height: 50px;
 	padding: 6px 12px;
@@ -121,7 +140,7 @@
 	padding:0 0 20px 0;
 	display: block;
 }
-.filter43 h3{
+.filter43 h3, #content .filter43 h3{
 	  margin: 0 0 5px 0;
 	  font-size: 18px;
   border-left: 5px solid #b92025;
@@ -129,11 +148,12 @@
   border-bottom: 0px solid #cccccc;
   margin-bottom: 10px;
 }
-.filter43 table{
+.filter43 table, #content .filter43 table{
 	border-collapse: collapse;
 	width: 100%;
-	border: 1px solid #dddddd;
-	border-bottom: none;
+	border: 0px solid #dddddd;
+	border-bottom: none;;
+	margin:0;
 }
 .filter43 tr:nth-child(even){
 	/*background-color: #EBEBEB;*/
@@ -142,46 +162,44 @@
 .filter43 thead tr:nth-of-type(odd) {
   background-color: #ffffff;
 }
-.filter43 tr:nth-of-type(odd) {
+.filter43 tbody tr:nth-of-type(odd), #content .filter43 tbody tr:nth-of-type(odd) {
   background-color: #f9f9f9;
 }
-.filter43 th{
+.filter43 th, #content .filter43 th{
 	padding:10px;
 	text-align: center;
 	border-bottom: 2px solid #dddddd;
 }
-.filter43 th a{
+.filter43 th a, #content .filter43 th a{
 	text-decoration: none;
 	color: white;
 }
-.filter43 td{
+.filter43 td, #content .filter43 td{
 	text-align: center;
+	border:0;
 	border-top: 1px solid #dddddd;
 	padding:10px;
 	vertical-align: middle;
 }
-.filter43 tr:last-child td{
+.filter43 tr:last-child td, #content .filter43 tr:last-child td{
 	border-top: 0px solid #dddddd;
 }
-.filter43 .item-title{
+.filter43 .item-title, #content .filter43 .item-title{
 	text-align: left;
 }
-.filter43 a{
+.filter43 a, #content .filter43 a{
 	color:#b92025;
 }
-.filter43 a:hover{
-	color:#b92025
+.filter43 a:hover, #content .filter43 a:hover{
+	color:#ffffff
 }
-.filter43 table thead th a:hover{
-	color: white
-}
-.filter43 .download, .filter43 .item-image{
+.filter43 .download, .filter43 .item-image, #content .filter43 .download, #content .filter43 .item-image{
 	text-align: center;
 }
-.filter43 .download a i{
+.filter43 .download a i, #content .filter43 .download a i{
 	font-size:24px;
 }
-.filter43 .img-thumbnail{
+.filter43 .img-thumbnail, #content .filter43 .img-thumbnail{
 	padding: 0px;
 	background-color: #ffffff;
 	border: 0px solid #dddddd;
@@ -196,16 +214,16 @@
 	max-height:45px;
 	box-shadow: 1px 1px 5px #cccccc;
 }
-.filter43 .results-count{
+.filter43 .results-count, #content .filter43 .results-count{
 	padding:10px 0; 
 }
-.filter43 .pagination{
+.filter43 .pagination, #content .filter43 .pagination{
   display: inline-block;
   padding-left: 0;
   margin: 20px 0;
   float: right;
 }
-.filter43 .pagination li{
+.filter43 .pagination li, #content .filter43 .pagination li{
   position: relative;
   float: left;  
   background-color: #ffffff;
@@ -213,41 +231,52 @@
   margin-left: -1px;
   list-style-type: none;
 }
-.filter43 .pagination>li:last-child {
+.filter43 .pagination>li:last-child, #content .filter43 .pagination>li:last-child {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-.filter43 .pagination>li:first-child {
+.filter43 .pagination>li:first-child, #content .filter43 .pagination>li:first-child {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-.filter43 .pagination li.active{
+.filter43 .pagination li.active, #content .filter43 .pagination li.active{
 	background-color: #b92025;
   border: 1px solid #b92025;
 }
-.filter43 .pagination li.active a:hover{
+.filter43 .pagination li.active a:hover, #content .filter43 .pagination li.active a:hover{
 	background-color: #b92025;
 	cursor: default;
 	}
-.filter43 .pagination a{
+.filter43 .pagination a, #content .filter43 .pagination a{
   padding: 6px 12px;
   display: block;
   line-height: 1.42857143;
   text-decoration: none;
   color: #b92025;
   outline: none;
+  font-size: 14px;
+  position: relative;
+  display: block;
+   border-radius: 0%; 
+  background: #ffffff;
+  width: auto;
+  height: auto;
+  color: #2c3334;
+  font-weight: normal
 }
-.filter43 .pagination a:hover{
-	background-color: #eee
+.filter43 .pagination a:hover, #content .filter43 .pagination a:hover{
+	background-color: #eee;
+	color: #2c3334 !important
 }
-.filter43 .pagination a.prev-icon{
+.filter43 .pagination a.prev-icon, #content .filter43 .pagination a.prev-icon{
 
 }
-.filter43 .pagination li.active a{
+.filter43 .pagination li.active a, #content .filter43 .pagination li.active a{
 	color: #ffffff;
 	  font-weight: bold;
+	  background: #b92025;
 }
-.filter43 .pagination li.disabled a{
+.filter43 .pagination li.disabled a, #content .filter43 .pagination li.disabled a{
 	cursor: default;
 	color:grey;
 }
@@ -256,7 +285,7 @@
   color: #2a6496;
   border-color: #dddddd;
 }*/
-.filter43 .chk-box .ng-scope{
+.filter43 .chk-box .ng-scope, #content .filter43 .chk-box .ng-scope{
 	/*float: left;
 	width: 50%*/
 }
@@ -275,58 +304,56 @@
    box-shadow: inset 0 3px 6px rgba(0,0,0,.09)*/
 
 }
-.filter43 table {
+.filter43 table, #content .filter43 table {
   margin: 0em 0;
   min-width: 300px;
 }
-.filter43 table tr {
+.filter43 table tr, #content .filter43 table tr{
   border-top: 0px solid #ddd;
-  border-bottom: 0x solid #ddd;
+  border-bottom: 0px solid #ddd;
 }
-.filter43 table tr:hover{
-	background: #f8f8f8
-}
-.filter43 table th {
+.filter43 table th, #content .filter43 table th {
   display: none;
 }
-.filter43 table td {
+.filter43 table td, #content .filter43 table td {
   display: block;
+  background: transparent;
 }
-.filter43 table td:first-child {
+.filter43 table td:first-child, #content .filter43 table td:first-child {
   padding-top: .5em;
 }
-.filter43 table td:last-child {
+.filter43 table td:last-child, #content .filter43 table td:last-child {
   padding-bottom: .5em;
 }
-.filter43 table td:last-child:hover{
+.filter43 table td:last-child:hover, #content .filter43 table:last-child:hover{
 	cursor: default;
 }
-.filter43 table td:before {
+.filter43 table td:before, #content .filter43 table td:before {
   content: attr(data-th) ": ";
   font-weight: bold;
   width: 6.5em;
   display: inline-block;
 }
-.filter43 table th, .filter43 table td {
+.filter43 table th, .filter43 table td, #content .filter43 table th, #content .filter43 table td {
     text-align: left;
 }
-.filter43 .download a i{
+.filter43 .download a i, #content .filter43 .download a i{
   	color: #428bca;
 }
-.filter43 .download a:hover i{
+.filter43 .download a:hover i, #content .filter43 .download a:hover i{
   	color: #2a6496;
 }
  @media (max-width: 767px) {
- 	.filter43 .download a{
+ 	.filter43 table, #content .filter43 table{
+ 		border:none;
+ 	}
+ 	.filter43 .download a, #content .filter43 .download a{
  		display: inline-block
  	}
- 	.filter43 table{
- 		border: none;
- 	}
-  .filter43 .download, .filter43 .item-image{
+  .filter43 .download, .filter43 .item-image,   #content .filter43 .download, #content .filter43 .item-image{
   	text-align: left;
   }
-  .filter43 tr:nth-of-type(odd){
+  .filter43 tr:nth-of-type(odd),  #content .filter43 tr:nth-of-type(odd){
   	margin-bottom: 10px;
   	border:1px solid #cccccc;
   	display: block;
@@ -338,7 +365,7 @@
   box-shadow: 0 0 10px #ccc;
   border: 1px solid #fff;
   }
-  .filter43 tr:nth-of-type(even){
+  .filter43 tr:nth-of-type(even),  #content .filter43 tr:nth-of-type(even){
   	margin-bottom: 10px;
   	border:1px solid #cccccc;
   	display: block;
@@ -350,38 +377,38 @@
   box-shadow: 0 0 10px #ccc;
   border: 1px solid #fff;
   }
-  .filter43 thead tr:nth-of-type(odd) {
+  .filter43 thead tr:nth-of-type(odd),  #content .filter43 thead tr:nth-of-type(odd) {
   background-color: #ffffff;
   display: none;
 }
-.filter43 .chk-box .ng-scope{
+.filter43 .chk-box .ng-scope,  #content .filter43 .chk-box .ng-scope{
 	width: 100%
 }
-.filter43 tr:last-child td {
+.filter43 tr:last-child td,  #content .filter43 tr:last-child td {
   border-top: 1px solid #dddddd;
 }
  }
 @media (min-width: 767px) {
-  .filter43 table td:before {
+  .filter43 table td:before, #content .filter43 table td:before {
     display: none;
   }
-  .filter43 table th, .filter43 table td {
+  .filter43 table th, .filter43 table td, #content .filter43 table th, #content .filter43 table td {
     display: table-cell;
     padding: 10px;
 	  vertical-align: middle;
 	  border: 2px solid #ffffff;
 	}
-	.filter43 table thead th {
+	.filter43 table thead th, #content .filter43 table thead th {
 	  border-bottom: 0px solid #ddd;
 	  background-color: #b92025;
 	  color: white;
 }
-  .filter43 table th:first-child, .filter43 table td:first-child {
+  .filter43 table th:first-child, .filter43 table td:first-child, #content .filter43 table th:first-child, #content .filter43 table td:first-child {
     padding-left: 0;
   }
-  .filter43 table th:last-child, .filter43 table td:last-child {
+  .filter43 table th:last-child, .filter43 table td:last-child, #content .filter43 table th:last-child, #content .filter43 table td:last-child {
     padding-right: 0;
-    color:#b92025;
+    color:#ffffff;
   }
 }
 .clearfix:before,
