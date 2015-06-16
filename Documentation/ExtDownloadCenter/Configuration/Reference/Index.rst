@@ -42,7 +42,9 @@ Reference
    {$plugin.tx\_pitsdownloadcenter.persistence.storagePid}
 
    }
-
+   settings{
+   showFileIconPreview = {$plugin.tx\__pitsdownloadcenter.settings.showFileIconPreview}		
+   }
    }
 
    plugin.tx\_pitsdownloadcenter.\_CSS\_DEFAULT\_STYLE (

@@ -26,6 +26,8 @@ Change Log
 
 - 1.0.3 Implemented File Type Preview Image, Managed Translated Version of File in Download.
 
+- 1.0.4 Typoscript Configuration Introduced for enabling FileType Icon, Implemented Backend Sorting for File Types TCA and Category TCA, Fixed URL Building from server side instead of template side absolute path , Minor CSS Bugs were fixed. 
+
 
 
 
