@@ -31,9 +31,15 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
  * The repository for Filetype
  */
 class FiletypeRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
+	
+		public function initializeObject() {
+      	/** @var $querySettings \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings */
+        	$querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        	
+      }	
 	public function findAll(){
 		$query = $this->createQuery();
-		$query->setOrderings(array('filetype' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
+		$query->setOrderings(array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
 		return $query->execute();	
 	}
 	
