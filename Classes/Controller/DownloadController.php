@@ -107,32 +107,14 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
                                     )
                                 )
                             );
-            $actionUrl  =   $this   ->uriBuilder->reset()
-                                    ->setTargetPageUid($pageUid)
-                                    ->setCreateAbsoluteUri(TRUE)
-                                    ->setArguments($urlArguments)
-                                    ->build();
-            $downloadArguments = array(
-                                    array(
-                                        'tx_pitsdownloadcenter_pitsdownloadcenter' =>
-                                        array(
-                                            'controller' => 'Download',
-                                            'action' => 'forceDownload',
-                                        ),
-                                        'no_cache' => 1
-                                    )
-                                );
-            $downloadUrl=   $this   ->uriBuilder->reset()
-                                    ->setTargetPageUid($pageUid)
-                                    ->setCreateAbsoluteUri(TRUE)
-                                    ->setArguments($downloadArguments)
-                                    ->setNoCache (TRUE)
-                                    ->build();
+            $actionUrl = $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($urlArguments)->build();
+            $filePreview = ($config['showFileIconPreview'] == 1 )?TRUE:FALSE;             
             $this->view->assign('baseURL' , $baseUrl );
             $this->view->assign('actionUrl' , $actionUrl );
             $this->view->assign('downloadUrl' , $downloadUrl );
             $this->view->assign('basePath'  , $basePath);
             $this->view->assign('showPreview', $showPreview);
+            $this->view->assign('showFileIcon',$filePreview);
         }
         else{
             $this->view->assign('showError',TRUE);
@@ -147,7 +129,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      */ 
     public function showAction() {
         ini_set('memory_limit', '-1');
-        $config = $this -> settings;
+        $config = $this -> settings;     
         $transilations = $this -> getPageTranslations();
         $filetypesObject = $this -> filetypeRepository -> findAll();
         $fileTypes  =   $this->getFileTypes( $filetypesObject );
@@ -335,10 +317,11 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      **/
     public function generateFiles($fileObject , $basePath , $showPreview ) {
         $response = array();
-        $pImgWidth                          = "150m";
-        $pImgHeight                         = "150m";
-        $processType                        = "Image.CropScaleMask";
-        $i=0;
+        $pImgWidth = "150m";
+        $pImgHeight = "150m";
+        $processType = "Image.CropScaleMask";
+        $i = 0;
+        $pageUid =   $GLOBALS['TSFE']->id;
         foreach ($fileObject as $key => $value) {
             if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
                 $key = $i++;
@@ -346,20 +329,27 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
                 $response[$key]['id']  = (int)$fileProperty['uid'];
                 $response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
                 $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
-                //$response[$key]['url']   =  $basePath . $fileProperty['identifier'];
                 $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
                 $response[$key]['fileType'] = strtoupper($fileProperty['extension']);
                 $response[$key]['extension'] = $fileProperty['extension'];
                 $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
                 $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
                 if( $showPreview ){
-                    //$response[$key]['processed']    = $this->processImage($response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
                     $processed                      = $this->processImage($value,$response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
-                    //$fileProcessingConf             = $this->downloadRepository->getProcessedFile($value) ;
-                    //$processedFileConf              = $fileProcessingConf->getProperties() ;
-                    $response[$key]['imageUrl']     = ($processed == '' || !file_exists($processed))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
+                  	$response[$key]['imageUrl']     = ($processed == '' || !file_exists($processed))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
                 }
                 $idRel = $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
+                $downloadArguments = array(
+                						array(
+                							'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
+                								'controller' => 'Download',
+                								'action' => 'forceDownload',
+                								'fileid' => $fileProperty['uid']
+                							),
+                							'no_cache' => 1
+                						)
+                					);
+                $response[$key]['downloadUrl']= $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->setNoCache (TRUE)->build();
             }
         }
         return $response;
