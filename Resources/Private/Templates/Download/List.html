@@ -1,4 +1,3 @@
-
 <f:layout name="Default" />
 
 This Template is responsible for creating a table of domain objects. If
@@ -12,7 +11,7 @@ the next time you save the extension in the extension builder
 		not configured storage path. Default "fileadmin/" mount point is not supported.
 	</f:if>
 	<f:else>
-	<div class="wrap filter43" ng-app="filterApp">
+	<div id="downloadcenter" class="wrap filter43" ng-app="filterApp">
 		<div id="loader">
 			<img
 				src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif"
@@ -37,7 +36,7 @@ the next time you save the extension in the extension builder
 								class="cust-select"></custom-select>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row chk-box clearfix">
 						<label class="control-label subheading clearfix">{{items.transilations.searchbytype}}</label>
 						<div ng-repeat="type in items.types" class="chk-box-blue">
 							<label class="control-label"> <input type="checkbox"
@@ -103,9 +102,16 @@ the next time you save the extension in the extension builder
 									<td class="item-title"
 										data-th="{{items.transilations.tabletitle}}">{{file.title}}</td>
 									<td data-th="{{items.transilations.tablesize}}">{{file.size}}</td>
-									<td data-th="{{items.transilations.tabletype}}">{{file.fileType}}</td>
+									<td data-th="{{items.transilations.tabletype}}">
+										<f:if condition="{showFileIcon}">
+											<f:then>
+												<span class="files file-{{file.extension}}"></span>										
+											</f:then>
+										</f:if>
+										 {{file.fileType}}
+									</td>
 									<td class="download" data-th="{{items.transilations.tabledownload}}">
-										<a href="{downloadUrl}&tx_pitsdownloadcenter_pitsdownloadcenter%5Bfileid%5D={{file.id}}" target="_blank"></a>
+										<a href="{{file.downloadUrl}}" target="_blank"></a>
 									</td>
 								</tr>
 							</tbody>
@@ -113,9 +119,8 @@ the next time you save the extension in the extension builder
 					</div>
 				</div>	
 			</div>
-			<div class="other-controller">
+			<div class="other-controller clearfix">
 				<div class="text-center">
-
 					<dir-pagination-controls boundary-links="true"
 						on-page-change="pageChangeHandler(newPageNumber)"
 						template-url="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Scripts/js/Pagination.html">
