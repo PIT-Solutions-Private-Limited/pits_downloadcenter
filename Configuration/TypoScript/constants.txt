@@ -14,4 +14,7 @@ plugin.tx_pitsdownloadcenter {
 		# cat=plugin.tx_pitsdownloadcenter//a; type=string; label=Default storage PID
 		storagePid =
 	}
+	settings{
+		showFileIconPreview = 1	
+	}
 }
