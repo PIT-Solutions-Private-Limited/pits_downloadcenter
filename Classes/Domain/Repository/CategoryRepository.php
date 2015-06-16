@@ -36,7 +36,7 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$query->matching(	
 			$query->equals("parentcategory", "$categoryID") 
 		);
-		$query->setOrderings(array('categoryname' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
+		$query->setOrderings(array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
 		return $query->execute();
 	}
 
@@ -46,7 +46,7 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		$query->matching(	
 			$query->equals("parentcategory", "$categoryID") 
 		);
-		$query->setOrderings(array('categoryname' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
+		$query->setOrderings(array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
 		return $query->count();
 	}
 	
