@@ -2,7 +2,9 @@
 namespace PITS\PitsDownloadcenter\Controller;
 use TYPO3\CMS\Core\Resource\Collection\FolderBasedFileCollection;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
 /***************************************************************
  *
  *  Copyright notice
@@ -196,6 +198,19 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         $sConfig            = $storageRepository->getConfiguration();
         $fileName           = (isset($fileDetails['name']))?$fileDetails['name']:NULL;
         $file               =  realpath( PATH_site.$sConfig['basePath'].$fileIdentifier ); 
+        $fileObject 		= $storageRepository->getFile($fileIdentifier);
+        $sys_language_uid	= $GLOBALS['TSFE']->sys_language_uid;
+        $checkTranslations = $this->downloadRepository->checkTranslations( $fileObject , $sys_language_uid );
+        if( $checkTranslations ):
+       		$file_identifier = isset($checkTranslations['translated_file'])?$checkTranslations['translated_file']:NULL;
+        	if ($file_identifier && !empty( $file_identifier )){
+        		$filepath = PATH_site.$file_identifier;
+        		if (!empty($filepath) && is_file($filepath)){
+        			$file = $filepath;
+        			$fileName = basename( $file );
+        		}
+        	}
+        endif;
         if(is_file($file)) {
             $fileLen    = filesize($file);          
             $ext        = strtolower(substr(strrchr($fileName, '.'), 1));
@@ -327,13 +342,14 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         foreach ($fileObject as $key => $value) {
             if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
                 $key = $i++;
-                $fileProperty          = $value -> getProperties();
+                $fileProperty = $value -> getProperties();
                 $response[$key]['id']  = (int)$fileProperty['uid'];
                 $response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
                 $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
                 //$response[$key]['url']   =  $basePath . $fileProperty['identifier'];
                 $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
-                $response[$key]['fileType'] = $fileProperty['extension'];
+                $response[$key]['fileType'] = strtoupper($fileProperty['extension']);
+                $response[$key]['extension'] = $fileProperty['extension'];
                 $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
                 $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
                 if( $showPreview ){

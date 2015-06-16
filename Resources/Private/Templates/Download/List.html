@@ -39,7 +39,7 @@ the next time you save the extension in the extension builder
 					</div>
 					<div class="row">
 						<label class="control-label subheading clearfix">{{items.transilations.searchbytype}}</label>
-						<div ng-repeat="type in items.types">
+						<div ng-repeat="type in items.types" class="chk-box-blue">
 							<label class="control-label"> <input type="checkbox"
 								ng-model="checkFilter[type.id]" value="{{type.id}}">
 								{{type.title}}
@@ -52,62 +52,66 @@ the next time you save the extension in the extension builder
 				<h3>
 					<span id="total-count"></span> {{items.transilations.resultsfound}}
 				</h3>
-				<table id="data-results" class="results">
-					<thead>
-						<tr>
-						<f:if condition="{showPreview}">
-							<f:then>
-								<th></th>	
-							</f:then>
-						</f:if>							
-							<th class="item-title"><a href=""
-								ng-click="orderByField='title'; reverseSort = !reverseSort">
-									{{items.transilations.tabletitle}} <span
-									ng-show="orderByField == 'title'"> <span
-										ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
-										ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
-								</span>
-							</a></th>
-							<th><a href=""
-								ng-click="orderByField='size'; reverseSort = !reverseSort">
-									{{items.transilations.tablesize}} <span
-									ng-show="orderByField == 'size'"> <span
-										ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
-										ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
-								</span>
-							</a></th>
-							<th><a href=""
-								ng-click="orderByField='fileType'; reverseSort = !reverseSort">
-									{{items.transilations.tabletype}} <span
-									ng-show="orderByField == 'fileType'"> <span
-										ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
-										ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
-								</span>
-							</a></th>
-							<th class="download">{{items.transilations.tabledownload}}</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr
-							dir-paginate="file in items.files | newFilter:dummyCategory | filter:byTypes | filter:search |  orderBy:orderByField:reverseSort | offset:0 | itemsPerPage: pageSize"
-							current-page="currentPage">
-							<f:if condition="{showPreview}">
-								<f:then>
-									<td class="item-image" data-th="Image"><img
-								class="img-thumbnail" ng-src="{{base}}{{file.imageUrl}}"></td>
-								</f:then>
-							</f:if>
-							
-							<td class="item-title"
-								data-th="{{items.transilations.tabletitle}}">{{file.title}}</td>
-							<td data-th="{{items.transilations.tablesize}}">{{file.size}}</td>
-							<td data-th="{{items.transilations.tabletype}}">{{file.fileType}}</td>
-							<td class="download" data-th="{{items.transilations.tabledownload}}">
-								<a href="{downloadUrl}&tx_pitsdownloadcenter_pitsdownloadcenter%5Bfileid%5D={{file.id}}" target="_blank"></a>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="shadow">
+					<div class="preview-box">
+						<table id="data-results" class="results">
+							<thead>
+								<tr>
+								<f:if condition="{showPreview}">
+									<f:then>
+										<th></th>	
+									</f:then>
+								</f:if>							
+									<th class="item-title"><a href=""
+										ng-click="orderByField='title'; reverseSort = !reverseSort">
+											{{items.transilations.tabletitle}} <span
+											ng-show="orderByField == 'title'"> <span
+												ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
+												ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
+										</span>
+									</a></th>
+									<th><a href=""
+										ng-click="orderByField='size'; reverseSort = !reverseSort">
+											{{items.transilations.tablesize}} <span
+											ng-show="orderByField == 'size'"> <span
+												ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
+												ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
+										</span>
+									</a></th>
+									<th><a href=""
+										ng-click="orderByField='fileType'; reverseSort = !reverseSort">
+											{{items.transilations.tabletype}} <span
+											ng-show="orderByField == 'fileType'"> <span
+												ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
+												ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
+										</span>
+									</a></th>
+									<th class="download">{{items.transilations.tabledownload}}</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr
+									dir-paginate="file in items.files | newFilter:dummyCategory | filter:byTypes | filter:search |  orderBy:orderByField:reverseSort | offset:0 | itemsPerPage: pageSize"
+									current-page="currentPage">
+									<f:if condition="{showPreview}">
+										<f:then>
+											<td class="item-image" data-th="Image"><img
+										class="img-thumbnail" ng-src="{{base}}{{file.imageUrl}}"></td>
+										</f:then>
+									</f:if>
+									
+									<td class="item-title"
+										data-th="{{items.transilations.tabletitle}}">{{file.title}}</td>
+									<td data-th="{{items.transilations.tablesize}}">{{file.size}}</td>
+									<td data-th="{{items.transilations.tabletype}}">{{file.fileType}}</td>
+									<td class="download" data-th="{{items.transilations.tabledownload}}">
+										<a href="{downloadUrl}&tx_pitsdownloadcenter_pitsdownloadcenter%5Bfileid%5D={{file.id}}" target="_blank"></a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>	
 			</div>
 			<div class="other-controller">
 				<div class="text-center">

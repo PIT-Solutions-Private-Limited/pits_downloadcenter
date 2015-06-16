@@ -24,6 +24,8 @@ Change Log
 
 - 1.0.2 Added 2 Themes Red and Blue Version as Default, Fixed Issues in TYPO3 7.0.2 , Force Download Implemented.
 
+- 1.0.3 Implemented File Type Preview Image, Managed Translated Version of File in Download.
+
 
 
 
