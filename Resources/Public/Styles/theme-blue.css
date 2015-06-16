@@ -290,9 +290,9 @@ margin: 0
   color: #2a6496;
   border-color: #dddddd;
 }*/
-.filter43 .chk-box .ng-scope, #content .filter43 .chk-box .ng-scope,.chk-box-blue{
+.filter43 .chk-box .ng-scope, #content .filter43 .chk-box .ng-scope{
 	float: left;
-	width: 50%
+	width: 100%
 }
 .filter43 .shadow {
   background: #F7F8F9;
