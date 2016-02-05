@@ -49,9 +49,15 @@ app.controller("filterCtrl", function($scope, $http, $location) {
 		$scope.base = data.baseURL;
 
 		$scope.byTypes = function(data){
-			return $scope.checkFilter[data.dataType] || reset($scope.checkFilter)
-		}
-		
+			for (var i = 0; i < Object.keys(data.dataType).length; i++) {
+				var type = data.dataType[i];
+				if ($scope.checkFilter[type]) {
+					return true;
+				}
+			}
+			return false;
+		};
+
 		$scope.changeCat = function(id){
 			$scope.dummyCategory = id;
 		}
@@ -87,7 +93,7 @@ app.controller("filterCtrl", function($scope, $http, $location) {
 					}
 				});
 				if(filterUrl.length>0){
-					$location.search('filter', filterUrl.joinactionURL(","));
+					$location.search('filter', filterUrl.join(","));
 				}else{
 					$location.search('filter', null);
 				}
