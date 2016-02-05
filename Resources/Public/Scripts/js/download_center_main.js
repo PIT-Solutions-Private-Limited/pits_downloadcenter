@@ -184,9 +184,13 @@ app.filter('newFilter', function ($location) {
 			var filtered = [];
 			angular.forEach(items, function(item) {					
 				angular.forEach(selVal.categories, function(selectedValue) {
-					if(item.categories[0] == selectedValue){
-						filtered.push(item);
-					}
+					angular.forEach(item.categories, function(value,key) {
+						if (item.categories[key] == selectedValue){
+							if (filtered.indexOf(item) === -1) {
+								filtered.push(item);
+							}
+						}
+					});
 				});
 			});
 			if(flag != 1){
