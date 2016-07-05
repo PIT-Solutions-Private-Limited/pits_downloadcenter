@@ -21,6 +21,7 @@ $GLOBALS['TCA']['tx_pitsdownloadcenter_domain_model_filetype'] = array(
 			'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.language',
 			'config' => array(
 				'type' => 'select',
+				'renderType' => 'selectSingle',
 				'foreign_table' => 'sys_language',
 				'foreign_table_where' => 'ORDER BY sys_language.title',
 				'items' => array(
