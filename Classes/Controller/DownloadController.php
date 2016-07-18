@@ -81,40 +81,47 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @return void
      */
     public function listAction() {
-        $config         = $this -> settings;
-        $transilations  = $this -> getPageTranslations();
-        $filetypesObject= $this -> filetypeRepository -> findAll();
-        $fileTypes      = $this->getFileTypes( $filetypesObject );
-        $categoryTree   = $this->doGetSubCategories(0);
-        $storageuid     = $this->settings['fileStorage'];
-        $storageRepository      = $this->storageRepository->findByUid($storageuid);
-        $storageConfiguration   = $storageRepository->getConfiguration();
-        $basePath               = $storageConfiguration['basePath'];
+        $config = $this -> settings;
+        $transilations = $this -> getPageTranslations();
+        $filetypesObject = $this -> filetypeRepository -> findAll();
+        $fileTypes = $this->getFileTypes( $filetypesObject );
+        $categoryTree = $this->doGetSubCategories(0);
+        $storageuid = $this->settings['fileStorage'];
+        $storageRepository = $this->storageRepository->findByUid($storageuid);
+        if( $storageRepository instanceof \TYPO3\CMS\Core\Resource\ResourceStorage )
+        {
+            $storageConfiguration   = $storageRepository->getConfiguration();
+        }
+        else{
+            $error_code = 503;
+            $this->request->forward('error', NULL, NULL, $error_code );
+        }
+        $basePath = $storageConfiguration['basePath'];
         // Stop Execution if the path selected is fileadmin  
-        $isValid    = ($basePath === "fileadmin/")?FALSE:TRUE;
-        $showPreview= ($config['showthumbnail'] == 1)?TRUE:FALSE;
-        if($isValid){
-            $baseUrl    =   $GLOBALS['TSFE']->baseUrl;
+        $isValid = ( $basePath === "fileadmin/" ) ? FALSE : TRUE;
+        $showPreview = ( $config['showthumbnail'] == 1 ) ? TRUE : FALSE;
+        if( $isValid ){
+            $baseUrl = $GLOBALS['TSFE']->baseUrl;
             //You can also set an array of arguments if you need to:
             $pageUid    =   $GLOBALS['TSFE']->id;
             //Uri for JSON Call
             $urlArguments = array(
                                 array(
-                                    'tx_pitsdownloadcenter_pitsdownloadcenter' =>
+                                    'tx_pitsdownloadcenter_pitsdownloadcenter' => 
                                     array(
                                         'controller' => 'Download',
                                         'action' => 'show',
                                     )
                                 )
                             );
-            $actionUrl = $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($urlArguments)->build();
-            $filePreview = ($config['showFileIconPreview'] == 1 )?TRUE:FALSE;             
-            $this->view->assign('baseURL' , $baseUrl );
-            $this->view->assign('actionUrl' , $actionUrl );
-            $this->view->assign('downloadUrl' , $downloadUrl );
-            $this->view->assign('basePath'  , $basePath);
-            $this->view->assign('showPreview', $showPreview);
-            $this->view->assign('showFileIcon',$filePreview);
+            $actionUrl = $this->uriBuilder->reset()->setTargetPageUid( $pageUid )->setCreateAbsoluteUri( TRUE )->setArguments( $urlArguments )->build();
+            $filePreview = ( $config['showFileIconPreview'] == 1 ) ? TRUE : FALSE;             
+            $this->view->assign( 'baseURL' , $baseUrl );
+            $this->view->assign( 'actionUrl' , $actionUrl );
+            $this->view->assign( 'downloadUrl' , $downloadUrl );
+            $this->view->assign( 'basePath'  , $basePath );
+            $this->view->assign( 'showPreview', $showPreview );
+            $this->view->assign( 'showFileIcon',$filePreview );
         }
         else{
             $this->view->assign('showError',TRUE);
@@ -128,32 +135,21 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @return void
      */ 
     public function showAction() {
-        ini_set('memory_limit', '-1');
-        $config = $this -> settings;     
-        $transilations = $this -> getPageTranslations();
-        $filetypesObject = $this -> filetypeRepository -> findAll();
-        $fileTypes  =   $this->getFileTypes( $filetypesObject );
-        $categoryTree = $this -> doGetSubCategories(0);
+        ini_set( 'memory_limit', '-1' );
+        $config = $this->settings;     
+        $transilations = $this->getPageTranslations();
+        $filetypesObject = $this->filetypeRepository->findAll();
+        $fileTypes = $this->getFileTypes( $filetypesObject );
+        $categoryTree = $this->doGetSubCategories(0);
         $storageuid = $this->settings['fileStorage'];
-        $showPreview= ($config['showthumbnail'] == 1)?TRUE:FALSE;
-        $storageRepository      = $this->storageRepository->findByUid($storageuid);
-        $storageConfiguration   = $storageRepository->getConfiguration();
-        $folder =   new \TYPO3\CMS\Core\Resource\Folder(    $storageRepository,
-                                                            '',
-                                                            ''
-                    );
-        $getfiles = $storageRepository->getFilesInFolder(   $folder ,
-                                                            $start = 0, 
-                                                            $maxNumberOfItems = 0, 
-                                                            $useFilters = TRUE, 
-                                                            $recursive = TRUE 
-                    );
+        $showPreview = ($config['showthumbnail'] == 1)?TRUE:FALSE;
+        $storageRepository = $this->storageRepository->findByUid( $storageuid );
+        $storageConfiguration = $storageRepository->getConfiguration();
+        $folder =   new \TYPO3\CMS\Core\Resource\Folder( $storageRepository , '' , '' );
+        $getfiles = $storageRepository->getFilesInFolder( $folder , $start = 0 , $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE );
         $basePath = $storageConfiguration['basePath'];
-        $files =    $this -> generateFiles( $getfiles , 
-                                            $basePath ,
-                                            $showPreview
-                    );
-        $baseUrl =  $GLOBALS['TSFE']->baseUrl;
+        $files = $this->generateFiles( $getfiles , $basePath , $showPreview );
+        $baseUrl = $GLOBALS['TSFE']->baseUrl;
         $response = array(
                         'baseURL' => $baseUrl ,
                         'files' => $files, 
@@ -162,8 +158,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
                         'config' => $config, 
                         'transilations' => $transilations
                     );
-        echo json_encode( $response );
-        exit;
+        echo json_encode( $response );exit;
     }
 
     /**
@@ -171,20 +166,20 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @void 
      */
     public function forceDownloadAction(){
-        $arguments          = $this->request->getArguments();
-        $fileID             = base64_decode($arguments['fileid']);
+        $arguments = $this->request->getArguments();
+        $fileID = base64_decode($arguments['fileid']);
         if( is_numeric($fileID)) {
-			$storageuid         = $this->settings['fileStorage'];
-			$fileDetails        = $this->downloadRepository->getFileDetails( $storageuid , $fileID  );
-			$fileIdentifier     =  (isset($fileDetails['identifier']))?$fileDetails['identifier']:FALSE;
+			$storageuid = $this->settings['fileStorage'];
+			$fileDetails = $this->downloadRepository->getFileDetails( $storageuid , $fileID  );
+			$fileIdentifier = ( isset($fileDetails['identifier']) ) ? $fileDetails['identifier'] : FALSE;
 			$storageRepository  = $this->storageRepository->findByUid( $storageuid );
-			$sConfig            = $storageRepository->getConfiguration();
-			$fileName           = (isset($fileDetails['name']))?$fileDetails['name']:NULL;
-			$file               =  realpath( PATH_site.$sConfig['basePath'].$fileIdentifier ); 
-			$fileObject 		= $storageRepository->getFile($fileIdentifier);
-			$sys_language_uid	= $GLOBALS['TSFE']->sys_language_uid;
+			$sConfig = $storageRepository->getConfiguration();
+			$fileName = (isset($fileDetails['name']))?$fileDetails['name']:NULL;
+			$file = realpath( PATH_site.$sConfig['basePath'].$fileIdentifier ); 
+			$fileObject = $storageRepository->getFile( $fileIdentifier );
+			$sys_language_uid = $GLOBALS['TSFE']->sys_language_uid;
 			$checkTranslations = $this->downloadRepository->checkTranslations( $fileObject , $sys_language_uid );
-			if( $checkTranslations ):
+			if( $checkTranslations ){
 				$file_identifier = isset($checkTranslations['translated_file'])?$checkTranslations['translated_file']:NULL;
 				if ($file_identifier && !empty( $file_identifier )){
 					$filepath = PATH_site.$file_identifier;
@@ -193,7 +188,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 						$fileName = basename( $file );
 					}
 				}
-			endif;
+			}
 			if(is_file($file)) {
 				$fileLen    = filesize($file);          
 				$ext        = strtolower(substr(strrchr($fileName, '.'), 1));
@@ -246,7 +241,6 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 					case 'avi':
 						$cType = 'video/x-msvideo';
 					break;
-
 					//forbidden filetypes
 					case 'inc':
 					case 'conf':
@@ -258,12 +252,10 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 					case 'php4':                        
 					case 'php5':
 					exit;
-
 					default:
 						$cType = 'application/force-download';
 					break;
 				}
-
 				$headers = array(
 					'Pragma'                    => 'public', 
 					'Expires'                   => 0, 
