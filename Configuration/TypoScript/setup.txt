@@ -56,10 +56,10 @@ page.includeCSS {
     file70001.title = Default CSS
     file70001.media = screen
     file70002=EXT:pits_downloadcenter/Resources/Public/fontawesome/font-awesome.min.css
-    file70002.external=1
     file70003=EXT:pits_downloadcenter/Resources/Public/Styles/fileicons.css
     file70003.title = Default CSS
 }
+
 page.includeJS {
     file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/angular.min.js
     file70001.type = text/javascript

@@ -5,4 +5,5 @@ page.includeCSS {
     file77777 = http://fonts.googleapis.com/css?family=Open+Sans
     file77777.title = Default CSS
     file77777.media = screen
+    file77777.external = 1
 }

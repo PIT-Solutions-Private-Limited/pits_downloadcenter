@@ -2,9 +2,8 @@ page.includeCSS {
     file70001 =EXT:pits_downloadcenter/Resources/Public/Styles/theme-blue.css
     file70001.title = Default CSS
     file70001.media = screen
-    file70002=http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css
-    file70002.external=1
     file77777 = http://fonts.googleapis.com/css?family=Open+Sans
     file77777.title = Default CSS
     file77777.media = screen
+    file77777.external = 1
 }

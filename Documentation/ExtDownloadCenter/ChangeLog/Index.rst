@@ -28,6 +28,7 @@ Change Log
 
 - 1.0.4 Typoscript Configuration Introduced for enabling FileType Icon, Implemented Backend Sorting for File Types TCA and Category TCA, Fixed URL Building from server side instead of template side absolute path , Minor CSS Bugs were fixed. 
 
+- 1.1.0 Minor Bug Fixes, BUG #https://forge.typo3.org/issues/73153 - Fixed , https://forge.typo3.org/issues/72355 - Fixed. 
 
 
 

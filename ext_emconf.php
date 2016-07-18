@@ -14,7 +14,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'title' => 'Download Center',
 	'description' => 'Download Center Sponsored by TNT-Graphics AG',
 	'category' => 'plugin',
-	'version' => '1.0.5',
+	'version' => '1.1.0',
 	'state' => 'stable',
 	'uploadfolder' => false,
 	'createDirs' => '',
@@ -26,13 +26,13 @@ $EM_CONF[$_EXTKEY] = array (
 	array (
 		'depends' => 
 		array (
-			'typo3' => '6.2.0 - 7.0.2',
+			'typo3' => '6.2.0 - 7.6.99',
 		),
 		'conflicts' => 
 		array (
 		),
 		'suggests' => 
-		array (
+		array ( 
 		),
 	),
 );

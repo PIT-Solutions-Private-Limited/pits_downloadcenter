@@ -167,7 +167,8 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      */
     public function forceDownloadAction(){
         $arguments = $this->request->getArguments();
-        $fileID = base64_decode($arguments['fileid']);
+        $fileID_Encoded = explode('__',base64_decode($arguments['fileid']) );
+        $fileID = ( isset($fileID_Encoded[0]) )?$fileID_Encoded[0]:0;
         if( is_numeric($fileID)) {
 			$storageuid = $this->settings['fileStorage'];
 			$fileDetails = $this->downloadRepository->getFileDetails( $storageuid , $fileID  );
@@ -341,7 +342,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
                 							'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
                 								'controller' => 'Download',
                 								'action' => 'forceDownload',
-                								'fileid' => base64_encode($fileProperty['uid'])
+                								'fileid' => base64_encode($fileProperty['uid']."__".$fileProperty['size'])
                 							),
                 							'no_cache' => 1
                 						)
