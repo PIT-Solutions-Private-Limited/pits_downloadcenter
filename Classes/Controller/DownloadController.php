@@ -5,6 +5,7 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
+use PITS\PitsDownloadcenter\Handlers\ContentTypeHandler;
 /***************************************************************
  *
  *  Copyright notice
@@ -33,47 +34,7 @@ use TYPO3\CMS\Core\Resource\ResourceStorage;
 /**
  * DownloadController
  */
-class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
-    /**
-     * downloadRepository
-     *
-     * @var \PITS\PitsDownloadcenter\Domain\Repository\DownloadRepository
-     * @inject
-     */
-    protected $downloadRepository = NULL;
-
-    /**
-     * filelistRepository
-     *
-     * @var \PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository
-     * @inject
-     */
-    protected $filetypeRepository = NULL;
-
-    /**
-     * categoryRepository
-     *
-     * @var \PITS\PitsDownloadcenter\Domain\Repository\CategoryRepository
-     * @inject
-     */
-    protected $categoryRepository = NULL;
-
-    /**
-     * categorymmRepository
-     *
-     * @var \PITS\PitsDownloadcenter\Domain\Repository\CategoryrecordmmRepository
-     * @inject
-     */
-    protected $categorymmRepository = NULL;
-
-    /**
-     * storageRepository
-     *
-     * @var \TYPO3\CMS\Core\Resource\StorageRepository 
-     * @inject
-     */
-    protected $storageRepository = NULL;
-    
+class DownloadController extends AbstractController {
     
     /**
      * action list
@@ -81,9 +42,9 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @return void
      */
     public function listAction() {
-        $config = $this -> settings;
-        $transilations = $this -> getPageTranslations();
-        $filetypesObject = $this -> filetypeRepository -> findAll();
+        $config = $this->settings;
+        $transilations = $this->getPageTranslations();
+        $filetypesObject = $this->filetypeRepository->findAll();
         $fileTypes = $this->getFileTypes( $filetypesObject );
         $categoryTree = $this->doGetSubCategories(0);
         $storageuid = $this->settings['fileStorage'];
@@ -145,7 +106,7 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
         $showPreview = ($config['showthumbnail'] == 1)?TRUE:FALSE;
         $storageRepository = $this->storageRepository->findByUid( $storageuid );
         $storageConfiguration = $storageRepository->getConfiguration();
-        $folder =   new \TYPO3\CMS\Core\Resource\Folder( $storageRepository , '' , '' );
+        $folder = new \TYPO3\CMS\Core\Resource\Folder( $storageRepository , '' , '' );
         $getfiles = $storageRepository->getFilesInFolder( $folder , $start = 0 , $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE );
         $basePath = $storageConfiguration['basePath'];
         $files = $this->generateFiles( $getfiles , $basePath , $showPreview );
@@ -166,259 +127,53 @@ class DownloadController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
      * @void 
      */
     public function forceDownloadAction(){
-        $arguments = $this->request->getArguments();
-        $fileID_Encoded = explode('__',base64_decode($arguments['fileid']) );
-        $fileID = ( isset($fileID_Encoded[0]) )?$fileID_Encoded[0]:0;
+        $encrypted_fileID = ( $this->request->hasArgument('fileid'))?$this->request->getArgument('fileid'):0;
+        $fileID= openssl_decrypt( base64_decode( $encrypted_fileID ) , $this->encryptionMethod, $this->encryptionKey , TRUE , $this->initializationVector );
         if( is_numeric($fileID)) {
-			$storageuid = $this->settings['fileStorage'];
-			$fileDetails = $this->downloadRepository->getFileDetails( $storageuid , $fileID  );
-			$fileIdentifier = ( isset($fileDetails['identifier']) ) ? $fileDetails['identifier'] : FALSE;
-			$storageRepository  = $this->storageRepository->findByUid( $storageuid );
-			$sConfig = $storageRepository->getConfiguration();
-			$fileName = (isset($fileDetails['name']))?$fileDetails['name']:NULL;
-			$file = realpath( PATH_site.$sConfig['basePath'].$fileIdentifier ); 
-			$fileObject = $storageRepository->getFile( $fileIdentifier );
-			$sys_language_uid = $GLOBALS['TSFE']->sys_language_uid;
-			$checkTranslations = $this->downloadRepository->checkTranslations( $fileObject , $sys_language_uid );
-			if( $checkTranslations ){
-				$file_identifier = isset($checkTranslations['translated_file'])?$checkTranslations['translated_file']:NULL;
-				if ($file_identifier && !empty( $file_identifier )){
-					$filepath = PATH_site.$file_identifier;
-					if (!empty($filepath) && is_file($filepath)){
-						$file = $filepath;
-						$fileName = basename( $file );
-					}
-				}
-			}
-			if(is_file($file)) {
-				$fileLen    = filesize($file);          
-				$ext        = strtolower(substr(strrchr($fileName, '.'), 1));
-				switch($ext) {
-					case 'txt':
-						$cType = 'text/plain'; 
-					break;              
-					case 'pdf':
-						$cType = 'application/pdf'; 
-					break;
-					case 'exe':
-						$cType = 'application/octet-stream';
-					break;
-					case 'zip':
-						$cType = 'application/zip';
-					break;
-					case 'doc':
-						$cType = 'application/msword';
-					break;
-					case 'xls':
-						$cType = 'application/vnd.ms-excel';
-					break;
-					case 'ppt':
-						$cType = 'application/vnd.ms-powerpoint';
-					break;
-					case 'gif':
-						$cType = 'image/gif';
-					break;
-					case 'png':
-						$cType = 'image/png';
-					break;
-					case 'jpeg':
-					case 'jpg':
-						$cType = 'image/jpg';
-					break;
-					case 'mp3':
-						$cType = 'audio/mpeg';
-					break;
-					case 'wav':
-						$cType = 'audio/x-wav';
-					break;
-					case 'mpeg':
-					case 'mpg':
-					case 'mpe':
-						$cType = 'video/mpeg';
-					break;
-					case 'mov':
-						$cType = 'video/quicktime';
-					break;
-					case 'avi':
-						$cType = 'video/x-msvideo';
-					break;
-					//forbidden filetypes
-					case 'inc':
-					case 'conf':
-					case 'sql':                 
-					case 'cgi':
-					case 'htaccess':
-					case 'php':
-					case 'php3':
-					case 'php4':                        
-					case 'php5':
-					exit;
-					default:
-						$cType = 'application/force-download';
-					break;
-				}
-				$headers = array(
-					'Pragma'                    => 'public', 
-					'Expires'                   => 0, 
-					'Cache-Control'             => 'must-revalidate, post-check=0, pre-check=0',
-					'Cache-Control'             => 'public',
-					'Content-Description'       => 'File Transfer',
-					'Content-Type'              => $cType,
-					'Content-Disposition'       => 'attachment; filename="'. $fileName .'"',
-					'Content-Transfer-Encoding' => 'binary', 
-					'Content-Length'            => $fileLen         
-				);
-				foreach($headers as $header => $data)
-				$this->response->setHeader($header, $data); 
-				$this->response->sendHeaders();                 
-				@readfile($file);   
-			}
-		}
-		else{
-			echo "Invalid Access!";
-		}   
-        exit;
-    }
-
-    /**
-     * generate subcategories and return category tree
-     *
-     * @return array
-     * @author
-     **/
-    public function doGetSubCategories($parentID) {
-        $categoryTree = array();
-        $subCategories = $this  -> categoryRepository 
-                                -> getSubCategories($parentID);
-        $i = 0;
-        foreach ($subCategories as $key => $value) {
-            $catID = $value -> getUid();
-            $catName = $value -> getCategoryname();
-            $categoryTree[$key]['id'] = $catID;
-            $categoryTree[$key]['title'] = $catName;
-
-            $has_sub = NULL;
-            $has_sub = $this-> categoryRepository 
-                            -> getSubCategoriesCount($catID);
-            if ($has_sub) {
-                $categoryTree[$key]['input'] = $this->doGetSubCategories($catID);
-            }
-            $i++;
-        }
-        return $categoryTree;
-    }
-
-     /**
-     * Function for structured file result
-     *
-     * @return structured array
-     **/
-    public function generateFiles($fileObject , $basePath , $showPreview ) {
-        $response = array();
-        $pImgWidth = "150m";
-        $pImgHeight = "150m";
-        $processType = "Image.CropScaleMask";
-        $i = 0;
-        $pageUid =   $GLOBALS['TSFE']->id;
-        foreach ($fileObject as $key => $value) {
-            if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
-                $key = $i++;
-                $fileProperty = $value -> getProperties();
-                $response[$key]['id']  = (int)$fileProperty['uid'];
-                $response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
-                $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
-                $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
-                $response[$key]['fileType'] = strtoupper($fileProperty['extension']);
-                $response[$key]['extension'] = $fileProperty['extension'];
-                $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
-                $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
-                if( $showPreview ){
-                    $processed                      = $this->processImage($value,$response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
-                  	$response[$key]['imageUrl']     = ($processed == '' || !file_exists($processed))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
+            $storageuid = $this->settings['fileStorage'];
+            $fileDetails = $this->downloadRepository->getFileDetails( $storageuid , $fileID  );
+            $fileIdentifier = ( isset($fileDetails['identifier']) ) ? $fileDetails['identifier'] : FALSE;
+            $storageRepository  = $this->storageRepository->findByUid( $storageuid );
+            $sConfig = $storageRepository->getConfiguration();
+            $fileName = (isset($fileDetails['name']))?$fileDetails['name']:NULL;
+            $file = realpath( PATH_site.$sConfig['basePath'].$fileIdentifier ); 
+            $fileObject = $storageRepository->getFile( $fileIdentifier );
+            $sys_language_uid = $GLOBALS['TSFE']->sys_language_uid;
+            $checkTranslations = $this->downloadRepository->checkTranslations( $fileObject , $sys_language_uid );
+            if( $checkTranslations ){
+                $file_identifier = isset($checkTranslations['translated_file'])?$checkTranslations['translated_file']:NULL;
+                if ($file_identifier && !empty( $file_identifier )){
+                    $filepath = PATH_site.$file_identifier;
+                    if (!empty($filepath) && is_file($filepath)){
+                        $file = $filepath;
+                        $fileName = basename( $file );
+                    }
                 }
-                $idRel = $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
-                $downloadArguments = array(
-                						array(
-                							'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
-                								'controller' => 'Download',
-                								'action' => 'forceDownload',
-                								'fileid' => base64_encode($fileProperty['uid']."__".$fileProperty['size'])
-                							),
-                							'no_cache' => 1
-                						)
-                					);
-                $response[$key]['downloadUrl']= $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->setNoCache (TRUE)->build();
+            }
+            if(is_file($file)) {
+                $fileLen    = filesize($file);          
+                $ext        = strtolower(substr(strrchr($fileName, '.'), 1));
+                $cType = ContentTypeHandler::getContentType( $ext );
+                $headers = array(
+                    'Pragma'                    => 'public', 
+                    'Expires'                   => 0, 
+                    'Cache-Control'             => 'must-revalidate, post-check=0, pre-check=0',
+                    'Cache-Control'             => 'public',
+                    'Content-Description'       => 'File Transfer',
+                    'Content-Type'              => $cType,
+                    'Content-Disposition'       => 'attachment; filename="'. $fileName .'"',
+                    'Content-Transfer-Encoding' => 'binary', 
+                    'Content-Length'            => $fileLen         
+                );
+                foreach($headers as $header => $data)
+                $this->response->setHeader($header, $data); 
+                $this->response->sendHeaders();                 
+                @readfile($file);   
             }
         }
-        return $response;
-    }
-
-    /**
-     * Processed Images
-     *
-     * @return Image
-     **/
-    public function processImage($fileObj,$file, $title, $size_w, $size_h) {
-        $cObj           = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
-        $file = urldecode( $file );
-        $response   = $cObj->IMG_RESOURCE( array(
-                            'file.'=>array('treatAsReference'=>1, 'width'=>$size_w, 'height'=>$size_h, ),
-                            'file' => $fileObj->getUid()
-                        )
-                    );
-        return $response;
-    }
-
-       /**
-     * Function Returns FileTypes
-     *
-     * @return array [object]
-     **/
-    public function getFileTypes( $filetypesObject ){
-        $response = array();
-        foreach ($filetypesObject as $key => $value) {
-            $response[$key]['id']  =   $value->getUid();
-            $response[$key]['title']  =   $value->getFiletype();
-        }
-        return $response;
-    }
-
-    /**
-     * Function Returns the Page Translations
-     *
-     * @return array
-     **/
-    public function getPageTranslations() {
-        $translatedValue = array();
-        $translatedValue['keywordsearch'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.keywordsearch");
-        $translatedValue['searchkey'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.searchkey");
-        $translatedValue['filterbyarea'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.filterbyarea");
-        $translatedValue['categoryplaceholder'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.categoryplaceholder");
-        $translatedValue['searchbytype'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.searchbytype");
-        $translatedValue['resultsfound'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.resultsfound");
-        $translatedValue['tabletitle'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.tabletitle");
-        $translatedValue['tablesize'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.tablesize");
-        $translatedValue['tabletype'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.tabletype");
-        $translatedValue['tabledownload'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.tabledownload");
-        return $translatedValue;
-    }
-
-    /*
-     * Localisation Function
-     */
-    public function localise($id) {
-        return \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($id, 'PitsDownloadcenter');
-    }
-
-    /*
-     *  Size Convertion Function
-     */
-    public function formatBytes($bytes, $precision = 2) {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        $bytes /= pow(1024, $pow);
-        return round($bytes, $precision) . ' ' . $units[$pow];
+        else{
+            echo "Invalid Access!";
+        }   
+        exit;
     }
 }

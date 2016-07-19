@@ -1,0 +1,5 @@
+# cat=BASIC/A; type=string; label=Encryption Secret Key : This key will be used for encryption and decryption
+secure_encryption_key =
+
+# cat=BASIC/B; type=options[AES-256-CBC]; label=Encryption Method : Encryption Method
+secure_encryption_method = AES-256-CBC
