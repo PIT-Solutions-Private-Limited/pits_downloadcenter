@@ -15,6 +15,10 @@ plugin.tx_pitsdownloadcenter {
 		storagePid =
 	}
 	settings{
-		showFileIconPreview = 1	
+		showFileIconPreview = 1
+		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Preview Thumbnail width (eg: 150m, 150c or 150)
+		previewThumbnailWidth =
+		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Preview Thumbnail Height (eg: 150m, 150c or 150)
+		previewThumbnailHeight =
 	}
 }

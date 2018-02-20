@@ -13,7 +13,9 @@ plugin.tx_pitsdownloadcenter {
 		# rewrittenPropertyMapper = 1
 	}
 	settings{
-		showFileIconPreview = {$plugin.tx_pitsdownloadcenter.settings.showFileIconPreview}		
+		showFileIconPreview = {$plugin.tx_pitsdownloadcenter.settings.showFileIconPreview}
+        previewThumbnailWidth = {$plugin.tx_pitsdownloadcenter.settings.previewThumbnailWidth}
+        previewThumbnailHeight = {$plugin.tx_pitsdownloadcenter.settings.previewThumbnailHeight}
 	}
 }
 
@@ -73,11 +75,11 @@ page.includeJS {
 }
 
 config.tx_extbase.persistence.classes {
- PITS\PitsDownloadcenter\Domain\Model{
-  tableName = tx_pitsdownloadcenter_domain_model_categoryrecordmm
-  columns {
-    	uid_local.mapOnProperty = uidLocal
-    	uid_foreign.mapOnProperty = uidForeign
-   }
- }
+    PITS\PitsDownloadcenter\Domain\Model{
+        tableName = tx_pitsdownloadcenter_domain_model_categoryrecordmm
+        columns {
+            uid_local.mapOnProperty = uidLocal
+            uid_foreign.mapOnProperty = uidForeign
+        }
+    }
 }
