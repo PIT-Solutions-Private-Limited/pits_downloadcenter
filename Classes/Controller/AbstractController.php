@@ -1,11 +1,7 @@
 <?php
 namespace PITS\PitsDownloadcenter\Controller;
 
-use TYPO3\CMS\Core\Resource\Collection\FolderBasedFileCollection;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Resource\FileRepository;
-use TYPO3\CMS\Core\Resource\ResourceStorage;
 /***************************************************************
  *
  *  Copyright notice
@@ -132,6 +128,13 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     protected $storageRepository = NULL;
 
     /**
+     * datetime
+     *
+     * @var \DateTime
+     */
+    protected $dateTime = null;
+
+    /**
      * Initializes the controller before invoking an action method.
      *
      * Override this method to solve tasks which all actions have in
@@ -139,15 +142,20 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      *
      * @return void
      */
-    protected function initializeAction() {
+    protected function initializeAction()
+    {
+        // Initialize Parent Context
         parent::initializeAction();
+
+        // Basic Configuration Variables
         $this->extensionName = $this->request->getControllerExtensionName();
         $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
         $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)]);
-        $this->initializationVector = $this->strToHex("12345678");
 
-        $this->encryptionKey = isset( $this->extConf['secure_encryption_key'] )?$this->extConf['secure_encryption_key']:NULL;
-        $this->encryptionMethod = isset( $this->extConf['secure_encryption_method'] )?$this->extConf['secure_encryption_method']:NULL;
+        // Encryption Variables
+        $this->initializationVector = $this->strToHex("12345678");
+        $this->encryptionKey = isset( $this->extConf['secure_encryption_key'] )? $this->extConf['secure_encryption_key'] : NULL;
+        $this->encryptionMethod = isset( $this->extConf['secure_encryption_method'] ) ? $this->extConf['secure_encryption_method'] : NULL;
         $this->controllerSettings = $this->settings['controllers'][$this->request->getControllerName()]; 
         $this->actionSettings = $this->controllerSettings['actions'][$this->request->getControllerActionName()];
         $this->currentPageUid = $GLOBALS['TSFE']->id;
@@ -163,7 +171,8 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * @param \TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
      * @return void
      */
-    protected function initializeView(\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view) {
+    protected function initializeView(\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view)
+    {
         parent::initializeView($view);
         $this->view->assignMultiple(array(
             'controllerSettings' => $this->controllerSettings,
@@ -173,7 +182,15 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         ));
     }
 
-    function strToHex($string){
+
+    /**
+     * strToHex
+     *
+     * @param $string
+     * @return string
+     */
+    public function strToHex($string)
+    {
 	    $hex = '';
 	    for ($i=0; $i<strlen($string); $i++){
 	        $ord = ord($string[$i]);
@@ -186,10 +203,12 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     /**
      * generate subcategories and return category tree
      *
+     * @param $parentID integer
      * @return array
      * @author
      **/
-    public function doGetSubCategories($parentID) {
+    public function doGetSubCategories($parentID)
+    {
         $categoryTree = array();
         $subCategories = $this  -> categoryRepository 
                                 -> getSubCategories($parentID);
@@ -211,16 +230,19 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         return $categoryTree;
     }
 
-     /**
-     * Function for structured file result
-     *
+    /**
+     * function for structured file result
+     * 
+     * @param $fileObject array
+     * @param $showPreview boolean
      * @return structured array
      **/
-    public function generateFiles($fileObject , $basePath , $showPreview ) {
+    public function generateFiles($fileObject, $showPreview)
+    {
         $response = array();
-        $pImgWidth = "150m";
-        $pImgHeight = "150m";
-        $processType = "Image.CropScaleMask";
+        $pImgWidth = (!empty($this->settings['previewThumbnailWidth']) && !empty($this->settings['previewThumbnailWidth'])) ? $this->settings['previewThumbnailWidth'] : "150m";
+        $pImgHeight = (!empty($this->settings['previewThumbnailHeight']) && !empty($this->settings['previewThumbnailHeight'])) ? $this->settings['previewThumbnailHeight'] : "150m";
+
         $i = 0;
         $pageUid = $GLOBALS['TSFE']->id;
         foreach ($fileObject as $key => $value) {
@@ -236,21 +258,22 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                 $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
                 $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
                 if( $showPreview ){
-                    $processed                      = $this->processImage($value,$response[$key]['url'], $response[$key]['title'], $pImgWidth, $pImgHeight);
-                    $response[$key]['imageUrl']     = ($processed == '' || !file_exists($processed))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
+                    $processed = $this->processImage($value, $pImgWidth, $pImgHeight);
+                    $response[$key]['imageUrl'] = ($processed == '' || !file_exists($processed))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
                 }
-                $idRel = $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'];
+
+                // Changed File Uid to encrypted format
                 $file_uid_secure = base64_encode(openssl_encrypt( $fileProperty['uid'] , $this->encryptionMethod, $this->encryptionKey , TRUE , $this->initializationVector ));
                 $downloadArguments = array(
-                                        array(
-                                            'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
-                                                'controller' => 'Download',
-                                                'action' => 'forceDownload',
-                                                'fileid' => $file_uid_secure
-                                            ),
-                                            'no_cache' => 1
-                                        )
-                                    );
+                    array(
+                        'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
+                            'controller' => 'Download',
+                            'action' => 'forceDownload',
+                            'fileid' => $file_uid_secure
+                        ),
+                        'no_cache' => 1
+                    )
+                );
                 $response[$key]['downloadUrl']= $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->setNoCache (TRUE)->build();
             }
         }
@@ -258,29 +281,35 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     }
 
     /**
-     * Processed Images
+     * processed Images
+     * changed the deprecated method to 8LTS function call
      *
-     * @return Image
+     * @param $fileObj \TYPO3\CMS\Core\Resource\File
+     * @param $size_w string
+     * @param $size_h string
+     * @return string
      **/
-    public function processImage($fileObj,$file, $title, $size_w, $size_h) {
-        $cObj           = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer');
-        $file = urldecode( $file );
-        $response   =   $cObj->IMG_RESOURCE( array(
-                            'file.'=>array('treatAsReference'=>1, 'width'=>$size_w, 'height'=>$size_h, ),
-                            'file' => $fileObj->getUid()
-                            )
-                        );
+    public function processImage($fileObj, $size_w, $size_h)
+    {
+        $cObj = $this->configurationManager->getContentObject();
+        $response = $cObj->cObjGetSingle('IMG_RESOURCE', array(
+            'file.'=>array('treatAsReference'=>1, 'width'=>$size_w, 'height'=>$size_h ),
+            'file' => $fileObj->getUid()
+            )
+        );
         return $response;
     }
 
-       /**
+    /**
      * Function Returns FileTypes
      *
-     * @return array [object]
+     * @param $fileTypesObject \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult
+     * @return array
      **/
-    public function getFileTypes( $filetypesObject ){
+    public function getFileTypes($fileTypesObject)
+    {
         $response = array();
-        foreach ($filetypesObject as $key => $value) {
+        foreach ($fileTypesObject as $key => $value) {
             $response[$key]['id']  =   $value->getUid();
             $response[$key]['title']  =   $value->getFiletype();
         }
@@ -292,7 +321,8 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      *
      * @return array
      **/
-    public function getPageTranslations() {
+    public function getPageTranslations()
+    {
         $translatedValue = array();
         $translatedValue['keywordsearch'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.keywordsearch");
         $translatedValue['searchkey'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.searchkey");
@@ -309,15 +339,24 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 
     /*
      * Localisation Function
+     *
+     * @param $id string
+     * @return string
      */
-    public function localise($id) {
+    public function localise($id)
+    {
         return \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($id, 'PitsDownloadcenter');
     }
 
     /*
-     *  Size Convertion Function
+     *  Size Conversion Function
+     *
+     * @param $bytes integer
+     * @param $precision integer
+     * @return integer
      */
-    public function formatBytes($bytes, $precision = 2) {
+    public function formatBytes($bytes, $precision = 2)
+    {
         $units = array('B', 'KB', 'MB', 'GB', 'TB');
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));

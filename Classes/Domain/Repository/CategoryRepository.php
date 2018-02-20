@@ -30,8 +30,16 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
 /**
  * The repository for Category
  */
-class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
-	public function getSubCategories( $categoryID ){
+class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+{
+    /**
+     * getSubCategories
+     *
+     * @param $categoryID
+     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     */
+	public function getSubCategories($categoryID)
+    {
 		$query = $this->createQuery();
 		$query->matching(	
 			$query->equals("parentcategory", "$categoryID") 
@@ -40,8 +48,14 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 		return $query->execute();
 	}
 
-
-	public function getSubCategoriesCount( $categoryID ){
+    /**
+     * getSubCategoriesCount
+     *
+     * @param $categoryID
+     * @return int
+     */
+	public function getSubCategoriesCount($categoryID)
+    {
 		$query = $this->createQuery();
 		$query->matching(	
 			$query->equals("parentcategory", "$categoryID") 

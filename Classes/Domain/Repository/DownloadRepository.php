@@ -1,6 +1,5 @@
 <?php
 namespace PITS\PitsDownloadcenter\Domain\Repository;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /***************************************************************
  *
@@ -30,17 +29,17 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 /**
  * The repository for Downloads
  */
-class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
-	public function findAll(){
+class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+{
+    /**
+     * findAll
+     *
+     * @return mixed
+     */
+	public function findAll()
+    {
 		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
 		return $fileRepository->findAll();
-	}
-	
-	public function findByStorageID( $storageID ){
-		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
-		$query=$this->createQuery();
-		$query->equals('storage', '2');
-		return $query->execute();
 	}
 
 	/**
@@ -61,48 +60,65 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
 	*/
 	public function findAllReferenced() {
 		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
-		$query = $this->createQuery();
-		$documents = $query->execute();
-		$references = array();
 		return $fileRepository->findAll();
 	}
 
 	/**
 	 * find Processed File
-	 * 
+	 *
+     * @param $data
 	 * @return array
 	 **/
-	public function getProcessedFile( $data ){	
+	public function getProcessedFile($data)
+    {
 		$processedFileRep = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository');
-		$storage = $data->getStorage();
-		$identifier = $data->getIdentifier() ;
 		$taskType = "Image.Preview";
-		//$processingConfig = array("width" => 150, "height" => 150);
 		$processingConfig = array();
-		$processedFile = new \TYPO3\CMS\Core\Resource\ProcessedFile( $data , $taskType , $processingConfig );
-		$retprocessFile = $processedFileRep->findOneByOriginalFileAndTaskTypeAndConfiguration( $data , $taskType , $processingConfig );
-		return $retprocessFile;
-	}	
+		return $processedFileRep->findOneByOriginalFileAndTaskTypeAndConfiguration($data, $taskType, $processingConfig);
+	}
 
-	public function isProcessed( array $fileDetails ){
-		$processedFile = new \TYPO3\CMS\Core\Resource\ProcessedFile( $fileDetails['fileObj'] , $fileDetails['processType'] , $fileDetails['processConfig'] );
+    /**
+     * isProcessed
+     *
+     * @param array $fileDetails
+     * @return bool
+     */
+	public function isProcessed(array $fileDetails)
+    {
+		$processedFile = new \TYPO3\CMS\Core\Resource\ProcessedFile($fileDetails['fileObj'], $fileDetails['processType'], $fileDetails['processConfig']);
 		$isProcessed = $processedFile->isProcessed();
 		return $isProcessed;
 	}
 
-	public function getFileDetails( $storageuid , $fileID ){
+    /**
+     * getFileDetails
+     *
+     * @param $storageUid
+     * @param $fileID
+     * @return mixed
+     */
+	public function getFileDetails($storageUid , $fileID)
+    {
 		$response = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 
-						"identifier,name", 
-						"sys_file", 
-						" storage = $storageuid AND uid = $fileID ", 
-						$groupBy= '', 
-						$orderBy= '', 
-						$numIndex=FALSE
-					);
+            "identifier,name",
+            "sys_file",
+            " storage = $storageUid AND uid = $fileID ",
+            $groupBy= '',
+            $orderBy= '',
+            $numIndex=FALSE
+        );
 		return $response;
 	}
-	
-	public function checkTranslations( $file , $sys_language_uid ){
+
+    /**
+     * checkTranslations
+     *
+     * @param $file
+     * @param $sys_language_uid
+     * @return array|bool
+     */
+	public function checkTranslations($file , $sys_language_uid)
+    {
 		$file_uid = $file->getUid();
 		$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = 1;
 		$getTranslatedFile = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 

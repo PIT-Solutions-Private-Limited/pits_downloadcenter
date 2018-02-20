@@ -1,11 +1,13 @@
 <?php
-class DocumentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
+class DocumentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+{
      /**
      * Disables pid constraint
      *
      * @return void
      */
-    public function initializeObject() {
+    public function initializeObject()
+    {
         $querySettings = $this->objectManager->create('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
         $querySettings->setRespectStoragePage(FALSE);
         $this->setDefaultQuerySettings($querySettings);
@@ -16,7 +18,8 @@ class DocumentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
      *
      * @return void
      */
-    public function findAllReferenced() {
+    public function findAllReferenced()
+    {
         $fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
         $query = $this->createQuery();
         $documents = $query->execute();
@@ -30,4 +33,3 @@ class DocumentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository {
     }
   
 }
-?>

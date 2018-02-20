@@ -1,10 +1,6 @@
 <?php
 namespace PITS\PitsDownloadcenter\Controller;
-use TYPO3\CMS\Core\Resource\Collection\FolderBasedFileCollection;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Resource\FileRepository;
-use TYPO3\CMS\Core\Resource\ResourceStorage;
+
 use PITS\PitsDownloadcenter\Handlers\ContentTypeHandler;
 /***************************************************************
  *
@@ -41,7 +37,8 @@ class DownloadController extends AbstractController {
      *
      * @return void
      */
-    public function listAction() {
+    public function listAction()
+    {
         $config = $this->settings;
         $transilations = $this->getPageTranslations();
         $filetypesObject = $this->filetypeRepository->findAll();
@@ -95,30 +92,31 @@ class DownloadController extends AbstractController {
      * 
      * @return void
      */ 
-    public function showAction() {
+    public function showAction()
+    {
         ini_set( 'memory_limit', '-1' );
         $config = $this->settings;     
-        $transilations = $this->getPageTranslations();
-        $filetypesObject = $this->filetypeRepository->findAll();
-        $fileTypes = $this->getFileTypes( $filetypesObject );
+        $translations = $this->getPageTranslations();
+        $fileTypesObject = $this->filetypeRepository->findAll();
+        $fileTypes = $this->getFileTypes( $fileTypesObject );
         $categoryTree = $this->doGetSubCategories(0);
-        $storageuid = $this->settings['fileStorage'];
-        $showPreview = ($config['showthumbnail'] == 1)?TRUE:FALSE;
-        $storageRepository = $this->storageRepository->findByUid( $storageuid );
+        $storageUid = $this->settings['fileStorage'];
+        $showPreview = ($config['showthumbnail'] == 1) ? TRUE : FALSE;
+        $storageRepository = $this->storageRepository->findByUid( $storageUid );
         $storageConfiguration = $storageRepository->getConfiguration();
-        $folder = new \TYPO3\CMS\Core\Resource\Folder( $storageRepository , '' , '' );
-        $getfiles = $storageRepository->getFilesInFolder( $folder , $start = 0 , $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE );
+        $folder = new \TYPO3\CMS\Core\Resource\Folder($storageRepository, '', '');
+        $getFiles = $storageRepository->getFilesInFolder($folder, $start = 0, $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE);
         $basePath = $storageConfiguration['basePath'];
-        $files = $this->generateFiles( $getfiles , $basePath , $showPreview );
+        $files = $this->generateFiles($getFiles, $showPreview);
         $baseUrl = $GLOBALS['TSFE']->baseUrl;
         $response = array(
-                        'baseURL' => $baseUrl ,
-                        'files' => $files, 
-                        'categories' => $categoryTree, 
-                        'types' => $fileTypes,
-                        'config' => $config, 
-                        'transilations' => $transilations
-                    );
+            'baseURL' => $baseUrl ,
+            'files' => $files,
+            'categories' => $categoryTree,
+            'types' => $fileTypes,
+            'config' => $config,
+            'translations' => $translations
+        );
         echo json_encode( $response );exit;
     }
 
@@ -126,7 +124,8 @@ class DownloadController extends AbstractController {
      * force download PHP Script
      * @void 
      */
-    public function forceDownloadAction(){
+    public function forceDownloadAction()
+    {
         $encrypted_fileID = ( $this->request->hasArgument('fileid'))?$this->request->getArgument('fileid'):0;
         $fileID= openssl_decrypt( base64_decode( $encrypted_fileID ) , $this->encryptionMethod, $this->encryptionKey , TRUE , $this->initializationVector );
         if( is_numeric($fileID)) {
