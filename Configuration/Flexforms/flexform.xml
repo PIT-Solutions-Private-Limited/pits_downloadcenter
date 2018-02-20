@@ -14,8 +14,32 @@
 					<type>check</type>									
 				</config>
 			</TCEforms>
-		</settings.showthumbnail>
-	  	 <settings.paginationcount>
+        </settings.showthumbnail>
+        <settings.hideSearchFilter>
+             <TCEforms>
+                 <label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download.hideSearchFilter</label>
+                 <config>
+                     <type>check</type>
+                 </config>
+             </TCEforms>
+        </settings.hideSearchFilter>
+		<settings.hideCategoryFilter>
+			 <TCEforms>
+				 <label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download.hideCategoryFilter</label>
+				 <config>
+					 <type>check</type>
+				 </config>
+			 </TCEforms>
+		</settings.hideCategoryFilter>
+		<settings.hideFileTypeFilter>
+			 <TCEforms>
+				 <label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download.hideFileTypeFilter</label>
+				 <config>
+					 <type>check</type>
+				 </config>
+			 </TCEforms>
+		</settings.hideFileTypeFilter>
+	  	<settings.paginationcount>
 			<TCEforms>
 				<label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download.paginationcount</label>
 				<config>
