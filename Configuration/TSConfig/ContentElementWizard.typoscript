@@ -1,0 +1,13 @@
+mod.wizards.newContentElement.wizardItems.plugins {
+	elements {
+		downloadcenter {
+			iconIdentifier = extension-downloadcenter-main
+			title = LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_mod.xlf:pluginWizardTitle
+			description = LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_mod.xlf:pluginWizardDescription
+			tt_content_defValues {
+				CType = list
+				list_type = pitsdownloadcenter_pitsdownloadcenter
+			}
+		}
+	}
+}
