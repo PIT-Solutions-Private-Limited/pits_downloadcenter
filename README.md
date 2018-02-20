@@ -1,40 +1,39 @@
+# Download Center extension for TYPO3 CMS Sponsored by TNT-Graphics AG
 
-===========================
-EXT: Download Center
-===========================
-
-:Author:
+**Author**:
       HOJA.M.A
 
-:Created:
+**Created**:
       2015-03-31 19::5:7:
 
-:Changed:
-      2015-03-31 21::3:3:
+**Changed**:
+      2018-02-08 10:00:00:00:
 
-:Classification:
+**Classification**:
       pits_downloadcenter
 
-:Description:
-      Download Center Sponsored by TNT Graphics AG ----
+**Description**:
 
-:Keywords:
-      FAL,Download Center,Download Manager,File Listing,Angular JS 
+This version 2.x of Download Center extension will work only with TYPO3 7.6 or newer. For older version of TYPO3 Please download the version 1.1.0.
 
-:Author:
+Repository, bug reporting, pull requests, etc is handled via https://github.com/hojama/pits_downloadcenter
+
+
+**Keywords**:
+      FAL,Download Center,Download Manager,File Listing,Angular JS
+
+**Author**:
       HOJA.M.A
 
-:Email:
+**Email**:
       hoja.ma@pitsolutions.com
 
-:Language:
+**Language**:
       en
 
+**Notes**:
 
-.. toctree::
-   :maxdepth: 5
-   :titlesonly:
-   :glob:
+* If you find errors, please, report them [here](https://github.com/hojama/pits_downloadcenter/issues). This place is **only** for bugs. Use TYPO3 mailing lists for questions!
 
-   ExtDownloadCenter/Index
 
+[Documentation](https://docs.typo3.org/typo3cms/extensions/pits_downloadcenter/)

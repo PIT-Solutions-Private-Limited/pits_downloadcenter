@@ -27,8 +27,7 @@ Version: 1.0.4
 Keywords: FAL, angular, PIT Solutions, File download, Download center,
 TNT Graphics
 
-Copyright 2015, Hoja M A, <hoja.ma@pitsolutions.com>,Sivakumar S,
-<sivakumar.sa@pitsolutions.com>
+Copyright 2018, Hoja M A, <hoja.ma@pitsolutions.com>
 
 This document is published under the Open Content License
 

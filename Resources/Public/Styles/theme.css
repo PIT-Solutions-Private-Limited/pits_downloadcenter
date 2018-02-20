@@ -217,7 +217,7 @@
 .filter43 .download a:hover i{
   	color: #2a6496;
 }
- @media (max-width: 767px) {
+@media (max-width: 767px) {
   .filter43 .download, .filter43 .item-image{
   	text-align: left;
   }

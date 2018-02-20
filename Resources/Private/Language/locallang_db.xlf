@@ -38,7 +38,17 @@
 			</trans-unit>	
 			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.showthumbnail">
 				<source>Show Preview Thumb</source>
-			</trans-unit>		
+			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.hideSearchFilter">
+                <source>Hide Search Filter</source>
+            </trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.hideCategoryFilter">
+                <source>Hide Category Filter</source>
+            </trans-unit>
+            <trans-unit id="tx_pitsdownloadcenter_domain_model_download.hideFileTypeFilter">
+                <source>Hide File Type Filter</source>
+            </trans-unit>
+				showFileTypeFilter
 		</body>
 	</file>
 </xliff>

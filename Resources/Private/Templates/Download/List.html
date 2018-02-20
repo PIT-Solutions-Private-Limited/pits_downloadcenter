@@ -20,36 +20,48 @@ the next time you save the extension in the extension builder
 		<div class="filter-wrapper" ng-controller="filterCtrl">
 			<div class="filter-wrap clearfix">
 				<form action="javascript:;" class="filter">
-					<div class="row">
-						<label class="control-label subheading clearfix">{{items.transilations.keywordsearch}}</label>
-						<div class="input-group">
-							<input type="text" class="form-control" ng-model="search"
-								ng-change="filter()"
-								placeholder="{{items.transilations.searchkey}}"> <span
-								class="input-group-addon" ng-click="search = ''"></span>
-						</div>
-					</div>
-					<div class="row">
-						<label class="control-label subheading clearfix">{{items.transilations.filterbyarea}}</label>
-						<div class="input-group">
-							<custom-select ng-repeat="cat in categories track by $index"
-								class="cust-select"></custom-select>
-						</div>
-					</div>
-					<div class="row chk-box clearfix">
-						<label class="control-label subheading clearfix">{{items.transilations.searchbytype}}</label>
-						<div ng-repeat="type in items.types" class="chk-box-blue">
-							<label class="control-label"> <input type="checkbox"
-								ng-model="checkFilter[type.id]" value="{{type.id}}">
-								{{type.title}}
-							</label>
-						</div>
-					</div>
+					<f:if condition="{settings.hideSearchFilter}">
+						<f:else>
+							<div class="row">
+								<label class="control-label subheading clearfix">{{items.translations.keywordsearch}}</label>
+								<div class="input-group">
+									<input type="text" class="form-control" ng-model="search"
+										   ng-change="filter()"
+										   placeholder="{{items.translations.searchkey}}"> <span
+										class="input-group-addon" ng-click="search = ''"></span>
+								</div>
+							</div>
+						</f:else>
+					</f:if>
+					<f:if condition="{settings.hideCategoryFilter}">
+						<f:else>
+							<div class="row">
+								<label class="control-label subheading clearfix">{{items.translations.filterbyarea}}</label>
+								<div class="input-group">
+									<custom-select ng-repeat="cat in categories track by $index"
+												   class="cust-select"></custom-select>
+								</div>
+							</div>
+						</f:else>
+					</f:if>
+					<f:if condition="{settings.hideFileTypeFilter}">
+						<f:else>
+							<div class="row chk-box clearfix">
+								<label class="control-label subheading clearfix">{{items.translations.searchbytype}}</label>
+								<div ng-repeat="type in items.types" class="chk-box-blue">
+									<label class="control-label"> <input type="checkbox"
+																		 ng-model="checkFilter[type.id]" value="{{type.id}}">
+										{{type.title}}
+									</label>
+								</div>
+							</div>
+						</f:else>
+					</f:if>
 				</form>
 			</div>
 			<div class="result-wrap">
 				<h3>
-					<span id="total-count"></span> {{items.transilations.resultsfound}}
+					<span id="total-count"></span> {{items.translations.resultsfound}}
 				</h3>
 				<div class="shadow">
 					<div class="preview-box">
@@ -63,7 +75,7 @@ the next time you save the extension in the extension builder
 								</f:if>							
 									<th class="item-title"><a href=""
 										ng-click="orderByField='title'; reverseSort = !reverseSort">
-											{{items.transilations.tabletitle}} <span
+											{{items.translations.tabletitle}} <span
 											ng-show="orderByField == 'title'"> <span
 												ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
 												ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
@@ -71,7 +83,7 @@ the next time you save the extension in the extension builder
 									</a></th>
 									<th><a href=""
 										ng-click="orderByField='size'; reverseSort = !reverseSort">
-											{{items.transilations.tablesize}} <span
+											{{items.translations.tablesize}} <span
 											ng-show="orderByField == 'size'"> <span
 												ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
 												ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
@@ -79,13 +91,13 @@ the next time you save the extension in the extension builder
 									</a></th>
 									<th><a href=""
 										ng-click="orderByField='fileType'; reverseSort = !reverseSort">
-											{{items.transilations.tabletype}} <span
+											{{items.translations.tabletype}} <span
 											ng-show="orderByField == 'fileType'"> <span
 												ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
 												ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
 										</span>
 									</a></th>
-									<th class="download">{{items.transilations.tabledownload}}</th>
+									<th class="download">{{items.translations.tabledownload}}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -98,11 +110,10 @@ the next time you save the extension in the extension builder
 										class="img-thumbnail" ng-src="{{base}}{{file.imageUrl}}"></td>
 										</f:then>
 									</f:if>
-									
 									<td class="item-title"
-										data-th="{{items.transilations.tabletitle}}">{{file.title}}</td>
-									<td data-th="{{items.transilations.tablesize}}">{{file.size}}</td>
-									<td data-th="{{items.transilations.tabletype}}">
+										data-th="{{items.translations.tabletitle}}">{{file.title}}</td>
+									<td data-th="{{items.translations.tablesize}}">{{file.size}}</td>
+									<td data-th="{{items.translations.tabletype}}">
 										<f:if condition="{showFileIcon}">
 											<f:then>
 												<span class="files file-{{file.extension}}"></span>										
@@ -110,7 +121,7 @@ the next time you save the extension in the extension builder
 										</f:if>
 										 {{file.fileType}}
 									</td>
-									<td class="download" data-th="{{items.transilations.tabledownload}}">
+									<td class="download" data-th="{{items.translations.tabledownload}}">
 										<a href="{{file.downloadUrl}}" target="_blank"></a>
 									</td>
 								</tr>

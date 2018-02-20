@@ -1,9 +1,9 @@
 var app = angular.module("filterApp", ['angularUtils.directives.dirPagination']);
-var flag = 0; 
+var flag = 0;
 app.controller("filterCtrl", function($scope, $http, $location) {
 
     var actionURL = document.getElementById("actionURL").value;
-    
+
     $http.get(actionURL).success(function(data){
         //  url configurations
         document.getElementById('loader').style.display = 'none';
@@ -25,7 +25,7 @@ app.controller("filterCtrl", function($scope, $http, $location) {
         if($scope.locations.category!=undefined){
             $scope.dummyCategory = $scope.locations.category;
         }
-        
+
 
         $scope.items = data;
         $scope.currentPage = 1;
@@ -51,7 +51,7 @@ app.controller("filterCtrl", function($scope, $http, $location) {
         $scope.byTypes = function(data){
             if($scope.locations.filter==undefined){
                 return true;
-            } 
+            }
             for (var i = 0; i < Object.keys(data.dataType).length; i++) {
                 var type = data.dataType[i];
                 if ($scope.checkFilter[type]) {
@@ -69,7 +69,7 @@ app.controller("filterCtrl", function($scope, $http, $location) {
         },true);
 
         $scope.$watch('dummyCategory.categories',function(o,n){
-            $scope.currentPage = 1; 
+            $scope.currentPage = 1;
             if(o){
                 $location.search('category', o[0]);
             }else{
@@ -78,7 +78,7 @@ app.controller("filterCtrl", function($scope, $http, $location) {
         },true);
 
         $scope.$watch('search',function(o,n){
-            $scope.currentPage = 1; 
+            $scope.currentPage = 1;
             if(o!=""){
                 $location.search('keyword', o);
             }else{
@@ -102,7 +102,7 @@ app.controller("filterCtrl", function($scope, $http, $location) {
                 }
             }
         },true);
-        $scope.resetDropDown = function(elem) { 
+        $scope.resetDropDown = function(elem) {
             flag = 1;
             elem = elem.target
             $(elem).prev().val("");
@@ -135,7 +135,7 @@ app.directive('customSelect',function(){
         link:function(scope,element,attr){
             scope.dummyCategory = {};
         },
-        template: '<select class="form-control cat-select" subcat ng-model="dummyCategory.categories" ng-options="item.id as item.title for item in cat.val"><option value="">{{items.transilations.categoryplaceholder}}</option></select><span class="input-group-addon filter43-cats" ng-click="resetDropDown($event)"></span>'
+        template: '<select class="form-control cat-select" subcat ng-model="dummyCategory.categories" ng-options="item.id as item.title for item in cat.val"><option value="">{{items.translations.categoryplaceholder}}</option></select><span class="input-group-addon filter43-cats" ng-click="resetDropDown($event)"></span>'
     }
 });
 
@@ -147,7 +147,7 @@ app.directive("subcat", function($compile, $timeout){
             element.bind("change",function($index){
                 $timeout(function(){
                     flag = 0;
-                    scope.dummyCategory.categories = [scope.dummyCategory.categories];      
+                    scope.dummyCategory.categories = [scope.dummyCategory.categories];
                     var newValue = scope.cat.val.filter(function(item)  {
                         return item.id == scope.dummyCategory.categories
                     });
@@ -158,17 +158,17 @@ app.directive("subcat", function($compile, $timeout){
                     if(newValue[0]){
                         itemTitle = newValue[0].title;
                     }
-                    if(newValue[0] && 'input' in newValue[0]){                                              
+                    if(newValue[0] && 'input' in newValue[0]){
                         getVal(scope, newValue[0]);
                         scope.newArray({categories:scope.dummyCategory,val:newValue[0].input,index:scope.$index});
-                        element[0].blur();                      
+                        element[0].blur();
                     }
                     else{
                         scope.removeArray(scope.$index);
                     }
                     scope.changeCat(scope.dummyCategory);
-                }, 100, true);  
-            });         
+                }, 100, true);
+            });
         }
     }
 });
@@ -183,15 +183,15 @@ function reset(filterObj) {
     for (var key in filterObj) {
         if (filterObj[key]) {
             return false;
-        } 
+        }
     }
     return true;
 }
-app.filter('newFilter', function ($location) {  
+app.filter('newFilter', function ($location) {
     return function(items, selVal){
         if (selVal && selVal.categories) {
             var filtered = [];
-            angular.forEach(items, function(item) {                 
+            angular.forEach(items, function(item) {
                 angular.forEach(selVal.categories, function(selectedValue) {
                     angular.forEach(item.categories, function(value,key) {
                         if (item.categories[key] == selectedValue){
@@ -218,16 +218,16 @@ app.filter('newFilter', function ($location) {
         else {
             return items;
         }
-    }               
+    }
 });
 function getVal(scope, newValue){
-    var testArray = {testval:newValue.input};   
+    var testArray = {testval:newValue.input};
     var tvLength = testArray.testval.length;
     for(var i=0; i<tvLength; i++){
         scope.dummyCategory.categories.push(testArray.testval[i].id);
         if(testArray.testval[i].input){
             getVal(scope, testArray.testval[i]);
-        }   
+        }
     }
     return scope.dummyCategory.categories;
 }
