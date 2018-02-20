@@ -1,4 +1,5 @@
 <?php
+defined('TYPO3_MODE') or die();
 /**
  * extend sys_file_metadata fields sys_file_metadata
  */
