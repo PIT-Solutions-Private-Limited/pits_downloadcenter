@@ -97,6 +97,6 @@ CREATE TABLE tx_pitsdownloadcenter_domain_model_categoryrecordmm (
 CREATE TABLE sys_file_metadata (
 	tx_pitsdownloadcenter_domain_model_download_category varchar(400) NOT NULL DEFAULT '',
   	tx_pitsdownloadcenter_domain_model_download_filetype varchar(400) NOT NULL DEFAULT '',
-  	tx_pitsdownloadcenter_domain_model_download_translate text NOT NULL DEFAULT NULL
+  	tx_pitsdownloadcenter_domain_model_download_translate varchar(400) NOT NULL DEFAULT ''
 );
 
