@@ -59,7 +59,7 @@ class DownloadController extends AbstractController {
         $isValid = ( $basePath === "fileadmin/" ) ? FALSE : TRUE;
         $showPreview = ( $config['showthumbnail'] == 1 ) ? TRUE : FALSE;
         if( $isValid ){
-            $baseUrl = $GLOBALS['TSFE']->baseUrl;
+            $baseUrl = $this->request->getBaseUri();
             //You can also set an array of arguments if you need to:
             $pageUid    =   $GLOBALS['TSFE']->id;
             //Uri for JSON Call
@@ -108,7 +108,7 @@ class DownloadController extends AbstractController {
         $getFiles = $storageRepository->getFilesInFolder($folder, $start = 0, $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE);
         $basePath = $storageConfiguration['basePath'];
         $files = $this->generateFiles($getFiles, $showPreview);
-        $baseUrl = $GLOBALS['TSFE']->baseUrl;
+        $baseUrl = $this->request->getBaseUri();
         $response = array(
             'baseURL' => $baseUrl ,
             'files' => $files,

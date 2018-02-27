@@ -270,11 +270,10 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                             'controller' => 'Download',
                             'action' => 'forceDownload',
                             'fileid' => $file_uid_secure
-                        ),
-                        'no_cache' => 1
+                        )
                     )
                 );
-                $response[$key]['downloadUrl']= $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->setNoCache (TRUE)->build();
+                $response[$key]['downloadUrl']= $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->build();
             }
         }
         return $response;
