@@ -34,7 +34,7 @@ the next time you save the extension in the extension builder
                                         <div class="input-group">
                                             <input type="text" class="form-control" ng-model="search"
                                                    ng-change="filter()"
-                                                   placeholder="{ang.s}items.translations.searchkey{ang.e}"> <span
+                                                   placeholder="{f:translate(key:'tx_pitsdownloadcenter_domain_model_download.searchkey')}"> <span
                                                 class="input-group-addon" ng-click="search = ''"></span>
                                         </div>
                                     </div>
@@ -43,7 +43,9 @@ the next time you save the extension in the extension builder
                             <f:if condition="{settings.hideCategoryFilter}">
                                 <f:else>
                                     <div class="row">
-                                        <label class="control-label subheading clearfix"><![CDATA[{ang.s}{items.translations.keywordsearch{ang.e}}]]>{ang.s}items.translations.filterbyarea{ang.e}</label>
+                                        <label class="control-label subheading clearfix">
+                                            <f:translate key="tx_pitsdownloadcenter_domain_model_download.filterbyarea"></f:translate>
+                                        </label>
                                         <div class="input-group">
                                             <custom-select ng-repeat="cat in categories track by $index" class="cust-select"></custom-select>
                                         </div>
@@ -53,7 +55,9 @@ the next time you save the extension in the extension builder
                             <f:if condition="{settings.hideFileTypeFilter}">
                                 <f:else>
                                     <div class="row chk-box clearfix">
-                                        <label class="control-label subheading clearfix">{ang.s}items.translations.searchbytype{ang.e}</label>
+                                        <label class="control-label subheading clearfix">
+                                            <f:translate key="tx_pitsdownloadcenter_domain_model_download.searchbytype"></f:translate>
+                                        </label>
                                         <div ng-repeat="type in items.types" class="chk-box-blue">
                                             <label class="control-label"> 
                                                 <input type="checkbox" ng-model="checkFilter[type.id]" value="{ang.s}type.id{ang.e}">
@@ -67,7 +71,7 @@ the next time you save the extension in the extension builder
                     </div>
                     <div class="result-wrap">
                         <h3>
-                            <span id="total-count"></span> {ang.s}items.translations.resultsfound{ang.e}
+                            <span id="total-count"></span> <f:translate key="tx_pitsdownloadcenter_domain_model_download.resultsfound"></f:translate>
                         </h3>
                         <div class="shadow">
                             <div class="preview-box">
@@ -81,15 +85,15 @@ the next time you save the extension in the extension builder
                                         </f:if>                         
                                             <th class="item-title"><a href=""
                                                 ng-click="orderByField='title'; reverseSort = !reverseSort">
-                                                    {ang.s}items.translations.tabletitle{ang.e} <span
-                                                    ng-show="orderByField == 'title'"> <span
-                                                        ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
-                                                        ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
-                                                </span>
+                                                    <f:translate key="tx_pitsdownloadcenter_domain_model_download.tabletitle"></f:translate>
+                                                    <span ng-show="orderByField == 'title'"> 
+                                                        <span ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> 
+                                                        <span ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
+                                                    </span>
                                             </a></th>
                                             <th><a href=""
                                                 ng-click="orderByField='size'; reverseSort = !reverseSort">
-                                                    {ang.s}items.translations.tablesize{ang.e} <span
+                                                    <f:translate key="tx_pitsdownloadcenter_domain_model_download.tablesize"></f:translate><span
                                                     ng-show="orderByField == 'size'"> <span
                                                         ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
                                                         ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
@@ -97,13 +101,13 @@ the next time you save the extension in the extension builder
                                             </a></th>
                                             <th><a href=""
                                                 ng-click="orderByField='fileType'; reverseSort = !reverseSort">
-                                                    {ang.s}items.translations.tabletype{ang.e} <span
+                                                    <f:translate key="tx_pitsdownloadcenter_domain_model_download.tabletype"></f:translate><span
                                                     ng-show="orderByField == 'fileType'"> <span
                                                         ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
                                                         ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
                                                 </span>
                                             </a></th>
-                                            <th class="download">{ang.s}items.translations.tabledownload{ang.e}</th>
+                                            <th class="download"><f:translate key="tx_pitsdownloadcenter_domain_model_download.tabledownload"></f:translate></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -117,9 +121,9 @@ the next time you save the extension in the extension builder
                                                 </f:then>
                                             </f:if>
                                             <td class="item-title"
-                                                data-th="{ang.s}items.translations.tabletitle{ang.e}"><![CDATA[{ang.s}file.title{ang.e}]]>{ang.s}file.title{ang.e}</td>
-                                            <td data-th="{ang.s}items.translations.tablesize{ang.e}">{ang.s}file.size{ang.e}</td>
-                                            <td data-th="{ang.s}items.translations.tabletype{ang.e}">
+                                                data-th="{f:translate(key: 'tx_pitsdownloadcenter_domain_model_download.tabletitle')}">{ang.s}file.title{ang.e}</td>
+                                            <td data-th="{f:translate(key: 'tx_pitsdownloadcenter_domain_model_download.tablesize')}">{ang.s}file.size{ang.e}</td>
+                                            <td data-th="{f:translate(key: 'tx_pitsdownloadcenter_domain_model_download.tabletype')}">
                                                 <f:if condition="{showFileIcon}">
                                                     <f:then>
                                                         <span class="files file-{ang.s}file.extension{ang.e}"></span>                                     
@@ -127,7 +131,7 @@ the next time you save the extension in the extension builder
                                                 </f:if>
                                                  {ang.s}file.fileType{ang.e}
                                             </td>
-                                            <td class="download" data-th="{ang.s}items.translations.tabledownload{ang.e}">
+                                            <td class="download" data-th="{f:translate(key: 'tx_pitsdownloadcenter_domain_model_download.tabledownload')}">
                                                 <a href="{ang.s}file.downloadUrl{ang.e}" target="_blank"></a>
                                             </td>
                                         </tr>
