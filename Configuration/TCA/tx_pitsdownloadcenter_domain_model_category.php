@@ -25,10 +25,10 @@ return [
 		'iconfile' => 'EXT:pits_downloadcenter/Resources/Public/Icons/tx_pitsdownloadcenter_domain_model_category.png'
 	),
 	'interface' => array(
-		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, parentcategory,categoryname,hidden, ',
+		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, parentcategory,categoryname, description, hidden, ',
 	),
 	'types' => array(
-		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, parentcategory,categoryname,hidden;;1, --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.access, starttime, endtime'),
+		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, parentcategory,categoryname, description, hidden;;1, --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.access, starttime, endtime'),
 	),
 	'palettes' => array(
 		'1' => array('showitem' => 'sys_language_uid, l10n_parent, hidden')
@@ -90,6 +90,7 @@ return [
 			'config' => array(
 				'minitems' => 0,
 				'maxitems' => 1,
+				'default' => 0,
 				'type' => 'select',
 				'renderMode' => 'tree',
 				'renderType' => 'selectTree',
@@ -104,6 +105,16 @@ return [
 					),
 				)
 			)
+		),
+		'description' => array(
+			'exclude' => 0,
+			'label' => 'LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download_categorydescription',
+			'config' => array(
+			        'type' => 'text',
+			        'cols' => '40',
+			        'rows' => '15',
+			        'wrap' => 'off',
+			),
 		),
 		'hidden' => array(
 			'exclude' => 1,

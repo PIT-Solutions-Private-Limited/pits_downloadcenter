@@ -64,6 +64,7 @@ $tempColumns = array (
     'label' => 'LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download_translatedfile',
     'config' => array(
       'type' => 'group',
+	'default' => '',
       'internal_type' => 'file',
       'allowed' => 'jpeg,jpg,doc,docx,pdf',
       'size' => '5',

@@ -28,7 +28,7 @@ CREATE TABLE tx_pitsdownloadcenter_domain_model_category (
 	l10n_parent int(11) DEFAULT '0' NOT NULL,
 	l10n_diffsource mediumblob,
 	categoryname tinytext NOT NULL,
-	description text NOT NULL,
+	description text NOT NULL DEFAULT '',
 	parentcategory int(11) NOT NULL DEFAULT '0',
 	items int(11) NOT NULL DEFAULT '0',
 	
@@ -88,15 +88,15 @@ CREATE TABLE tx_pitsdownloadcenter_domain_model_categoryrecordmm (
  	sorting int(11) NOT NULL DEFAULT '0',
 	sorting_foreign int(11) NOT NULL DEFAULT '0',
  	KEY uid_local_foreign (uid_local,uid_foreign),
-  KEY uid_foreign_tablenames (uid_foreign,tablenames)
+	KEY uid_foreign_tablenames (uid_foreign,tablenames)
 );
 
 #
 # Table structure for table 'sys_file_meta_data'
 #
 CREATE TABLE sys_file_metadata (
-		tx_pitsdownloadcenter_domain_model_download_category varchar(400) NOT NULL DEFAULT NULL,
-  	tx_pitsdownloadcenter_domain_model_download_filetype varchar(400) NOT NULL DEFAULT NULL,
-  	tx_pitsdownloadcenter_domain_model_download_translate text NOT NULL
+	tx_pitsdownloadcenter_domain_model_download_category varchar(400) NOT NULL DEFAULT '',
+  	tx_pitsdownloadcenter_domain_model_download_filetype varchar(400) NOT NULL DEFAULT '',
+  	tx_pitsdownloadcenter_domain_model_download_translate text NOT NULL DEFAULT NULL
 );
 
