@@ -9,6 +9,9 @@
 			<trans-unit id="tx_pitsdownloadcenter_domain_model_download_category">
 				<source>Categories</source>
 			</trans-unit>
+			 <trans-unit id="tx_pitsdownloadcenter_domain_model_download_categorydescription">
+                                <source>Category Description</source>
+                        </trans-unit>
 			<trans-unit id="tx_pitsdownloadcenter_domain_model_download_filetype">
 				<source>File Type</source>
 			</trans-unit>	
