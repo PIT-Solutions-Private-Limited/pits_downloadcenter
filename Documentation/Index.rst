@@ -43,7 +43,7 @@ Pits Downloadcenter
       en
 
 :Version:
-      1.0.3
+      2.0.0
 
 .. toctree::
    :maxdepth: 5

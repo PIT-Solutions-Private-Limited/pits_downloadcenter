@@ -21,9 +21,8 @@ To-Do list
 - Direct url for accessibility when category filters or file type filter
   is selected
 
-- Jquery dependency removal.
+- Angular 5 Migration
 
-- Upcoming Release of Stable Version
 
 
 

@@ -15,7 +15,7 @@
 .. role::   php(code)
 
 
-Adding Category filters
+Adding Category Filters
 -----------------------
 
 The download manager category is not a sys\_category provided by
@@ -31,14 +31,3 @@ center categories where a title can be added and parent category can
 be selected which will be rendered as dropdown filters in front end.
 
 |img-6| |img-7|
-
-
-Adding File type filters
-------------------------
-
-The file type data can be added similar to categories through Web →
-List in backend. Only a title can be provided which will be available
-as multiple select item inside the media FAL item.
-
-|img-8| |img-9|
-

@@ -22,7 +22,7 @@ Extension Key: pits\_downloadcenter
 
 Language:en
 
-Version: 1.0.4 
+Version: 2.0.0
 
 Keywords: FAL, angular, PIT Solutions, File download, Download center,
 TNT Graphics

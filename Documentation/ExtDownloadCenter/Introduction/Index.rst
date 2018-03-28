@@ -26,8 +26,13 @@ Introduction
 
    WhatDoesItDo/Index
    Screenshots/Index
+   UsersManual/Index
+   Configurations/Index
+   PluginOptions/Index
    AddingCategoryFilters/Index
+   AddingFileTypeFilters/Index
    AddingMediaAsset/Index
+   AddingFileStorage/Index
    Faq/Index
    ConfiguringTheme/Index
 

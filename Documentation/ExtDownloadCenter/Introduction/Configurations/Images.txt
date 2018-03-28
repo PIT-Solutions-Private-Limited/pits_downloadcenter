@@ -1,0 +1,6 @@
+.. |img-11|      image:: ../../../Images/ConfigurationTwo.png
+   :height: 150
+   :width: 700
+.. :align: left
+.. :border: 0
+.. :name: Image11

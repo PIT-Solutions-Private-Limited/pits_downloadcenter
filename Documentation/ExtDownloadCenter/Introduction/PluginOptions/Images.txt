@@ -1,0 +1,13 @@
+.. |img-10|      image:: ../../../Images/ConfigurationOne.png
+   :height: 700
+   :width: 600
+.. :align: left
+.. :border: 0
+.. :name: Image10
+
+.. |img-4|      image:: ../../../Images/pic3.png
+   :height: 295
+   :width: 586
+.. :align: left
+.. :border: 0
+.. :name: Image2
