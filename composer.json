@@ -1,0 +1,19 @@
+{
+  "name": "pits/downloadcenter",
+  "type": "typo3-cms-extension",
+  "description": "Download Center for TYPO3 (FAL files can be shown in frontend with several filters)",
+  "keywords": [
+    "TYPO3",
+    "extension"
+  ],
+  "homepage": "http://pitsolutions.ch/",
+  "license": ["GPL-2.0-or-later"],
+  "require": {
+    "typo3/cms-core": "^8.7.13|| ^9.5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "PITS\\PitsDownloadcenter\\": "Classes"
+    }
+  }
+}
