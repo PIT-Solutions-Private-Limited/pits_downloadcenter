@@ -15,5 +15,9 @@
     "psr-4": {
       "PITS\\PitsDownloadcenter\\": "Classes"
     }
-  }
+  },
+  "replace": {
+        "pits_downloadcenter": "self.version",
+        "typo3-ter/pits-download-center": "self.version"
+    }
 }
