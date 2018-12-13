@@ -18,9 +18,6 @@
 To-Do list
 ----------
 
-- Direct url for accessibility when category filters or file type filter
-  is selected
-
 - Angular 5 Migration
 
 

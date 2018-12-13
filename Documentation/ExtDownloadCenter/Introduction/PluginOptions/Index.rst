@@ -24,7 +24,11 @@ the page in the standard way. There are only 2 plugin options:
 - File storage path
 
   |img-4|
-  
+
 In plugin options there are options implemented for disabling the search options from frontend. So that those search criterias will not applicable for the files.
 
 |img-10|
+
+In plugin there is an option available for enable/disable the direct link download of file from front end.
+
+|image-direct-link-download|

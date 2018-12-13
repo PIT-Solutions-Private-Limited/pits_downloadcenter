@@ -11,3 +11,11 @@
 .. :align: left
 .. :border: 0
 .. :name: Image2
+
+.. |image-direct-link-download|      image:: ../../../Images/direct_download.png
+   :height: 700
+   :width: 600
+.. :align: left
+.. :border: 0
+.. :name: Image3
+
