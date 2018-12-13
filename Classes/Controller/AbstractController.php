@@ -235,9 +235,11 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * 
      * @param $fileObject array
      * @param $showPreview boolean
+     * @param $allowDirectLinkDownlod boolean
+     * @param $basePath string
      * @return structured array
      **/
-    public function generateFiles($fileObject, $showPreview)
+    public function generateFiles($fileObject, $showPreview, $allowDirectLinkDownlod, $basePath)
     {
         $response = array();
         $pImgWidth = (!empty($this->settings['previewThumbnailWidth']) && !empty($this->settings['previewThumbnailWidth'])) ? $this->settings['previewThumbnailWidth'] : "150m";
@@ -261,19 +263,22 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                     $processed = $this->processImage($value, $pImgWidth, $pImgHeight);
                     $response[$key]['imageUrl'] = ($processed == '' || !file_exists($processed))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
                 }
-
-                // Changed File Uid to encrypted format
-                $file_uid_secure = base64_encode(openssl_encrypt( $fileProperty['uid'] , $this->encryptionMethod, $this->encryptionKey , TRUE , $this->initializationVector ));
-                $downloadArguments = array(
-                    array(
-                        'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
-                            'controller' => 'Download',
-                            'action' => 'forceDownload',
-                            'fileid' => $file_uid_secure
+                if(!$allowDirectLinkDownlod) {
+                    // Changed File Uid to encrypted format
+                    $file_uid_secure = base64_encode(openssl_encrypt( $fileProperty['uid'] , $this->encryptionMethod, $this->encryptionKey , TRUE , $this->initializationVector ));
+                    $downloadArguments = array(
+                        array(
+                            'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
+                                'controller' => 'Download',
+                                'action' => 'forceDownload',
+                                'fileid' => $file_uid_secure
+                            )
                         )
-                    )
-                );
-                $response[$key]['downloadUrl']= $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->build();
+                    );
+                    $response[$key]['downloadUrl']= $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->build();
+                } else {
+                    $response[$key]['downloadUrl']= $basePath.$fileProperty['identifier'];
+                }
             }
         }
         return $response;

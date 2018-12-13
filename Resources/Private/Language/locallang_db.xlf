@@ -42,6 +42,9 @@
 			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.showthumbnail">
 				<source>Show Preview Thumb</source>
 			</trans-unit>
+			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.allowDirectLinkDownload">
+				<source>Allow Direct Link Download</source>
+			</trans-unit>
 			<trans-unit id="tx_pitsdownloadcenter_domain_model_download.hideSearchFilter">
                 <source>Hide Search Filter</source>
             </trans-unit>

@@ -102,12 +102,13 @@ class DownloadController extends AbstractController {
         $categoryTree = $this->doGetSubCategories(0);
         $storageUid = $this->settings['fileStorage'];
         $showPreview = ($config['showthumbnail'] == 1) ? TRUE : FALSE;
+        $allowDirectLinkDownlod = ($config['allowDirectLinkDownload'] == 1) ? TRUE : FALSE;
         $storageRepository = $this->storageRepository->findByUid( $storageUid );
         $storageConfiguration = $storageRepository->getConfiguration();
         $folder = new \TYPO3\CMS\Core\Resource\Folder($storageRepository, '', '');
         $getFiles = $storageRepository->getFilesInFolder($folder, $start = 0, $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE);
         $basePath = $storageConfiguration['basePath'];
-        $files = $this->generateFiles($getFiles, $showPreview);
+        $files = $this->generateFiles($getFiles, $showPreview, $allowDirectLinkDownlod, $basePath);
         $baseUrl = $this->request->getBaseUri();
         $response = array(
             'baseURL' => $baseUrl ,

@@ -39,6 +39,14 @@
 				 </config>
 			 </TCEforms>
 		</settings.hideFileTypeFilter>
+		<settings.allowDirectLinkDownload>
+			 <TCEforms>
+				 <label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download.allowDirectLinkDownload</label>
+				 <config>
+					 <type>check</type>
+				 </config>
+			 </TCEforms>
+		</settings.allowDirectLinkDownload>
 	  	<settings.paginationcount>
 			<TCEforms>
 				<label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download.paginationcount</label>
