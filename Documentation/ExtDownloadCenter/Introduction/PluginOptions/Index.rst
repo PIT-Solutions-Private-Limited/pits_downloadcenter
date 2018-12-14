@@ -17,18 +17,24 @@
 Plugin Options
 ------------------------
 The plugin will be available in the plugin list which can be added to
-the page in the standard way. There are only 2 plugin options:
+the page in the standard way. Plugin options are listed below :
 
-- Definition for pagination limit per page count
+- Show Preview Thumb
 
-- File storage path
+- Hide Search Filter
 
-  |img-4|
+- Hide Category Filter
 
-In plugin options there are options implemented for disabling the search options from frontend. So that those search criterias will not applicable for the files.
+- Hide File Type Filter
 
-|img-10|
+- Allow Direct Link Download
 
-In plugin there is an option available for enable/disable the direct link download of file from front end.
+- Pagination Count
 
-|image-direct-link-download|
+- Select Filestorage Path
+
+
+In plugin there are options implemented for disabling the search options from frontend. So that those search criterias will not applicable for the files.
+
+
+|img-plugin-option|

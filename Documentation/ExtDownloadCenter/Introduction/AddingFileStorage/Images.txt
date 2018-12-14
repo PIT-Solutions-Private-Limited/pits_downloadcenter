@@ -12,23 +12,30 @@
 .. :border: 0
 .. :name: Image8
 
-.. |img-11|     image:: ../../../Images/manual_html_m12e953ca.png
+.. |settings-1|     image:: ../../../Images/adding_file_storage.png
    :height: 242
    :width: 539
 .. :align: left
 .. :border: 0
-.. :name: Image9
+.. :name: settings1
 
-.. |img-12|     image:: ../../../Images/manual_html_5b658681.png
-   :height: 307
-   :width: 608
+.. |settings-2|     image:: ../../../Images/settings-2.png
+   :height: 700
+   :width: 700
 .. :align: left
 .. :border: 0
-.. :name: Image10
+.. :name: settings2
 
-.. |img-13|     image:: ../../../Images/pic2.png
-   :height: 218
-   :width: 586
+.. |settings-3|     image:: ../../../Images/settings-3.png
+   :height: 157
+   :width: 1000
 .. :align: left
 .. :border: 0
-.. :name: Image11
+.. :name: settings3
+
+.. |settings-4|     image:: ../../../Images/settings-4.png
+   :height: 127
+   :width: 576
+.. :align: left
+.. :border: 0
+.. :name: settings4

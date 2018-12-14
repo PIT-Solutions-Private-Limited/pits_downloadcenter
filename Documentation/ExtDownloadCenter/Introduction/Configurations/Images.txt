@@ -1,4 +1,4 @@
-.. |img-11|      image:: ../../../Images/ConfigurationTwo.png
+.. |img-11|      image:: ../../../Images/configuration_plugin.png
    :height: 150
    :width: 700
 .. :align: left

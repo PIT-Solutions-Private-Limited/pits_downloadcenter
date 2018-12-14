@@ -1,18 +1,18 @@
-﻿.. |img-5|      image:: ../../../Images/manual_html_m63e0ad37.png
+﻿.. |category|      image:: ../../../Images/category.png
    :height: 272
    :width: 456
 .. :align: left
 .. :border: 0
-.. :name: Image3
+.. :name: category
 
-.. |img-6|      image:: ../../../Images/manual_html_6a63e927.png
+.. |img-6|      image:: ../../../Images/add_new_category.png
    :height: 358
    :width: 386
 .. :align: left
 .. :border: 0
 .. :name: Image4
 
-.. |img-7|      image:: ../../../Images/manual_html_29708060.png
+.. |img-7|      image:: ../../../Images/download-center.png
    :height: 210
    :width: 246
 .. :align: left

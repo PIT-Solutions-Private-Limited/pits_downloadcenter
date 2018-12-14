@@ -5,7 +5,7 @@
 .. :border: 0
 .. :name: Image2
 
-.. |img-10|     image:: ../../../Images/manual_html_600bc7fa.png
+.. |img-10|     image:: ../../../Images/add_media_file.png
    :height: 325
    :width: 561
 .. :align: left

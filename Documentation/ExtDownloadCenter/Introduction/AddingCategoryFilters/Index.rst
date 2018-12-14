@@ -24,10 +24,14 @@ preferred in this case. For this purpose typo3 FAL has been extended
 with few new fields that will be made available in the download
 manager tab in backend when user edits a FAL asset. See screen below;
 
-|img-5|
+|category|
 
 The new category type can be created in web → list view as Download
 center categories where a title can be added and parent category can
 be selected which will be rendered as dropdown filters in front end.
 
-|img-6| |img-7|
+
+|img-7|
+
+
+|img-6|

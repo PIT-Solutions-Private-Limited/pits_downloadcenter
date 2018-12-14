@@ -19,9 +19,9 @@
 .. :border: 0
 .. :name: Image10
 
-.. |img-13|     image:: ../../../Images/ThemeConfiguration.png
-   :height: 300
-   :width: 586
+.. |theme-configuration|     image:: ../../../Images/theme_configuration.png
+   :height: 500
+   :width: 1100
 .. :align: left
 .. :border: 0
-.. :name: Image11
+.. :name: theme-configuration

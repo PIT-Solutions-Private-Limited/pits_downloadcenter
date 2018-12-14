@@ -23,7 +23,7 @@ Download Center Plugin shipped with two default colour schemes. Red and Blue Ver
 Adding Template to Root Template or Extension TS Configuration
 ------------------------
 
-|img-13|
+|theme-configuration|
 
 
 Preview of Red Colour Theme
