@@ -14,44 +14,26 @@ plugin.tx_pitsdownloadcenter {
 	}
 	settings{
 		showFileIconPreview = {$plugin.tx_pitsdownloadcenter.settings.showFileIconPreview}
-        previewThumbnailWidth = {$plugin.tx_pitsdownloadcenter.settings.previewThumbnailWidth}
-        previewThumbnailHeight = {$plugin.tx_pitsdownloadcenter.settings.previewThumbnailHeight}
+    previewThumbnailWidth = {$plugin.tx_pitsdownloadcenter.settings.previewThumbnailWidth}
+    previewThumbnailHeight = {$plugin.tx_pitsdownloadcenter.settings.previewThumbnailHeight}
+    typeNum =  {$plugin.tx_pitsdownloadcenter.settings.typeNum}
 	}
 }
 
-plugin.tx_pitsdownloadcenter._CSS_DEFAULT_STYLE (
-	textarea.f3-form-error {
-		background-color:#FF9F9F;
-		border: 1px #FF0000 solid;
-	}
-
-	input.f3-form-error {
-		background-color:#FF9F9F;
-		border: 1px #FF0000 solid;
-	}
-
-	.tx-pits-downloadcenter table {
-		border-collapse:separate;
-		border-spacing:10px;
-	}
-
-	.tx-pits-downloadcenter table th {
-		font-weight:bold;
-	}
-
-	.tx-pits-downloadcenter table td {
-		vertical-align:top;
-	}
-
-	.typo3-messages .message-error {
-		color:red;
-	}
-
-	.typo3-messages .message-ok {
-		color:green;
-	}
-
-)
+// PAGE object for Download Center Rendering Service:
+download_center_ajax_service = PAGE
+download_center_ajax_service {
+  typeNum = 427590
+  config {
+    disableAllHeaderCode = 1
+    additionalHeaders = Content-type:application/json
+    xhtml_cleaning = 0
+    debug = 0
+    no_cache = 1
+    admPanel = 0
+  }
+  10 < tt_content.list.20.pitsdownloadcenter_pitsdownloadcenter
+}
 
 page.includeCSS {
     file70001 =EXT:pits_downloadcenter/Resources/Public/Styles/theme-blue.css

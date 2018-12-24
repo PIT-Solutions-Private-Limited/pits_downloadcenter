@@ -2,6 +2,9 @@
 namespace PITS\PitsDownloadcenter\Controller;
 
 use PITS\PitsDownloadcenter\Handlers\ContentTypeHandler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+
 /***************************************************************
  *
  *  Copyright notice
@@ -30,15 +33,32 @@ use PITS\PitsDownloadcenter\Handlers\ContentTypeHandler;
 /**
  * DownloadController
  */
-class DownloadController extends AbstractController {
-    
+class DownloadController extends AbstractController
+{
     /**
-     * action list
+     * initialize Action
      *
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     */
+    public function initializeAction()
+    {
+        parent::initializeAction();
+        // forward to ajax handler service
+        if (GeneralUtility::_GET('type') === '427590') {
+            $this->forward('show');
+        }
+    }
+
+    /**
+     * listAction
+     *
+     * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
     public function listAction()
     {
+
         $config = $this->settings;
         $transilations = $this->getPageTranslations();
         $filetypesObject = $this->filetypeRepository->findAll();
@@ -64,15 +84,20 @@ class DownloadController extends AbstractController {
             $pageUid    =   $GLOBALS['TSFE']->id;
             //Uri for JSON Call
             $urlArguments = array(
-                                array(
-                                    'tx_pitsdownloadcenter_pitsdownloadcenter' => 
-                                    array(
-                                        'controller' => 'Download',
-                                        'action' => 'show',
-                                    )
-                                )
-                            );
-            $actionUrl = $this->uriBuilder->reset()->setTargetPageUid( $pageUid )->setCreateAbsoluteUri( TRUE )->setArguments( $urlArguments )->build();
+                array(
+                    'tx_pitsdownloadcenter_pitsdownloadcenter' =>
+                    array(
+                        'controller' => 'Download',
+                        'action' => 'show',
+                    ),
+                    'settings' => $this->settings
+                )
+            );
+            $actionUrl = $this->uriBuilder->reset()
+                ->setTargetPageUid( $pageUid )
+                ->setCreateAbsoluteUri( TRUE )
+                ->setArguments( $urlArguments )
+                ->build();
             $filePreview = ( $config['showFileIconPreview'] == 1 ) ? TRUE : FALSE;             
             $this->view->assign( 'baseURL' , $baseUrl );
             $this->view->assign( 'actionUrl' , $actionUrl );
@@ -105,6 +130,7 @@ class DownloadController extends AbstractController {
         $allowDirectLinkDownlod = ($config['allowDirectLinkDownload'] == 1) ? TRUE : FALSE;
         $storageRepository = $this->storageRepository->findByUid( $storageUid );
         $storageConfiguration = $storageRepository->getConfiguration();
+
         $folder = new \TYPO3\CMS\Core\Resource\Folder($storageRepository, '', '');
         $getFiles = $storageRepository->getFilesInFolder($folder, $start = 0, $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE);
         $basePath = $storageConfiguration['basePath'];

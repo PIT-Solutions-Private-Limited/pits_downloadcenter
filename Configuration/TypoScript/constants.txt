@@ -20,5 +20,7 @@ plugin.tx_pitsdownloadcenter {
 		previewThumbnailWidth =
 		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Preview Thumbnail Height (eg: 150m, 150c or 150)
 		previewThumbnailHeight =
+    # cat = plugin.tx_pitsdownloadcenter//3; type=int+; label=typeNum for AJAX call 
+    typeNum = 427590
 	}
 }

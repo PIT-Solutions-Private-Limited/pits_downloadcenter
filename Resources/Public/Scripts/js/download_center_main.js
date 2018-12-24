@@ -3,6 +3,7 @@ var flag = 0;
 app.controller("filterCtrl", function($scope, $http, $location) {
 
     var actionURL = document.getElementById("actionURL").value;
+    // var actionURL = 'index.php?type=427590'
 
     $http.get(actionURL).success(function(data){
         //  url configurations
