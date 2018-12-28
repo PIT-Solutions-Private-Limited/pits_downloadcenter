@@ -40,7 +40,7 @@ CREATE TABLE tx_pitsdownloadcenter_domain_model_category (
 );
 
 #
-# Table structure for table 'tx_pitsdownloadcenter_domain_model_download_filetype'
+# Table structure for table 'tx_pitsdownloadcenter_domain_model_filetype'
 #
 CREATE TABLE tx_pitsdownloadcenter_domain_model_filetype (
 
@@ -78,25 +78,11 @@ CREATE TABLE tx_pitsdownloadcenter_domain_model_filetype (
 );
 
 #
-# Table structure for table 'tx_pitsdownloadcenter_domain_model_download_categoryrecord_mm'
-#
-CREATE TABLE tx_pitsdownloadcenter_domain_model_categoryrecordmm (
-	uid_local int(11) NOT NULL DEFAULT '0',
-	uid_foreign int(11) NOT NULL DEFAULT '0',
-	tablenames varchar(255) NOT NULL DEFAULT '',
- 	fieldname varchar(255) NOT NULL DEFAULT '',
- 	sorting int(11) NOT NULL DEFAULT '0',
-	sorting_foreign int(11) NOT NULL DEFAULT '0',
- 	KEY uid_local_foreign (uid_local,uid_foreign),
-	KEY uid_foreign_tablenames (uid_foreign,tablenames)
-);
-
-#
 # Table structure for table 'sys_file_meta_data'
 #
 CREATE TABLE sys_file_metadata (
 	tx_pitsdownloadcenter_domain_model_download_category varchar(400) NOT NULL DEFAULT '',
-  	tx_pitsdownloadcenter_domain_model_download_filetype varchar(400) NOT NULL DEFAULT '',
-  	tx_pitsdownloadcenter_domain_model_download_translate varchar(400) NOT NULL DEFAULT ''
+  tx_pitsdownloadcenter_domain_model_download_filetype varchar(400) NOT NULL DEFAULT '',
+  tx_pitsdownloadcenter_domain_model_download_translate varchar(400) NOT NULL DEFAULT ''
 );
 

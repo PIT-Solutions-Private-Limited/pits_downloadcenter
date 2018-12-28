@@ -17,7 +17,7 @@
 
 Known problems
 --------------
-
+-  Category filter (url copied) not retained all other filters are working fine
 -  There seems only one constraint that on initial page load there will
 be slight performance hiccup while fetching large number of files >
 4000.

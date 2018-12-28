@@ -1,7 +1,5 @@
 <?php
 namespace PITS\PitsDownloadcenter\Domain\Model;
-
-
 /***************************************************************
  *
  *  Copyright notice
@@ -28,7 +26,7 @@ namespace PITS\PitsDownloadcenter\Domain\Model;
  ***************************************************************/
 
 /**
- * Filetype
+ * FileType
  */
 class Filetype extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	

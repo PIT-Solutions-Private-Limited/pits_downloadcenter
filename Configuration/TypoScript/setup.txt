@@ -1,29 +1,29 @@
-
+// Download Center Plugin Settings
 plugin.tx_pitsdownloadcenter {
-	view {
-		templateRootPath = {$plugin.tx_pitsdownloadcenter.view.templateRootPath}
-		partialRootPath = {$plugin.tx_pitsdownloadcenter.view.partialRootPath}
-		layoutRootPath = {$plugin.tx_pitsdownloadcenter.view.layoutRootPath}
-	}
-	persistence {
-		storagePid = {$plugin.tx_pitsdownloadcenter.persistence.storagePid}
-	}
-	features {
-		# uncomment the following line to enable the new Property Mapper.
-		# rewrittenPropertyMapper = 1
-	}
-	settings{
-		showFileIconPreview = {$plugin.tx_pitsdownloadcenter.settings.showFileIconPreview}
+  view {
+    templateRootPath = {$plugin.tx_pitsdownloadcenter.view.templateRootPath}
+    partialRootPath = {$plugin.tx_pitsdownloadcenter.view.partialRootPath}
+    layoutRootPath = {$plugin.tx_pitsdownloadcenter.view.layoutRootPath}
+  }
+  persistence {
+    storagePid = {$plugin.tx_pitsdownloadcenter.persistence.storagePid}
+  }
+  features {
+    # uncomment the following line to enable the new Property Mapper.
+    # rewrittenPropertyMapper = 1
+  }
+  settings{
+    showFileIconPreview = {$plugin.tx_pitsdownloadcenter.settings.showFileIconPreview}
     previewThumbnailWidth = {$plugin.tx_pitsdownloadcenter.settings.previewThumbnailWidth}
     previewThumbnailHeight = {$plugin.tx_pitsdownloadcenter.settings.previewThumbnailHeight}
-    typeNum =  {$plugin.tx_pitsdownloadcenter.settings.typeNum}
-	}
+    typeNum = {$plugin.tx_pitsdownloadcenter.settings.ajaxPageTypeNum}
+  }
 }
 
 // PAGE object for Download Center Rendering Service:
 download_center_ajax_service = PAGE
 download_center_ajax_service {
-  typeNum = 427590
+  typeNum = {$plugin.tx_pitsdownloadcenter.settings.ajaxPageTypeNum}
   config {
     disableAllHeaderCode = 1
     additionalHeaders = Content-type:application/json
@@ -53,15 +53,4 @@ page.includeJS {
     file70003.type = text/javascript
     file70004 = EXT:pits_downloadcenter/Resources/Public/Scripts/js/download_center_main.js
     file70004.type = text/javascript
-  	
-}
-
-config.tx_extbase.persistence.classes {
-    PITS\PitsDownloadcenter\Domain\Model{
-        tableName = tx_pitsdownloadcenter_domain_model_categoryrecordmm
-        columns {
-            uid_local.mapOnProperty = uidLocal
-            uid_foreign.mapOnProperty = uidForeign
-        }
-    }
 }

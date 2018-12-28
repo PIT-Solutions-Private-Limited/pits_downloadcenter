@@ -1,10 +1,6 @@
 <?php
 namespace PITS\PitsDownloadcenter\Controller;
 
-use PITS\PitsDownloadcenter\Handlers\ContentTypeHandler;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
-
 /***************************************************************
  *
  *  Copyright notice
@@ -30,24 +26,38 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use PITS\PitsDownloadcenter\Handlers\ContentTypeHandler;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * DownloadController
+ *
+ * @todo change to ajax url
+ * @todo merge angular 5 fixes
+ * @todo unit test the fixes made in angular 5
+ * @todo code cleanup and fine tuning
+ * @todo fix the trailing slash issues in storage mount url
  */
 class DownloadController extends AbstractController
 {
+    /**
+     * typeNumConstant
+     *
+     * @var integer
+     */
+    protected $typeNumConstant = null;
+
     /**
      * initialize Action
      *
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
-    public function initializeAction()
+    public function initializeListAction()
     {
-        parent::initializeAction();
-        // forward to ajax handler service
-        if (GeneralUtility::_GET('type') === '427590') {
-            $this->forward('show');
-        }
+        // forward to ajax handler service if typeNum set in url
+        $this->checkServiceCalledRoute();
     }
 
     /**
@@ -58,83 +68,106 @@ class DownloadController extends AbstractController
      */
     public function listAction()
     {
-
         $config = $this->settings;
-        $transilations = $this->getPageTranslations();
-        $filetypesObject = $this->filetypeRepository->findAll();
-        $fileTypes = $this->getFileTypes( $filetypesObject );
-        $categoryTree = $this->doGetSubCategories(0);
-        $storageuid = $this->settings['fileStorage'];
-        $storageRepository = $this->storageRepository->findByUid($storageuid);
+        $storageUid = $this->settings['fileStorage'];
+        $storageRepository = $this->storageRepository->findByUid($storageUid);
+
         if( $storageRepository instanceof \TYPO3\CMS\Core\Resource\ResourceStorage )
         {
             $storageConfiguration   = $storageRepository->getConfiguration();
-        }
-        else{
-            $error_code = 503;
-            $this->request->forward('error', NULL, NULL, $error_code );
+        } else{
+            $this->redirectTo404();
         }
         $basePath = $storageConfiguration['basePath'];
-        // Stop Execution if the path selected is fileadmin  
+
+        // Stop Execution if the path selected is fileadmin
+        // this is intentionally done because we dont want to show all the default
+        // FAL layer files to frontend
         $isValid = ( $basePath === "fileadmin/" ) ? FALSE : TRUE;
         $showPreview = ( $config['showthumbnail'] == 1 ) ? TRUE : FALSE;
-        if( $isValid ){
+
+        // Check Starts Here
+        if($isValid) {
             $baseUrl = $this->request->getBaseUri();
-            //You can also set an array of arguments if you need to:
-            $pageUid    =   $GLOBALS['TSFE']->id;
-            //Uri for JSON Call
-            $urlArguments = array(
-                array(
-                    'tx_pitsdownloadcenter_pitsdownloadcenter' =>
-                    array(
-                        'controller' => 'Download',
-                        'action' => 'show',
-                    ),
-                    'settings' => $this->settings
-                )
-            );
+            // uri for JSON service
+            $urlArguments = [
+                'type'  => intval(preg_replace('/[^A-Za-z0-9\-]/', '', $this->settings['typeNum'])),
+                'contentIdentifier' => $this->configurationManager->getContentObject()->data['uid']
+            ];
             $actionUrl = $this->uriBuilder->reset()
-                ->setTargetPageUid( $pageUid )
-                ->setCreateAbsoluteUri( TRUE )
-                ->setArguments( $urlArguments )
+                ->setTargetPageUid($this->currentPageUid)
+                ->setCreateAbsoluteUri(TRUE)
+                ->setArguments($urlArguments)
+                ->setUseCacheHash(false)
                 ->build();
-            $filePreview = ( $config['showFileIconPreview'] == 1 ) ? TRUE : FALSE;             
-            $this->view->assign( 'baseURL' , $baseUrl );
-            $this->view->assign( 'actionUrl' , $actionUrl );
-            $this->view->assign( 'downloadUrl' , $downloadUrl );
-            $this->view->assign( 'basePath'  , $basePath );
-            $this->view->assign( 'showPreview', $showPreview );
-            $this->view->assign( 'showFileIcon',$filePreview );
+            $filePreview = ($config['showFileIconPreview'] == 1) ? TRUE : FALSE;
+            $this->view->assign('baseURL' , $baseUrl);
+            $this->view->assign('actionUrl' , $actionUrl);
+            $this->view->assign('downloadUrl' , $downloadUrl);
+            $this->view->assign('basePath'  , $basePath);
+            $this->view->assign('showPreview', $showPreview);
+            $this->view->assign('showFileIcon',$filePreview);
         }
-        else{
+        else {
             $this->view->assign('showError',TRUE);
+            // error will shown in frontend
         }
     }
 
     /**
      * action show
      *
-     * 
      * @return void
-     */ 
+     * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException
+     */
     public function showAction()
     {
+        // to handle large requests
         ini_set( 'memory_limit', '-1' );
-        $config = $this->settings;     
+
+        // this function will be used for setting the flex-form settings for AJAX service action
+        $this->setExtensionSettingsForService();
+
+        // settings and required arguments for the json object
+        $config = $this->settings;
         $translations = $this->getPageTranslations();
-        $fileTypesObject = $this->filetypeRepository->findAll();
-        $fileTypes = $this->getFileTypes( $fileTypesObject );
+        $fileTypesObject = $this->fileTypeRepository->findAll();
+        $fileTypes = $this->getFileTypes($fileTypesObject);
         $categoryTree = $this->doGetSubCategories(0);
         $storageUid = $this->settings['fileStorage'];
         $showPreview = ($config['showthumbnail'] == 1) ? TRUE : FALSE;
-        $allowDirectLinkDownlod = ($config['allowDirectLinkDownload'] == 1) ? TRUE : FALSE;
+        $allowDirectLinkDownload = ($config['allowDirectLinkDownload'] == 1) ? TRUE : FALSE;
         $storageRepository = $this->storageRepository->findByUid( $storageUid );
         $storageConfiguration = $storageRepository->getConfiguration();
 
-        $folder = new \TYPO3\CMS\Core\Resource\Folder($storageRepository, '', '');
-        $getFiles = $storageRepository->getFilesInFolder($folder, $start = 0, $maxNumberOfItems = 0, $useFilters = TRUE, $recursive = TRUE);
+        // folder object
+        $folderObject = GeneralUtility::makeInstance(
+            'TYPO3\\CMS\\Core\\Resource\\Folder',
+            $storageRepository,
+            null,
+            null
+        );
+
+        // getting files from the storage folder object
+        $getFiles = $storageRepository->getFilesInFolder(
+            $folderObject,
+            $start = 0,
+            $maxNumberOfItems = 0,
+            $useFilters = TRUE,
+            $recursive = TRUE
+        );
+
+        // basePath
         $basePath = $storageConfiguration['basePath'];
-        $files = $this->generateFiles($getFiles, $showPreview, $allowDirectLinkDownlod, $basePath);
+        $files = $this->generateFiles(
+            $getFiles,
+            $showPreview,
+            $allowDirectLinkDownload,
+            $basePath
+        );
+
+        // setting response variables
+        $this->defaultViewObjectName = \TYPO3\CMS\Extbase\Mvc\View\JsonView::class;
         $baseUrl = $this->request->getBaseUri();
         $response = array(
             'baseURL' => $baseUrl ,
@@ -144,42 +177,51 @@ class DownloadController extends AbstractController
             'config' => $config,
             'translations' => $translations
         );
-        echo json_encode( $response );exit;
+        echo json_encode( $response );
+        die;
     }
 
     /**
-     * force download PHP Script
+     * force download file
+     * by decrypting the file uid
+     *
      * @void 
      */
     public function forceDownloadAction()
     {
-        $encrypted_fileID = ( $this->request->hasArgument('fileid'))?$this->request->getArgument('fileid'):0;
-        $fileID= openssl_decrypt( base64_decode( $encrypted_fileID ) , $this->encryptionMethod, $this->encryptionKey , TRUE , $this->initializationVector );
-        if( is_numeric($fileID)) {
-            $storageuid = $this->settings['fileStorage'];
-            $fileDetails = $this->downloadRepository->getFileDetails( $storageuid , $fileID  );
-            $fileIdentifier = ( isset($fileDetails['identifier']) ) ? $fileDetails['identifier'] : FALSE;
-            $storageRepository  = $this->storageRepository->findByUid( $storageuid );
+        $encrypted_fileID = ($this->request->hasArgument('fileid')) ? $this->request->getArgument('fileid') : 0;
+        $fileID= openssl_decrypt(
+            base64_decode( $encrypted_fileID ),
+            $this->encryptionMethod,
+            $this->encryptionKey,
+            TRUE,
+            $this->initializationVector
+        );
+        if(is_numeric($fileID)) {
+            $storageUid = $this->settings['fileStorage'];
+            $fileDetails = $this->downloadRepository->getFileDetails($storageUid , $fileID);
+            $fileIdentifier = (isset($fileDetails['identifier'])) ? $fileDetails['identifier'] : FALSE;
+            $storageRepository  = $this->storageRepository->findByUid($storageUid);
             $sConfig = $storageRepository->getConfiguration();
-            $fileName = (isset($fileDetails['name']))?$fileDetails['name']:NULL;
-            $file = realpath( PATH_site.$sConfig['basePath'].$fileIdentifier ); 
+            $fileName = (isset($fileDetails['name'])) ? $fileDetails['name'] : NULL;
+            $file = realpath(PATH_site.$sConfig['basePath'].$fileIdentifier);
             $fileObject = $storageRepository->getFile( $fileIdentifier );
             $sys_language_uid = $GLOBALS['TSFE']->sys_language_uid;
-            $checkTranslations = $this->downloadRepository->checkTranslations( $fileObject , $sys_language_uid );
-            if( $checkTranslations ){
-                $file_identifier = isset($checkTranslations['translated_file'])?$checkTranslations['translated_file']:NULL;
-                if ($file_identifier && !empty( $file_identifier )){
-                    $filepath = PATH_site.$file_identifier;
-                    if (!empty($filepath) && is_file($filepath)){
-                        $file = $filepath;
-                        $fileName = basename( $file );
+            $checkTranslations = $this->downloadRepository->checkTranslations($fileObject , $sys_language_uid);
+            if( $checkTranslations ) {
+                $file_identifier = isset($checkTranslations['translated_file']) ? $checkTranslations['translated_file'] : NULL;
+                if ($file_identifier && !empty( $file_identifier )) {
+                    $filePath = PATH_site.$file_identifier;
+                    if (!empty($filePath) && is_file($filePath)){
+                        $file = $filePath;
+                        $fileName = basename($file);
                     }
                 }
             }
             if(is_file($file)) {
-                $fileLen    = filesize($file);          
-                $ext        = strtolower(substr(strrchr($fileName, '.'), 1));
-                $cType = ContentTypeHandler::getContentType( $ext );
+                $fileLen = filesize($file);
+                $ext = strtolower(substr(strrchr($fileName, '.'), 1));
+                $cType = ContentTypeHandler::getContentType($ext);
                 $headers = array(
                     'Pragma'                    => 'public', 
                     'Expires'                   => 0, 
@@ -194,12 +236,92 @@ class DownloadController extends AbstractController
                 foreach($headers as $header => $data)
                 $this->response->setHeader($header, $data); 
                 $this->response->sendHeaders();                 
-                @readfile($file);   
+                @readfile($file);die;
             }
         }
         else{
-            echo "Invalid Access!";
+            echo "Invalid Access!";die;
         }   
-        exit;
+    }
+
+    /**
+     * showErrorMessage
+     *
+     * @return void
+     */
+    public function showErrorMessage()
+    {
+        $error_code = 503;
+        $this->request->forward('error', NULL, NULL, $error_code);
+    }
+
+    /**
+     * redirectTo404
+     *
+     * @return void
+     */
+    public function redirectTo404()
+    {
+        $GLOBALS['TSFE']->pageNotFoundAndExit($this->entityNotFoundMessage);
+    }
+
+    /**
+     * setExtensionSettingsForService
+     *
+     * @return array | boolean
+     */
+    public function setExtensionSettingsForService()
+    {
+        $contentObjectIdentifier = intval(GeneralUtility::_GET('contentIdentifier'));
+        $record = BackendUtility::getRecord('tt_content', $contentObjectIdentifier);
+        $this->handleRedirectPolicyIfInvalidIdentifier($record);
+        $this->configurationManager->getContentObject()->readFlexformIntoConf($record['pi_flexform'], $this->settings);
+        foreach ($this->settings as $key => $val) {
+            unset($this->settings[$key]);
+            $this->settings[str_replace('settings.','', $key)] = $val;
+        }
+    }
+
+    /**
+     * handleRedirectPolicyIfInvalidIdentifier
+     * This function will check the ajax service url parameters and redirect to 404 page if not valid
+     *
+     * @param $record
+     * @return void
+     */
+    public function handleRedirectPolicyIfInvalidIdentifier($record)
+    {
+        if ($record['list_type'] != "pitsdownloadcenter_pitsdownloadcenter") {
+            $this->redirectTo404();
+        }
+    }
+
+    /**
+     * checkServiceCalledRoute
+     *
+     * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     */
+    public function checkServiceCalledRoute()
+    {
+        $this->typeNumConstant = $this->getTypeNumUsedForAjaxService();
+        if (intval(GeneralUtility::_GET('type')) === $this->typeNumConstant) {
+            // forward to show action
+            $this->forward('show');
+        }
+    }
+
+    /**
+     * getTypeNumUsedForAjaxService
+     *
+     * @return int
+     */
+    public function getTypeNumUsedForAjaxService()
+    {
+        $pluginConfigurations = $this->configurationManager->getConfiguration(
+            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            $this->extensionName
+        );
+        return intval($pluginConfigurations['typeNum']);
     }
 }

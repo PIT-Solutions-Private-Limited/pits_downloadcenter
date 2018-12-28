@@ -1,6 +1,8 @@
 <?php
 namespace PITS\PitsDownloadcenter\Handlers;
 
+use TYPO3\CMS\Core\SingletonInterface;
+
 /***************************************************************
  *
  *  Copyright notice
@@ -29,13 +31,16 @@ namespace PITS\PitsDownloadcenter\Handlers;
 /**
  * ContentTypeHandler
  */
-class ContentTypeHandler{
+class ContentTypeHandler implements SingletonInterface
+{
 	/**
 	 * getContentType
+     *
 	 * @param string | extension of the file
 	 * @return string
 	 */
-	public static function getContentType( $extension ){
+	public static function getContentType($extension)
+    {
 		switch($extension) {
             case 'txt':
                 $cType = 'text/plain'; 
