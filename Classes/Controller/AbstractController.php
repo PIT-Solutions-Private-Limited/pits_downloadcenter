@@ -282,8 +282,8 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                         ->build();
                     $response[$key]['url'] = $response[$key]['downloadUrl'];
                 } else {
-                    $response[$key]['url'] = $value->getPublicUrl();
-                    $response[$key]['downloadUrl']= $value->getPublicUrl();
+                    $response[$key]['url'] = $this->request->getBaseUri() . $value->getPublicUrl();
+                    $response[$key]['downloadUrl']= $this->request->getBaseUri() . $value->getPublicUrl();
                 }
             }
         }
