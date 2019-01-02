@@ -1,5 +1,4 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-      data-namespace-typo3-fluid="true">
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
 <f:layout name="Default" />
 
 This Template is responsible for creating a table of domain objects. If
@@ -10,150 +9,26 @@ the next time you save the extension in the extension builder
 
 <f:section name="main">
     <f:alias map="{ang: {s: '{{', e: '}}'}}">
-    <f:if condition="{showError}">
-        <f:then>
-            <h3>Not configured storage path. Default "fileadmin/" mount point is not supported.</h3>
-        </f:then>
-        <f:else>
-            <h1>Download Center</h1>
-            <div id="downloadcenter" class="wrap filter43" ng-app="filterApp">
-                <div id="loader">
-                    <img
-                        src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif"
-                        alt="Loader-Image" />
-                </div>
-                <div class="filter-wrapper" ng-controller="filterCtrl">
-                    <div class="filter-wrap clearfix">
-                        <form action="javascript:;" class="filter">
-                            <f:if condition="{settings.hideSearchFilter}">
-                                <f:else>
-                                    <div class="row">
-                                        <label class="control-label subheading clearfix">
-                                            <f:translate key="tx_pitsdownloadcenter_domain_model_download.keywordsearch"></f:translate>
-                                        </label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" ng-model="search"
-                                                   ng-change="filter()"
-                                                   placeholder="{f:translate(key:'tx_pitsdownloadcenter_domain_model_download.searchkey')}"> <span
-                                                class="input-group-addon" ng-click="search = ''"></span>
-                                        </div>
-                                    </div>
-                                </f:else>
-                            </f:if>
-                            <f:if condition="{settings.hideCategoryFilter}">
-                                <f:else>
-                                    <div class="row">
-                                        <label class="control-label subheading clearfix">
-                                            <f:translate key="tx_pitsdownloadcenter_domain_model_download.filterbyarea"></f:translate>
-                                        </label>
-                                        <div class="input-group">
-                                            <custom-select ng-repeat="cat in categories track by $index" class="cust-select"></custom-select>
-                                        </div>
-                                    </div>
-                                </f:else>
-                            </f:if>
-                            <f:if condition="{settings.hideFileTypeFilter}">
-                                <f:else>
-                                    <div class="row chk-box clearfix">
-                                        <label class="control-label subheading clearfix">
-                                            <f:translate key="tx_pitsdownloadcenter_domain_model_download.searchbytype"></f:translate>
-                                        </label>
-                                        <div ng-repeat="type in items.types" class="chk-box-blue">
-                                            <label class="control-label"> 
-                                                <input type="checkbox" ng-model="checkFilter[type.id]" value="{ang.s}type.id{ang.e}">
-                                                {ang.s}type.title{ang.e}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </f:else>
-                            </f:if>
-                        </form>
+        <f:if condition="{showError}">
+            <f:then>
+                <h3>Not configured storage path. Default "fileadmin/" mount point is not supported.</h3>
+            </f:then>
+            <f:else>
+                <base href="/">
+                <app-root>
+                    <div id="loader">
+                        <img src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif"
+                            alt="Loader-Image">
                     </div>
-                    <div class="result-wrap">
-                        <h3>
-                            <span id="total-count"></span> <f:translate key="tx_pitsdownloadcenter_domain_model_download.resultsfound"></f:translate>
-                        </h3>
-                        <div class="shadow">
-                            <div class="preview-box">
-                                <table id="data-results" class="results">
-                                    <thead>
-                                        <tr>
-                                        <f:if condition="{showPreview}">
-                                            <f:then>
-                                                <th></th>   
-                                            </f:then>
-                                        </f:if>                         
-                                            <th class="item-title"><a href=""
-                                                ng-click="orderByField='title'; reverseSort = !reverseSort">
-                                                    <f:translate key="tx_pitsdownloadcenter_domain_model_download.tabletitle"></f:translate>
-                                                    <span ng-show="orderByField == 'title'"> 
-                                                        <span ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> 
-                                                        <span ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
-                                                    </span>
-                                            </a></th>
-                                            <th><a href=""
-                                                ng-click="orderByField='size'; reverseSort = !reverseSort">
-                                                    <f:translate key="tx_pitsdownloadcenter_domain_model_download.tablesize"></f:translate><span
-                                                    ng-show="orderByField == 'size'"> <span
-                                                        ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
-                                                        ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
-                                                </span>
-                                            </a></th>
-                                            <th><a href=""
-                                                ng-click="orderByField='fileType'; reverseSort = !reverseSort">
-                                                    <f:translate key="tx_pitsdownloadcenter_domain_model_download.tabletype"></f:translate><span
-                                                    ng-show="orderByField == 'fileType'"> <span
-                                                        ng-show="!reverseSort"><i class="fa fa-caret-up"></i></span> <span
-                                                        ng-show="reverseSort"><i class="fa fa-caret-down"></i></span>
-                                                </span>
-                                            </a></th>
-                                            <th class="download"><f:translate key="tx_pitsdownloadcenter_domain_model_download.tabledownload"></f:translate></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr
-                                            dir-paginate="file in items.files | newFilter:dummyCategory | filter:byTypes | filter:search |  orderBy:orderByField:reverseSort | offset:0 | itemsPerPage: pageSize"
-                                            current-page="currentPage">
-                                            <f:if condition="{showPreview}">
-                                                <f:then>
-                                                    <td class="item-image" data-th="Image"><img
-                                                class="img-thumbnail" ng-src="{ang.s}base{ang.e}{ang.s}file.imageUrl{ang.e}"></td>
-                                                </f:then>
-                                            </f:if>
-                                            <td class="item-title"
-                                                data-th="{f:translate(key: 'tx_pitsdownloadcenter_domain_model_download.tabletitle')}">{ang.s}file.title{ang.e}</td>
-                                            <td data-th="{f:translate(key: 'tx_pitsdownloadcenter_domain_model_download.tablesize')}">{ang.s}file.size{ang.e}</td>
-                                            <td data-th="{f:translate(key: 'tx_pitsdownloadcenter_domain_model_download.tabletype')}">
-                                                <f:if condition="{showFileIcon}">
-                                                    <f:then>
-                                                        <span class="files file-{ang.s}file.extension{ang.e}"></span>                                     
-                                                    </f:then>
-                                                </f:if>
-                                                 {ang.s}file.fileType{ang.e}
-                                            </td>
-                                            <td class="download" data-th="{f:translate(key: 'tx_pitsdownloadcenter_domain_model_download.tabledownload')}">
-                                                <a href="{ang.s}file.downloadUrl{ang.e}" target="_blank" download></a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>  
-                    </div>
-                    <div class="other-controller clearfix">
-                        <div class="text-center">
-                            <dir-pagination-controls boundary-links="true"
-                                on-page-change="pageChangeHandler(newPageNumber)"
-                                template-url="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Scripts/js/Pagination.html">
-                            </dir-pagination-controls>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" id="baseURL" value="{baseURL}">
-            <input type="hidden" id="actionURL" value="{actionUrl}">
-        </f:else>
-    </f:if>
+                </app-root>
+                <script type="text/javascript" src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Scripts/angular/runtime.ec2944dd8b20ec099bf3.js"></script>
+                <script type="text/javascript" src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.8dd612f791bcfe6fcdb2.js"></script>
+                <script type="text/javascript" src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Scripts/angular/main.afe02781504ee148a39b.js"></script>
+                <input type="hidden" id="baseURL" value="{baseURL}">
+                <input type="hidden" id="actionURL" value="{actionUrl}">
+            </f:else>
+        </f:if>
     </f:alias>
 </f:section>
+
 </html>

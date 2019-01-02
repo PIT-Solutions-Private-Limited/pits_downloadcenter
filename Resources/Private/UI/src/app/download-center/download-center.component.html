@@ -1,136 +1,134 @@
-<div class="tx-pits-downloadcenter">
-  <h1>Download Center</h1>
-  <div id="downloadcenter" class="wrap filter43">
-    <div id="loader" *ngIf="loading; else filter_container">
-      <img src="./typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif" alt="Loader-Image">
-    </div>
-    <ng-template #filter_container>
-      <div class="filter-wrapper">
-        <div class="filter-wrap clearfix">
-          <form action="javascript:void(0);" [formGroup]="filterFormGroup" class="filter">
-            <div class="row" *ngIf="!+listData?.config?.hideSearchFilter">
-              <label class="control-label subheading clearfix">{{listData?.translations?.keywordsearch}}</label>
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="{{listData?.translations?.searchkey}}"
-                  formControlName="keyword_search">
-                <span class="input-group-addon" (click)="resetFieldByType('keyword_search')"></span>
-              </div>
-            </div>
-            <div class="row" *ngIf="!+listData?.config?.hideCategoryFilter">
-              <label class="control-label subheading clearfix">{{listData?.translations?.filterbyarea}}</label>
-              <div class="input-group">
-                <div class="cust-select">
-                  <select class="form-control cat-select" (change)="fetchSubCategory(category.value)" #category
-                    formControlName="category">
-                    <option value="">{{listData?.translations?.categoryplaceholder}}</option>
-                    <ng-container *ngFor="let category of listData?.categories;trackBy: trackByFn">
-                      <option [value]="category.id">{{category.title}}</option>
-                    </ng-container>
-                  </select>
-                  <span class="input-group-addon filter43-cats" (click)="resetFieldByType('category')"></span>
-                </div>
-                <div class="cust-select" *ngIf="subCategories?.length">
-                  <select class="form-control cat-select" #sub_category formControlName="sub_category">
-                    <option value="">{{listData?.translations?.categoryplaceholder}}</option>
-                    <ng-container *ngFor="let category of subCategories;trackBy: trackByFn">
-                      <option [value]="category.id">{{category.title}}</option>
-                    </ng-container>
-                  </select>
-                  <span class="input-group-addon filter43-cats" (click)="resetFieldByType('sub_category')"></span>
-                </div>
-              </div>
-            </div>
-            <div class="row chk-box clearfix" *ngIf="!+listData?.config?.hideFileTypeFilter">
-              <label class="control-label subheading clearfix">{{listData?.translations?.searchbytype}}</label>
-              <div class="chk-box-blue ng-scope" *ngFor="let type of listData?.types;trackBy: trackByFn">
-                <label class="control-label">
-                  <input type="checkbox" [attr.checked]="filterConfig.file_types?.indexOf(type.id+'')!==-1?true:null"
-                    [value]="type.id" (change)="patchFileTypes(type.id+'',$event.target.checked)">
-                  {{type.title}}
-                </label>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="result-wrap">
-          <h3> <span id="total-count">{{listData?.files?.length}}</span> {{listData?.translations?.resultsfound}}</h3>
-          <div class="shadow">
-            <div class="preview-box">
-              <table id="data-results" class="results" style="display: table;" *ngIf="listData?.files?.length">
-                <thead>
-                  <tr>
-                    <th *ngIf="!!+listData?.config?.showFileIconPreview"></th>
-                    <th class="item-title">
-                      <a href="javascript:void(0);" (click)="sortFileList('title')">
-                        {{listData?.translations?.tabletitle}}
-                        <span *ngIf="orderByField == 'title'">
-                          <span *ngIf="!reverseSort"><i class="fa fa-caret-up"></i></span>
-                          <span *ngIf="reverseSort"><i class="fa fa-caret-down"></i></span>
-                        </span>
-                      </a>
-                    </th>
-                    <th>
-                      <a href="javascript:void(0);" (click)="sortFileList('size')">
-                        {{listData?.translations?.tablesize}}
-                        <span *ngIf="orderByField == 'size'" class="ng-hide">
-                          <span *ngIf="!reverseSort"><i class="fa fa-caret-up"></i></span>
-                          <span *ngIf="reverseSort" class="ng-hide"><i class="fa fa-caret-down"></i></span>
-                        </span>
-                      </a>
-                    </th>
-                    <th>
-                      <a href="javascript:void(0);" (click)="sortFileList('fileType')">
-                        {{listData?.translations?.tabletype}}
-                        <span *ngIf="orderByField == 'fileType'">
-                          <span *ngIf="!reverseSort"><i class="fa fa-caret-up"></i></span>
-                          <span *ngIf="reverseSort" class="ng-hide"><i class="fa fa-caret-down"></i></span>
-                        </span>
-                      </a>
-                    </th>
-                    <th class="download">{{listData?.translations?.tabledownload}}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let file of listData?.files| paginate: config;trackBy: trackByFn">
-                    <td *ngIf="!!+listData?.config?.showFileIconPreview" data-th="Image" class="item-image">
-                      <img class="img-thumbnail" [src]="file.imageUrl" #img_preview>
-                    </td>
-                    <td data-th="Title" class="item-title">{{file.title}}</td>
-                    <td data-th="Size">{{file.size}}</td>
-                    <td data-th="Type"> <span class="files file-{{file.extension}}"></span> {{file.fileType}} </td>
-                    <td data-th="Download" class="download">
-                      <a [href]="file.downloadUrl" target="_blank" download></a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+<h1>Download Center</h1>
+<div id="downloadcenter" class="wrap filter43">
+  <div id="loader" *ngIf="loading; else filter_container">
+    <img src="./typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif" alt="Loader-Image">
+  </div>
+  <ng-template #filter_container>
+    <div class="filter-wrapper">
+      <div class="filter-wrap clearfix">
+        <form action="javascript:void(0);" [formGroup]="filterFormGroup" class="filter">
+          <div class="row" *ngIf="!+listData?.config?.hideSearchFilter">
+            <label class="control-label subheading clearfix">{{listData?.translations?.keywordsearch}}</label>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="{{listData?.translations?.searchkey}}"
+                formControlName="keyword_search">
+              <span class="input-group-addon" (click)="resetFieldByType('keyword_search')"></span>
             </div>
           </div>
-        </div>
-        <div class="other-controller clearfix">
-          <div class="text-center">
-            <pagination-template #p="paginationApi" [id]="config.id" (pageChange)="onPageChange($event)">
-              <ul class="pagination" *ngIf="1 < p.pages.length">
-                <li [class.disabled]="p.isFirstPage()">
-                  <a href="javascript:void(0);" (click)="p.setCurrent(1)">&laquo;</a>
-                </li>
-                <li [class.disabled]="p.isFirstPage()">
-                  <a href="javascript:void(0);" (click)="p.previous()">‹</a>
-                </li>
-                <li *ngFor="let page of p.pages;trackBy: $index" [class.active]="p.getCurrent() === page.value">
-                  <a href="javascript:void(0);" (click)="p.setCurrent(page.label)">{{ page.label }}</a>
-                </li>
-                <li [class.disabled]="p.isLastPage()">
-                  <a href="javascript:void(0);" (click)="p.next()">›</a>
-                </li>
-                <li [class.disabled]="p.isLastPage()">
-                  <a href="javascript:void(0);" (click)="p.setCurrent(p.getLastPage())">&raquo;</a>
-                </li>
-              </ul>
-            </pagination-template>
+          <div class="row" *ngIf="!+listData?.config?.hideCategoryFilter">
+            <label class="control-label subheading clearfix">{{listData?.translations?.filterbyarea}}</label>
+            <div class="input-group">
+              <div class="cust-select">
+                <select class="form-control cat-select" (change)="fetchSubCategory(category.value)" #category
+                  formControlName="category">
+                  <option value="">{{listData?.translations?.categoryplaceholder}}</option>
+                  <ng-container *ngFor="let category of listData?.categories;trackBy: trackByFn">
+                    <option [value]="category.id">{{category.title}}</option>
+                  </ng-container>
+                </select>
+                <span class="input-group-addon filter43-cats" (click)="resetFieldByType('category')"></span>
+              </div>
+              <div class="cust-select" *ngIf="subCategories?.length">
+                <select class="form-control cat-select" #sub_category formControlName="sub_category">
+                  <option value="">{{listData?.translations?.categoryplaceholder}}</option>
+                  <ng-container *ngFor="let category of subCategories;trackBy: trackByFn">
+                    <option [value]="category.id">{{category.title}}</option>
+                  </ng-container>
+                </select>
+                <span class="input-group-addon filter43-cats" (click)="resetFieldByType('sub_category')"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row chk-box clearfix" *ngIf="!+listData?.config?.hideFileTypeFilter">
+            <label class="control-label subheading clearfix">{{listData?.translations?.searchbytype}}</label>
+            <div class="chk-box-blue ng-scope" *ngFor="let type of listData?.types;trackBy: trackByFn">
+              <label class="control-label">
+                <input type="checkbox" [attr.checked]="filterConfig.file_types?.indexOf(type.id+'')!==-1?true:null"
+                  [value]="type.id" (change)="patchFileTypes(type.id+'',$event.target.checked)">
+                {{type.title}}
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="result-wrap">
+        <h3> <span id="total-count">{{listData?.files?.length}}</span> {{listData?.translations?.resultsfound}}</h3>
+        <div class="shadow">
+          <div class="preview-box">
+            <table id="data-results" class="results" style="display: table;" *ngIf="listData?.files?.length">
+              <thead>
+                <tr>
+                  <th *ngIf="!!+listData?.config?.showFileIconPreview"></th>
+                  <th class="item-title">
+                    <a href="javascript:void(0);" (click)="sortFileList('title')">
+                      {{listData?.translations?.tabletitle}}
+                      <span *ngIf="orderByField == 'title'">
+                        <span *ngIf="!reverseSort"><i class="fa fa-caret-up"></i></span>
+                        <span *ngIf="reverseSort"><i class="fa fa-caret-down"></i></span>
+                      </span>
+                    </a>
+                  </th>
+                  <th>
+                    <a href="javascript:void(0);" (click)="sortFileList('size')">
+                      {{listData?.translations?.tablesize}}
+                      <span *ngIf="orderByField == 'size'" class="ng-hide">
+                        <span *ngIf="!reverseSort"><i class="fa fa-caret-up"></i></span>
+                        <span *ngIf="reverseSort" class="ng-hide"><i class="fa fa-caret-down"></i></span>
+                      </span>
+                    </a>
+                  </th>
+                  <th>
+                    <a href="javascript:void(0);" (click)="sortFileList('fileType')">
+                      {{listData?.translations?.tabletype}}
+                      <span *ngIf="orderByField == 'fileType'">
+                        <span *ngIf="!reverseSort"><i class="fa fa-caret-up"></i></span>
+                        <span *ngIf="reverseSort" class="ng-hide"><i class="fa fa-caret-down"></i></span>
+                      </span>
+                    </a>
+                  </th>
+                  <th class="download">{{listData?.translations?.tabledownload}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let file of listData?.files| paginate: config;trackBy: trackByFn">
+                  <td *ngIf="!!+listData?.config?.showFileIconPreview" data-th="Image" class="item-image">
+                    <img class="img-thumbnail" [src]="file.imageUrl" #img_preview>
+                  </td>
+                  <td data-th="Title" class="item-title">{{file.title}}</td>
+                  <td data-th="Size">{{file.size}}</td>
+                  <td data-th="Type"> <span class="files file-{{file.extension}}"></span> {{file.fileType}} </td>
+                  <td data-th="Download" class="download">
+                    <a [href]="file.downloadUrl" target="_blank" download></a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    </ng-template>
-  </div>
+      <div class="other-controller clearfix">
+        <div class="text-center">
+          <pagination-template #p="paginationApi" [id]="config.id" (pageChange)="onPageChange($event)">
+            <ul class="pagination" *ngIf="1 < p.pages.length">
+              <li [class.disabled]="p.isFirstPage()">
+                <a href="javascript:void(0);" (click)="p.setCurrent(1)">&laquo;</a>
+              </li>
+              <li [class.disabled]="p.isFirstPage()">
+                <a href="javascript:void(0);" (click)="p.previous()">‹</a>
+              </li>
+              <li *ngFor="let page of p.pages;trackBy: $index" [class.active]="p.getCurrent() === page.value">
+                <a href="javascript:void(0);" (click)="p.setCurrent(page.label)">{{ page.label }}</a>
+              </li>
+              <li [class.disabled]="p.isLastPage()">
+                <a href="javascript:void(0);" (click)="p.next()">›</a>
+              </li>
+              <li [class.disabled]="p.isLastPage()">
+                <a href="javascript:void(0);" (click)="p.setCurrent(p.getLastPage())">&raquo;</a>
+              </li>
+            </ul>
+          </pagination-template>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 </div>
