@@ -18,7 +18,7 @@
 To-Do list
 ----------
 
-- Angular 5 Migration
+- Angular 5 Migration (Next Release 3.0.0)
 
 
 

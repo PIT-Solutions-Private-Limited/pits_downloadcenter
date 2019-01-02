@@ -28,10 +28,32 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
  ***************************************************************/
 
 /**
+ * CategoryRepository
  * The repository for Category
  */
 class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
+    /**
+     * $defaultOrderings
+     *
+     * @var array
+     */
+    protected $defaultOrderings = array(
+        'sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
+    );
+
+    /**
+     * initializeObject
+     */
+    public function initializeObject()
+    {
+        /** @var $querySettings \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings */
+        $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        // don't add the pid constraint
+        $querySettings->setRespectStoragePage(FALSE);
+        $this->setDefaultQuerySettings($querySettings);
+    }
+
     /**
      * getSubCategories
      *
@@ -41,10 +63,16 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	public function getSubCategories($categoryID)
     {
 		$query = $this->createQuery();
-		$query->matching(	
+
+		// constraint for setting the Parent Category Uid
+		$query->matching(
 			$query->equals("parentcategory", "$categoryID") 
 		);
-		$query->setOrderings(array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
+
+		// set the sorting order ascending and field sorting for ordering
+		$query->setOrderings(
+		    array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
+        );
 		return $query->execute();
 	}
 
@@ -57,11 +85,16 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	public function getSubCategoriesCount($categoryID)
     {
 		$query = $this->createQuery();
-		$query->matching(	
+
+        // constraint for setting the Parent Category Uid
+		$query->matching(
 			$query->equals("parentcategory", "$categoryID") 
 		);
-		$query->setOrderings(array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
+
+        // set the sorting order ascending and field sorting for ordering
+		$query->setOrderings(
+		    array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
+        );
 		return $query->count();
 	}
-	
 }

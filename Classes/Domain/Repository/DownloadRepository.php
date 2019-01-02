@@ -27,6 +27,9 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
  ***************************************************************/
 
 /**
+ * @todo cleanup required in this class
+ *
+ * DownloadRepository
  * The repository for Downloads
  */
 class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
@@ -38,7 +41,9 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function findAll()
     {
-		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
+		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+		    'TYPO3\\CMS\\Core\\Resource\\FileRepository'
+        );
 		return $fileRepository->findAll();
 	}
 
@@ -47,8 +52,11 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	*
 	* @return void
 	*/
-	public function initializeObject() {
-		$querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+	public function initializeObject()
+    {
+		$querySettings = $this->objectManager->get(
+		    'TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings'
+        );
 		$querySettings->setRespectStoragePage(FALSE);
 		$this->setDefaultQuerySettings($querySettings);
 	}
@@ -58,8 +66,11 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	*
 	* @return void
 	*/
-	public function findAllReferenced() {
-		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\FileRepository');
+	public function findAllReferenced()
+    {
+		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+		    'TYPO3\\CMS\\Core\\Resource\\FileRepository'
+        );
 		return $fileRepository->findAll();
 	}
 
@@ -71,7 +82,9 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	 **/
 	public function getProcessedFile($data)
     {
-		$processedFileRep = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository');
+		$processedFileRep = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+		    'TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository'
+        );
 		$taskType = "Image.Preview";
 		$processingConfig = array();
 		return $processedFileRep->findOneByOriginalFileAndTaskTypeAndConfiguration($data, $taskType, $processingConfig);
@@ -85,7 +98,11 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function isProcessed(array $fileDetails)
     {
-		$processedFile = new \TYPO3\CMS\Core\Resource\ProcessedFile($fileDetails['fileObj'], $fileDetails['processType'], $fileDetails['processConfig']);
+		$processedFile = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+            'TYPO3\\CMS\\Core\\Resource\\ProcessedFile',
+            // fileObject , processing type, processing configurations
+            [$fileDetails['fileObj'], $fileDetails['processType'], $fileDetails['processConfig']]
+        );
 		$isProcessed = $processedFile->isProcessed();
 		return $isProcessed;
 	}
@@ -93,6 +110,7 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     /**
      * getFileDetails
      *
+     * @todo deprecated function TYPO3 _DB needs to change
      * @param $storageUid
      * @param $fileID
      * @return mixed
@@ -113,6 +131,7 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     /**
      * checkTranslations
      *
+     * @todo deprecated function TYPO3 _DB needs to change
      * @param $file
      * @param $sys_language_uid
      * @return array|bool
@@ -122,13 +141,13 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 		$file_uid = $file->getUid();
 		$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = 1;
 		$getTranslatedFile = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 
-								"uid,tx_pitsdownloadcenter_domain_model_download_translate as translated_file", 
-								"sys_file_metadata", 
-								" sys_language_uid = $sys_language_uid AND file = $file_uid ", 
-								$groupBy= '', 
-								$orderBy= '', 
-								$numIndex=FALSE 
-							 );
+            "uid,tx_pitsdownloadcenter_domain_model_download_translate as translated_file",
+            "sys_file_metadata",
+            " sys_language_uid = $sys_language_uid AND file = $file_uid ",
+            $groupBy= '',
+            $orderBy= '',
+            $numIndex=FALSE
+        );
 		
 		// Query
 		if (is_array( $getTranslatedFile )):

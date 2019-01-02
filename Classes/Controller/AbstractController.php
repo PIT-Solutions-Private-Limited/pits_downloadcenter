@@ -1,7 +1,6 @@
 <?php
 namespace PITS\PitsDownloadcenter\Controller;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 /***************************************************************
  *
  *  Copyright notice
@@ -27,10 +26,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * AbstractController
  */
-abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
+abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+{
 	/**
      * downloadRepository
      *
@@ -40,12 +42,12 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     protected $downloadRepository = NULL;
 
     /**
-     * filelistRepository
+     * fileTypeRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository
      * @inject
      */
-    protected $filetypeRepository = NULL;
+    protected $fileTypeRepository = NULL;
 
     /**
      * @var array
@@ -112,14 +114,6 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     protected $categoryRepository = NULL;
 
     /**
-     * categorymmRepository
-     *
-     * @var \PITS\PitsDownloadcenter\Domain\Repository\CategoryrecordmmRepository
-     * @inject
-     */
-    protected $categorymmRepository = NULL;
-
-    /**
      * storageRepository
      *
      * @var \TYPO3\CMS\Core\Resource\StorageRepository 
@@ -182,7 +176,6 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         ));
     }
 
-
     /**
      * strToHex
      *
@@ -192,7 +185,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     public function strToHex($string)
     {
 	    $hex = '';
-	    for ($i=0; $i<strlen($string); $i++){
+	    for ($i=0; $i<strlen($string); $i++) {
 	        $ord = ord($string[$i]);
 	        $hexCode = dechex($ord);
 	        $hex .= substr('0'.$hexCode, -2);
@@ -202,16 +195,15 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 
     /**
      * generate subcategories and return category tree
+     * this is a recursive function
      *
      * @param $parentID integer
      * @return array
-     * @author
      **/
     public function doGetSubCategories($parentID)
     {
         $categoryTree = array();
-        $subCategories = $this  -> categoryRepository 
-                                -> getSubCategories($parentID);
+        $subCategories = $this->categoryRepository->getSubCategories($parentID);
         $i = 0;
         foreach ($subCategories as $key => $value) {
             $catID = $value -> getUid();
@@ -220,8 +212,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
             $categoryTree[$key]['title'] = $catName;
 
             $has_sub = NULL;
-            $has_sub = $this-> categoryRepository 
-                            -> getSubCategoriesCount($catID);
+            $has_sub = $this->categoryRepository->getSubCategoriesCount($catID);
             if ($has_sub) {
                 $categoryTree[$key]['input'] = $this->doGetSubCategories($catID);
             }
@@ -237,47 +228,62 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * @param $showPreview boolean
      * @param $allowDirectLinkDownlod boolean
      * @param $basePath string
-     * @return structured array
+     * @return array
      **/
     public function generateFiles($fileObject, $showPreview, $allowDirectLinkDownlod, $basePath)
     {
         $response = array();
         $pImgWidth = (!empty($this->settings['previewThumbnailWidth']) && !empty($this->settings['previewThumbnailWidth'])) ? $this->settings['previewThumbnailWidth'] : "150m";
         $pImgHeight = (!empty($this->settings['previewThumbnailHeight']) && !empty($this->settings['previewThumbnailHeight'])) ? $this->settings['previewThumbnailHeight'] : "150m";
-
         $i = 0;
         $pageUid = $GLOBALS['TSFE']->id;
         foreach ($fileObject as $key => $value) {
-            if ( $value instanceof \TYPO3\CMS\Core\Resource\File) {
+            if ($value instanceof \TYPO3\CMS\Core\Resource\File) {
                 $key = $i++;
-                $fileProperty = $value -> getProperties();
+                $fileProperty = $value->getProperties();
                 $response[$key]['id']  = (int)$fileProperty['uid'];
-                $response[$key]['url'] =  'fileadmin' . urlencode($fileProperty['identifier']);
-                $response[$key]['title'] = (!empty($fileProperty['title']))     ? $fileProperty['title'] : $value->getNameWithoutExtension();
+                $response[$key]['title'] = (!empty($fileProperty['title'])) ? $fileProperty['title'] : $value->getNameWithoutExtension();
                 $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
                 $response[$key]['fileType'] = strtoupper($fileProperty['extension']);
                 $response[$key]['extension'] = $fileProperty['extension'];
                 $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
                 $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
-                if( $showPreview ){
+
+                // for preview image
+                if ($showPreview) {
                     $processed = $this->processImage($value, $pImgWidth, $pImgHeight);
-                    $response[$key]['imageUrl'] = ($processed == '' || !file_exists($processed))?  'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
+                    $response[$key]['imageUrl'] = ($processed == '' || !file_exists($processed)) ? 'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
                 }
-                if(!$allowDirectLinkDownlod) {
+
+                // check force download or direct download
+                if (!$allowDirectLinkDownlod) {
                     // Changed File Uid to encrypted format
-                    $file_uid_secure = base64_encode(openssl_encrypt( $fileProperty['uid'] , $this->encryptionMethod, $this->encryptionKey , TRUE , $this->initializationVector ));
-                    $downloadArguments = array(
-                        array(
+                    $file_uid_secure = base64_encode(
+                        openssl_encrypt($fileProperty['uid'],
+                            $this->encryptionMethod,
+                            $this->encryptionKey ,
+                            TRUE ,
+                            $this->initializationVector
+                        )
+                    );
+                    $downloadArguments = [
+                        [
                             'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
                                 'controller' => 'Download',
                                 'action' => 'forceDownload',
                                 'fileid' => $file_uid_secure
                             )
-                        )
-                    );
-                    $response[$key]['downloadUrl']= $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(TRUE)->setArguments($downloadArguments)->build();
+                        ]
+                    ];
+                    $response[$key]['downloadUrl'] = $this->uriBuilder->reset()
+                        ->setTargetPageUid($pageUid)
+                        ->setCreateAbsoluteUri(TRUE)
+                        ->setArguments($downloadArguments)
+                        ->build();
+                    $response[$key]['url'] = $response[$key]['downloadUrl'];
                 } else {
-                    $response[$key]['downloadUrl']= $basePath.$fileProperty['identifier'];
+                    $response[$key]['url'] = $this->request->getBaseUri() . $value->getPublicUrl();
+                    $response[$key]['downloadUrl']= $this->request->getBaseUri() . $value->getPublicUrl();
                 }
             }
         }
@@ -328,20 +334,20 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     public function getPageTranslations()
     {
         $translatedValue = array();
-        $translatedValue['keywordsearch'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.keywordsearch");
-        $translatedValue['searchkey'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.searchkey");
-        $translatedValue['filterbyarea'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.filterbyarea");
-        $translatedValue['categoryplaceholder'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.categoryplaceholder");
-        $translatedValue['searchbytype'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.searchbytype");
-        $translatedValue['resultsfound'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.resultsfound");
-        $translatedValue['tabletitle'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.tabletitle");
-        $translatedValue['tablesize'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.tablesize");
-        $translatedValue['tabletype'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.tabletype");
-        $translatedValue['tabledownload'] = $this -> localise("tx_pitsdownloadcenter_domain_model_download.tabledownload");
+        $translatedValue['keywordsearch'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.keywordsearch");
+        $translatedValue['searchkey'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.searchkey");
+        $translatedValue['filterbyarea'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.filterbyarea");
+        $translatedValue['categoryplaceholder'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.categoryplaceholder");
+        $translatedValue['searchbytype'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.searchbytype");
+        $translatedValue['resultsfound'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.resultsfound");
+        $translatedValue['tabletitle'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.tabletitle");
+        $translatedValue['tablesize'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.tablesize");
+        $translatedValue['tabletype'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.tabletype");
+        $translatedValue['tabledownload'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.tabledownload");
         return $translatedValue;
     }
 
-    /*
+    /**
      * Localisation Function
      *
      * @param $id string
@@ -352,8 +358,8 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         return \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($id, 'PitsDownloadcenter');
     }
 
-    /*
-     *  Size Conversion Function
+    /**
+     * Size Conversion Function
      *
      * @param $bytes integer
      * @param $precision integer

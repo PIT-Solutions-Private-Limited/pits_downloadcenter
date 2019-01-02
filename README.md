@@ -7,14 +7,14 @@
       2015-03-31 19::5:7:
 
 **Changed**:
-      2018-02-08 10:00:00:00:
+      2018-12-27 16:30:00:00:
 
 **Classification**:
       pits_downloadcenter
 
 **Description**:
 
-This version 2.x of Download Center extension will work only with TYPO3 7.6 or newer. For older version of TYPO3 Please download the version 1.1.0.
+This version 2.1 of Download Center extension will work only with TYPO3 7.6 LTS or newer. For older version of TYPO3 Please download the version 1.1.0.
 
 Repository, bug reporting, pull requests, etc is handled via https://github.com/hojama/pits_downloadcenter
 

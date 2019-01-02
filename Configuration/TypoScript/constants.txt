@@ -1,24 +1,29 @@
 
 plugin.tx_pitsdownloadcenter {
-	view {
-		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template root (FE)
-		templateRootPath = EXT:pits_downloadcenter/Resources/Private/Templates/
-		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template partials (FE)
-		partialRootPath = EXT:pits_downloadcenter/Resources/Private/Partials/
-		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template layouts (FE)
-		layoutRootPath = EXT:pits_downloadcenter/Resources/Private/Layouts/
-		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=css file
-		skinFile = EXT:pits_downloadcenter/Resources/Private/Layouts/
-	}
-	persistence {
-		# cat=plugin.tx_pitsdownloadcenter//a; type=string; label=Default storage PID
-		storagePid =
-	}
-	settings{
-		showFileIconPreview = 1
-		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Preview Thumbnail width (eg: 150m, 150c or 150)
-		previewThumbnailWidth =
-		# cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Preview Thumbnail Height (eg: 150m, 150c or 150)
-		previewThumbnailHeight =
-	}
+  view {
+    # cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template root (FE)
+    templateRootPath = EXT:pits_downloadcenter/Resources/Private/Templates/
+    # cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template partials (FE)
+    partialRootPath = EXT:pits_downloadcenter/Resources/Private/Partials/
+    # cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Path to template layouts (FE)
+    layoutRootPath = EXT:pits_downloadcenter/Resources/Private/Layouts/
+    # cat=plugin.tx_pitsdownloadcenter/file; type=string; label=css file
+    skinFile = EXT:pits_downloadcenter/Resources/Private/Layouts/
+  }
+  persistence {
+    # cat=plugin.tx_pitsdownloadcenter//a; type=string; label=Default storage PID
+    storagePid =
+  }
+  settings{
+    showFileIconPreview = 1
+    # cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Preview Thumbnail width (eg: 150m, 150c or 150)
+    previewThumbnailWidth =
+    # cat=plugin.tx_pitsdownloadcenter/file; type=string; label=Preview Thumbnail Height (eg: 150m, 150c or 150)
+    previewThumbnailHeight =
+    # cat=plugin.tx_pitsdownloadcenter/a; type=int+; label=Type Number for AJAX Service
+    ajaxServiceTypeNum =
+
+    # cat = plugin.tx_pitsdownloadcenter/a;type=int+;label=Type Number for AJAX call Configuration
+    ajaxPageTypeNum = 898950
+  }
 }

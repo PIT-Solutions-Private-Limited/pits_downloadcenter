@@ -32,18 +32,39 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
  */
 class FiletypeRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
-	
+    /**
+     * $defaultOrderings
+     *
+     * @var array
+     */
+    protected $defaultOrderings = array(
+        'sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
+    );
+
+    /**
+     * initializeObject
+     */
     public function initializeObject()
     {
         /** @var $querySettings \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings */
         $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        // don't add the pid constraint
+        $querySettings->setRespectStoragePage(FALSE);
+        $this->setDefaultQuerySettings($querySettings);
     }
 
+    /**
+     * findAll
+     *
+     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     */
     public function findAll()
     {
-		$query = $this->createQuery();
-		$query->setOrderings(array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING));
-		return $query->execute();	
-	}
+        $query = $this->createQuery();
+        $query->setOrderings(
+            array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
+        );
+        return $query->execute();
+    }
 	
 }

@@ -30,7 +30,6 @@ namespace PITS\PitsDownloadcenter\Domain\Model;
 /**
  * Download
  */
-class Download extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
-
-	
+class Download extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+{
 }
