@@ -48,8 +48,8 @@ page.includeCSS {
 page.includeJS {
     file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/runtime.ec2944dd8b20ec099bf3.js
     file70001.type = text/javascript
-    file70002 = EXT:typo3conf/ext/pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.8dd612f791bcfe6fcdb2.js
+    file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.8dd612f791bcfe6fcdb2.js
     file70002.type = text/javascript
-    file70003 = EXT:typo3conf/ext/pits_downloadcenter/Resources/Public/Scripts/angular/main.afe02781504ee148a39b.js
+    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/main.afe02781504ee148a39b.js
     file70003.type = text/javascript
 }
