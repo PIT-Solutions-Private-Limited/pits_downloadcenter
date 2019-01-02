@@ -102,8 +102,11 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
   }
 
   private _setRouting(config: FilterConfig): void {
-    const queryParams = _.join(Object.keys(config).filter((key) => !!config[key].length).map((key) => `${key}=${config[key]}`), '&&');
-    this._router.navigateByUrl(`/?${queryParams}`);
+    const params = {};
+    Object.keys(config)
+      .filter((data) => !!config[data].length)
+      .forEach((key) => { params[key] = `${config[key]}`; });
+    this._router.navigate([], { relativeTo: this._activatedRoute, queryParams: params });
   }
 
   private _keyWordFilter(data: object) {

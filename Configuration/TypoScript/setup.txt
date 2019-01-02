@@ -44,13 +44,12 @@ page.includeCSS {
     file70003.title = Default CSS
 }
 
-page.includeJS {
-    file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/angular.min.js
+# Angular 7 scripts
+page.includeJSFooter {
+    file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/runtime.ec2944dd8b20ec099bf3.js
     file70001.type = text/javascript
-    file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/js/paginator.js
+    file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.8dd612f791bcfe6fcdb2.js
     file70002.type = text/javascript
-    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/js/jquery.js
+    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/main.2aa9de3d1a14e4ea3e76.js
     file70003.type = text/javascript
-    file70004 = EXT:pits_downloadcenter/Resources/Public/Scripts/js/download_center_main.js
-    file70004.type = text/javascript
 }

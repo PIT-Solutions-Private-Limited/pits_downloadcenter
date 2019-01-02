@@ -4,8 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { DownloadCenterComponent } from './download-center/download-center.component';
 
 const routes: Routes = [
-  { path: '', component: DownloadCenterComponent },
-  { path: '**', redirectTo: '/', pathMatch: 'full' },
+  { path: '**', component: DownloadCenterComponent, pathMatch: 'full' }
 ];
 
 @NgModule({
