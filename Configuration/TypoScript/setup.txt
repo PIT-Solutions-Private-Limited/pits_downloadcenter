@@ -50,6 +50,6 @@ page.includeJSFooter {
     file70001.type = text/javascript
     file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.8dd612f791bcfe6fcdb2.js
     file70002.type = text/javascript
-    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/main.2aa9de3d1a14e4ea3e76.js
+    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/main.fc4e979f148c6937ad6d.js
     file70003.type = text/javascript
 }
