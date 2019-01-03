@@ -32,7 +32,6 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
 
   private _categoryList = {};
   private _initialListData = '[]';
-  private _items: FormArray;
   private _ids = [];
   private _traverseObj = {};
 
@@ -58,7 +57,7 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     });
   }
 
-  private _createCategoryGroup() {
+  private _createCategoryGroup(): FormGroup {
     return this._fb.group({
       categoryId: ['']
     });
@@ -84,8 +83,6 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this._activatedRoute.queryParams
       .pipe(take(1))
       .subscribe((params) => {
-        params['cPage'] && (this.config.currentPage = this.filterConfig.cPage = params['cPage']);
-        this.filterConfig.file_types = params['file_types'] ? params['file_types'].split(',') : [];
         let categories = [];
         if (params['category']) {
           const categoryArray = params['category'].split(',');
@@ -94,17 +91,17 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
             this.onCategoryChange(id, i);
           });
         }
+        params['cPage'] && (this.config.currentPage = this.filterConfig.cPage = params['cPage']);
+        this.filterConfig.file_types = params['file_types'] ? params['file_types'].split(',') : [];
         this.filterConfig.category = categories;
         this.filterFormGroup.patchValue({
           keyword_search: params['keyword_search'] || '',
-          category: categories,
-          file_types: params['file_types'] || '',
-          cPage: params['cPage'] || ''
+          category: categories
         });
       });
   }
 
-  private _listenFilterFormValueChanges() {
+  private _listenFilterFormValueChanges(): void {
     this.filterFormGroup.valueChanges
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe((res) => {
@@ -113,18 +110,19 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
       });
   }
 
-  public onCategoryChange(id, index) {
-    this._items = this.filterFormGroup.get('category') as FormArray;
-    while (this._items.controls.length !== (index + 1)) {
-      this._items.controls.pop();
+  public onCategoryChange(id: number, index: number): void {
+    const items = this.filterFormGroup.get('category') as FormArray;
+    const itemControls = items.controls;
+    while (itemControls.length !== (index + 1)) {
+      itemControls.pop();
     }
     if (!id) {
-      return this._items.controls[index].setValue({ categoryId: id });
+      return itemControls[index].setValue({ categoryId: id });
     }
-    const sub = this.getCategoryList(index).filter(data => data.id === +id)[0]['input'] || [];
+    const sub = this.getCategoryList(index).filter(data => data['id'] === +id)[0]['input'] || [];
     if (sub.length) {
       this._categoryList[index + 1] = sub;
-      this._items.push(this._createCategoryGroup());
+      items.push(this._createCategoryGroup());
     }
   }
 
@@ -153,7 +151,7 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this._router.navigate([], { relativeTo: this._activatedRoute, queryParams: params });
   }
 
-  private _setTraverseObj(obj, id?: number) {
+  private _setTraverseObj(obj: object, id: number): void {
     const that = this;
     _.forIn(obj, (val, key) => {
       (obj['id'] === id) && (that._traverseObj = obj);
@@ -163,7 +161,7 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     });
   }
 
-  private _traverse(obj) {
+  private _traverse(obj: object): void {
     const that = this;
     _.forIn(obj, (val, key) => {
       (key === 'id') && that._ids.push(val);
@@ -171,13 +169,13 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     });
   }
 
-  private _keyWordFilter(data: object) {
+  private _keyWordFilter(data: object): boolean {
     const keyword_search = this.filterConfig.keyword_search;
     const searchString = (data['title'] + data['size'] + data['extension']).toLowerCase();
     return !keyword_search || searchString.indexOf(keyword_search.toLowerCase().trim()) !== -1;
   }
 
-  private _categoryFilter(data: object) {
+  private _categoryFilter(data: object): boolean {
     const category = this.filterConfig.category.filter(res => !!res['categoryId']).map(res => res['categoryId']);
     if (category.length) {
       const dataCat = data['categories'].map(id => +id);
@@ -187,13 +185,13 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  private _fileTypeFilter(data: object) {
+  private _fileTypeFilter(data: object): boolean {
     const fileTypes = this.filterConfig.file_types;
     const mergedTypes = [...fileTypes, ...data['dataType']];
     return !fileTypes.length || Array.from(new Set(mergedTypes)).length !== mergedTypes.length;
   }
 
-  public patchFileTypes(id: string, checked: boolean) {
+  public patchFileTypes(id: string, checked: boolean): void {
     const types = this.filterConfig.file_types;
     const index = types.indexOf(id);
     (checked) ? (index === -1) && this.filterConfig.file_types.push(id) : this.filterConfig.file_types.splice(index, 1);
@@ -209,15 +207,15 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this.filterFormGroup.patchValue(formValue);
   }
 
-  public getCategoryList(i) {
+  public getCategoryList(i): object[] {
     return this._categoryList[i] || [];
   }
 
-  public trackByFn(index, item) {
+  public trackByFn(index, item): void {
     return item.id;
   }
 
-  public sortFileList(order_by) {
+  public sortFileList(order_by): void {
     this.orderByField = order_by;
     this.reverseSort = !this.reverseSort;
     const sort_order = !this.reverseSort ? 'asc' : 'desc';
