@@ -17,8 +17,8 @@
 
 To-Do list
 ----------
-
-- Angular 5 Migration (Next Release 3.0.0)
+- Fine Tuning and Bug Fixing
+- If you need further functionality or any support contact hoja.ma@pitsolutions.com
 
 
 

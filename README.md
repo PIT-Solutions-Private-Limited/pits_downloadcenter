@@ -14,7 +14,7 @@
 
 **Description**:
 
-This version 2.1 of Download Center extension will work only with TYPO3 7.6 LTS or newer. For older version of TYPO3 Please download the version 1.1.0.
+This version 3.0 [Angular 7] of Download Center extension will work only with TYPO3 7.6 LTS or newer. For older version of TYPO3 Please download the version 1.1.0.
 
 Repository, bug reporting, pull requests, etc is handled via https://github.com/hojama/pits_downloadcenter
 
@@ -36,4 +36,6 @@ Repository, bug reporting, pull requests, etc is handled via https://github.com/
 * If you find errors, please, report them [here](https://github.com/hojama/pits_downloadcenter/issues). This place is **only** for bugs. Use TYPO3 mailing lists for questions!
 
 
-[Documentation](https://docs.typo3.org/typo3cms/extensions/pits_downloadcenter/)
+[TYPO3 Extension Repository Documentation](https://docs.typo3.org/typo3cms/extensions/pits_downloadcenter/)
+
+[Official Documentation](https://docs.typo3.org/typo3cms/extensions/pits_downloadcenter/)

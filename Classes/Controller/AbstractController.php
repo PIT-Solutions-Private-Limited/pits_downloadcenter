@@ -252,7 +252,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                 // for preview image
                 if ($showPreview) {
                     $processed = $this->processImage($value, $pImgWidth, $pImgHeight);
-                    $response[$key]['imageUrl'] = ($processed == '' || !file_exists($processed)) ? 'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $processed;
+                    $response[$key]['imageUrl'] = ($processed == '' || !file_exists($processed)) ? $this->request->getBaseUri() .'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $this->request->getBaseUri() . $processed;
                 }
 
                 // check force download or direct download

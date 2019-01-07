@@ -1,7 +1,9 @@
 .files {background:url(files.png) no-repeat top left;background-position: 0 -460px;display: block;height: 18px;width: 18px;float: left;margin: 5px;}
 .file-ai{ background-position: 0 0;  } 
 .file-atom{ background-position: 0 -20px;  } 
-.file-audio{ background-position: 0 -40px;  } 
+.file-audio{ background-position: 0 -40px;  }
+.file-mp3{ background-position: 0 -40px;  }
+.file-ogg{ background-position: 0 -40px;}
 .file-binary{ background-position: 0 -60px;  } 
 .file-c{ background-position: 0 -80px;  } 
 .file-cfc{ background-position: 0 -100px;  } 
