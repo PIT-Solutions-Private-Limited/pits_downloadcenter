@@ -32,7 +32,9 @@ Change Log
 
 - 2.0.0 Major Release, 8 LTS Support, FlexForm Configurations added for limiting the search options in frontend, TypoScript configuration added for preview image file size
 
-- 2.0.1 Minor Release, FlexForm Configurations added for downloading file by direct url.
+- 2.1.0 Minor Release, FlexForm Configurations added for downloading file by direct url.
+
+- 3.0.0 Major Release Version with Angular 7.0.0 update
 
 
 
