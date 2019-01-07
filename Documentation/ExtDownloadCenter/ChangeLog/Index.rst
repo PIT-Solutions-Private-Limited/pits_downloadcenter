@@ -36,5 +36,7 @@ Change Log
 
 - 3.0.0 Major Release Version with Angular 7.0.0 update
 
+- 3.0.1 BUG FIX: Removed empty loader from template
+
 
 
