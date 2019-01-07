@@ -17,25 +17,17 @@
           </div>
           <div class="row" *ngIf="!+listData?.config?.hideCategoryFilter">
             <label class="control-label subheading clearfix">{{listData?.translations?.filterbyarea}}</label>
-            <div class="input-group">
-              <div class="cust-select">
-                <select class="form-control cat-select" (change)="fetchSubCategory(category.value)" #category
-                  formControlName="category">
+            <div class="input-group" formArrayName="category">
+              <div class="cust-select" *ngFor="let category of filterFormGroup.get('category').controls; let i = index;"
+                [formGroupName]="i">
+                <select formControlName="categoryId" class="form-control cat-select" (change)="onCategoryChange(cat.value,i)"
+                  #cat>
                   <option value="">{{listData?.translations?.categoryplaceholder}}</option>
-                  <ng-container *ngFor="let category of listData?.categories;trackBy: trackByFn">
+                  <ng-container *ngFor="let category of getCategoryList(i);trackBy: trackByFn">
                     <option [value]="category.id">{{category.title}}</option>
                   </ng-container>
                 </select>
-                <span class="input-group-addon filter43-cats" (click)="resetFieldByType('category')"></span>
-              </div>
-              <div class="cust-select" *ngIf="subCategories?.length">
-                <select class="form-control cat-select" #sub_category formControlName="sub_category">
-                  <option value="">{{listData?.translations?.categoryplaceholder}}</option>
-                  <ng-container *ngFor="let category of subCategories;trackBy: trackByFn">
-                    <option [value]="category.id">{{category.title}}</option>
-                  </ng-container>
-                </select>
-                <span class="input-group-addon filter43-cats" (click)="resetFieldByType('sub_category')"></span>
+                <span class="input-group-addon filter43-cats" (click)="onCategoryChange('',i)"></span>
               </div>
             </div>
           </div>

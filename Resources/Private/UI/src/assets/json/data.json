@@ -3,7 +3,6 @@
     "files": [
         {
             "id": 802,
-            "url": "fileadmin%2Fbe1.png",
             "title": "Test Title",
             "size": "116.06 KB",
             "fileType": "PNG",
@@ -15,11 +14,11 @@
                 "1"
             ],
             "imageUrl": "downloadcenter\/_processed\/6\/3\/csm_be1_791b966023.png",
-            "downloadUrl": "downloadcenter\/be1.png"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/be1.png",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/be1.png"
         },
         {
             "id": 801,
-            "url": "fileadmin%2Fbe2.png",
             "title": "be2",
             "size": "94.5 KB",
             "fileType": "PNG",
@@ -31,11 +30,11 @@
                 "3"
             ],
             "imageUrl": "downloadcenter\/_processed\/1\/c\/csm_be2_d110963d2e.png",
-            "downloadUrl": "downloadcenter\/be2.png"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/be2.png",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/be2.png"
         },
         {
             "id": 803,
-            "url": "fileadmin%2Fbe4.png",
             "title": "be4",
             "size": "133.98 KB",
             "fileType": "PNG",
@@ -47,11 +46,11 @@
                 "4"
             ],
             "imageUrl": "downloadcenter\/_processed\/3\/4\/csm_be4_7b74182b8d.png",
-            "downloadUrl": "downloadcenter\/be4.png"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/be4.png",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/be4.png"
         },
         {
             "id": 831,
-            "url": "fileadmin%2Fgit-cheat-sheet-large.png",
             "title": "git-cheat-sheet-large",
             "size": "1.21 MB",
             "fileType": "PNG",
@@ -59,11 +58,11 @@
             "dataType": [],
             "categories": [],
             "imageUrl": "downloadcenter\/_processed\/e\/b\/csm_git-cheat-sheet-large_3b6fd14c07.png",
-            "downloadUrl": "downloadcenter\/git-cheat-sheet-large.png"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/git-cheat-sheet-large.png",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/git-cheat-sheet-large.png"
         },
         {
             "id": 832,
-            "url": "fileadmin%2Fgithub-git-cheat-sheet.pdf",
             "title": "github-git-cheat-sheet",
             "size": "368.91 KB",
             "fileType": "PDF",
@@ -71,11 +70,11 @@
             "dataType": [],
             "categories": [],
             "imageUrl": "downloadcenter\/_processed\/1\/a\/csm_github-git-cheat-sheet_5d586397cf.gif",
-            "downloadUrl": "downloadcenter\/github-git-cheat-sheet.pdf"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/github-git-cheat-sheet.pdf",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/github-git-cheat-sheet.pdf"
         },
         {
             "id": 839,
-            "url": "fileadmin%2Ftest11062015.pdf",
             "title": "AA TEST 11062015",
             "size": "81.67 KB",
             "fileType": "PDF",
@@ -87,11 +86,11 @@
                 "9"
             ],
             "imageUrl": "downloadcenter\/_processed\/a\/e\/csm_test11062015_c480a04443.gif",
-            "downloadUrl": "downloadcenter\/test11062015.pdf"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/test11062015.pdf",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/test11062015.pdf"
         },
         {
             "id": 816,
-            "url": "fileadmin%2Ftest_pdf.pdf",
             "title": "test titeltest titeltest titeltest titeltest titel",
             "size": "32.95 KB",
             "fileType": "PDF",
@@ -101,11 +100,11 @@
                 "6"
             ],
             "imageUrl": "downloadcenter\/_processed\/7\/d\/csm_test_pdf_19581bdfc0.gif",
-            "downloadUrl": "downloadcenter\/test_pdf.pdf"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/test_pdf.pdf",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/test_pdf.pdf"
         },
         {
             "id": 817,
-            "url": "fileadmin%2Ftest_word.docx",
             "title": "test_word",
             "size": "11.32 KB",
             "fileType": "DOCX",
@@ -113,11 +112,11 @@
             "dataType": [],
             "categories": [],
             "imageUrl": "typo3conf\/ext\/pits_downloadcenter\/Resources\/Public\/Icons\/noimage.jpg",
-            "downloadUrl": "downloadcenter\/test_word.docx"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/test_word.docx",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/test_word.docx"
         },
         {
             "id": 833,
-            "url": "fileadmin%2Ftower_cheatsheet_dark_DE.pdf",
             "title": "tower_cheatsheet_dark_DE",
             "size": "232.58 KB",
             "fileType": "PDF",
@@ -125,11 +124,11 @@
             "dataType": [],
             "categories": [],
             "imageUrl": "downloadcenter\/_processed\/5\/4\/csm_tower_cheatsheet_dark_DE_0f9e3ae2c6.gif",
-            "downloadUrl": "downloadcenter\/tower_cheatsheet_dark_DE.pdf"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/tower_cheatsheet_dark_DE.pdf",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/tower_cheatsheet_dark_DE.pdf"
         },
         {
             "id": 835,
-            "url": "fileadmin%2Ftower_cheatsheet_grey_DE.pdf",
             "title": "tower_cheatsheet_grey_DE",
             "size": "232.76 KB",
             "fileType": "PDF",
@@ -137,11 +136,11 @@
             "dataType": [],
             "categories": [],
             "imageUrl": "downloadcenter\/_processed\/f\/4\/csm_tower_cheatsheet_grey_DE_cd7d93cb8a.gif",
-            "downloadUrl": "downloadcenter\/tower_cheatsheet_grey_DE.pdf"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/tower_cheatsheet_grey_DE.pdf",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/tower_cheatsheet_grey_DE.pdf"
         },
         {
             "id": 837,
-            "url": "fileadmin%2Ftower_cheatsheet_white_DE.pdf",
             "title": "tower_cheatsheet_white_DE",
             "size": "232.15 KB",
             "fileType": "PDF",
@@ -149,7 +148,8 @@
             "dataType": [],
             "categories": [],
             "imageUrl": "downloadcenter\/_processed\/0\/9\/csm_tower_cheatsheet_white_DE_cc6e1c4411.gif",
-            "downloadUrl": "downloadcenter\/tower_cheatsheet_white_DE.pdf"
+            "url": "http:\/\/demo.mypits.org:10068\/downloadcenter\/tower_cheatsheet_white_DE.pdf",
+            "downloadUrl": "http:\/\/demo.mypits.org:10068\/downloadcenter\/tower_cheatsheet_white_DE.pdf"
         }
     ],
     "categories": [
@@ -222,6 +222,7 @@
         "showFileIconPreview": "1",
         "previewThumbnailWidth": "",
         "previewThumbnailHeight": "",
+        "typeNum": "898950",
         "showFilePreview": "10",
         "showthumbnail": "1",
         "paginationcount": "10",
