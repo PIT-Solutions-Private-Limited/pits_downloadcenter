@@ -19,9 +19,7 @@
 ngapp
 ## Angular
 # compiled output
-/dist
-/tmp
-/out-tsc
-# dependencies
-/node_modules
-package-lock.json
+/Resources/Public/Scripts/angular/*.html
+/Resources/Public/Scripts/angular/*.txt
+/Resources/Public/Scripts/angular/*.ico
+/Resources/Public/Scripts/angular/assets

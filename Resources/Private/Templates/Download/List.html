@@ -14,12 +14,8 @@ the next time you save the extension in the extension builder
                 <h3>Not configured storage path. Default "fileadmin/" mount point is not supported.</h3>
             </f:then>
             <f:else>
-                <app-root>
-                    <div id="loader">
-                        <img src="{baseURL}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif"
-                            alt="Loader-Image">
-                    </div>
-                </app-root>
+                <h1>Download Center</h1>
+                <app-root></app-root>
                 <input type="hidden" id="baseURL" value="{baseURL}">
                 <input type="hidden" id="actionURL" value="{actionUrl}">
             </f:else>
