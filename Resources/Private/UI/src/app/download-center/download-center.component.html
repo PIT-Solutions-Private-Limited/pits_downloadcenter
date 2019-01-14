@@ -90,7 +90,7 @@
                   <td *ngIf="!+listData?.config?.hideSizeColumn" [attr.data-th]="listData?.translations?.tablesize">{{file.size}}</td>
                   <td [attr.data-th]="listData?.translations?.tabletype"> <span *ngIf="!!+listData?.config?.showFileIconPreview" class="files file-{{file.extension}}"></span> {{file.fileType}} </td>
                   <td [attr.data-th]="listData?.translations?.tabledownload" class="download">
-                    <a [href]="file.downloadUrl" target="_blank" [attr.download]="!!+listData?.config?.disableForceDownload?null:true"></a>
+                    <a [href]="file.downloadUrl" target="_blank" [attr.download]="!!+listData?.config?.disableForceDownload?null:''"></a>
                   </td>
                 </tr>
               </tbody>
