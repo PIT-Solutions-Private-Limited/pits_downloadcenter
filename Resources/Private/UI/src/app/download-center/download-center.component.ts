@@ -145,10 +145,12 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
   private _setRouting(filterConfig: FilterConfig): void {
     const config = Object.assign({}, filterConfig);
     config['category'] = config['category'].filter(data => !!data['categoryId']).map(data => data['categoryId']);
-    const params = {};
-    Object.keys(config)
-      .filter((data) => !!config[data].length)
-      .forEach((key) => { params[key] = `${config[key]}`; });
+    const params = Object.assign({}, this._activatedRoute.snapshot.queryParams, config);
+    Object.keys(params)
+      .forEach((key) => {
+        params[key] = key in config ? `${config[key]}` : params[key];
+        !params[key] && delete params[key];
+      });
     this._router.navigate([], { relativeTo: this._activatedRoute, queryParams: params });
   }
 
