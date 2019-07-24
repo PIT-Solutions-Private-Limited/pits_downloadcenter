@@ -185,7 +185,7 @@ class DownloadController extends AbstractController
      * force download file
      * by decrypting the file uid
      *
-     * @void 
+     * @return void 
      */
     public function forceDownloadAction()
     {
