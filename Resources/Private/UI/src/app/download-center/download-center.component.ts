@@ -22,6 +22,7 @@ interface FilterConfig {
   templateUrl: './download-center.component.html'
 })
 export class DownloadCenterComponent implements OnInit, OnDestroy {
+  public baseURL = document.getElementById('baseURL');
   public orderByField = '';
   public reverseSort = true;
   public listData = {};
@@ -134,20 +135,22 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
       this._setTraverseObj(this.listData['categories'].filter((d) => d.id === +category[0])[0], +category[category.length - 1]);
       this._traverse(this._traverseObj);
     }
-    this.listData['files'] = JSON.parse(this._initialListData)['files'];
-    this.listData['files'] = this.listData['files']
+    this.listData['files'] = JSON.parse(this._initialListData)['files']
       .filter(this._keyWordFilter.bind(this))
       .filter(this._categoryFilter.bind(this))
       .filter(this._fileTypeFilter.bind(this));
+    !!this.orderByField && this.sortFileList(this.orderByField, true);
   }
 
   private _setRouting(filterConfig: FilterConfig): void {
     const config = Object.assign({}, filterConfig);
     config['category'] = config['category'].filter(data => !!data['categoryId']).map(data => data['categoryId']);
-    const params = {};
-    Object.keys(config)
-      .filter((data) => !!config[data].length)
-      .forEach((key) => { params[key] = `${config[key]}`; });
+    const params = Object.assign({}, this._activatedRoute.snapshot.queryParams, config);
+    Object.keys(params)
+      .forEach((key) => {
+        params[key] = key in config ? `${config[key]}` : params[key];
+        !params[key] && delete params[key];
+      });
     this._router.navigate([], { relativeTo: this._activatedRoute, queryParams: params });
   }
 
@@ -171,7 +174,8 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
 
   private _keyWordFilter(data: object): boolean {
     const keyword_search = this.filterConfig.keyword_search;
-    const searchString = (data['title'] + data['size'] + data['extension']).toLowerCase();
+    const searchKeys = ['title', ...(!+this.listData['config']['hideSizeColumn'] ? ['size'] : []), 'extension'];
+    const searchString = searchKeys.map(key => data[key]).join('').toLowerCase();
     return !keyword_search || searchString.indexOf(keyword_search.toLowerCase().trim()) !== -1;
   }
 
@@ -215,9 +219,9 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     return item.id;
   }
 
-  public sortFileList(order_by): void {
+  public sortFileList(order_by: string, skip?: boolean): void {
     this.orderByField = order_by;
-    this.reverseSort = !this.reverseSort;
+    !skip && (this.reverseSort = !this.reverseSort);
     const sort_order = !this.reverseSort ? 'asc' : 'desc';
     this.listData['files'] = _.orderBy(this.listData['files'], order_by, sort_order);
   }

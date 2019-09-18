@@ -46,10 +46,10 @@ page.includeCSS {
 
 # Angular 7 scripts
 page.includeJSFooter {
-    file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/runtime.ec2944dd8b20ec099bf3.js
+    file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/runtime.js
     file70001.type = text/javascript
-    file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.8dd612f791bcfe6fcdb2.js
+    file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.js
     file70002.type = text/javascript
-    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/main.11e9138ccdf3ae805e4f.js
+    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/main.js
     file70003.type = text/javascript
 }

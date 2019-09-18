@@ -1,7 +1,7 @@
-<h1>Download Center</h1>
 <div id="downloadcenter" class="wrap filter43">
   <div id="loader" *ngIf="loading; else filter_container">
-    <!-- <img src="./typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif" alt="Loader-Image"> -->
+    <img *ngIf="baseURL" src="{{baseURL['value']}}typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif"
+      alt="Loader-Image">
   </div>
   <ng-template #filter_container>
     <div class="filter-wrapper">
@@ -50,7 +50,7 @@
             <table id="data-results" class="results" style="display: table;" *ngIf="listData?.files?.length">
               <thead>
                 <tr>
-                  <th *ngIf="!!+listData?.config?.showFileIconPreview"></th>
+                  <th *ngIf="!!+listData?.config?.showthumbnail"></th>
                   <th class="item-title">
                     <a href="javascript:void(0);" (click)="sortFileList('title')">
                       {{listData?.translations?.tabletitle}}
@@ -60,7 +60,7 @@
                       </span>
                     </a>
                   </th>
-                  <th>
+                  <th *ngIf="!+listData?.config?.hideSizeColumn">
                     <a href="javascript:void(0);" (click)="sortFileList('size')">
                       {{listData?.translations?.tablesize}}
                       <span *ngIf="orderByField == 'size'" class="ng-hide">
@@ -83,14 +83,14 @@
               </thead>
               <tbody>
                 <tr *ngFor="let file of listData?.files| paginate: config;trackBy: trackByFn">
-                  <td *ngIf="!!+listData?.config?.showFileIconPreview" data-th="Image" class="item-image">
-                    <img class="img-thumbnail" [src]="file.imageUrl" #img_preview>
+                  <td *ngIf="!!+listData?.config?.showthumbnail" data-th="Image" class="item-image">
+                    <img class="img-thumbnail" style="min-width:45px;height:45px;" [src]="file.imageUrl" #img_preview>
                   </td>
-                  <td data-th="Title" class="item-title">{{file.title}}</td>
-                  <td data-th="Size">{{file.size}}</td>
-                  <td data-th="Type"> <span class="files file-{{file.extension}}"></span> {{file.fileType}} </td>
-                  <td data-th="Download" class="download">
-                    <a [href]="file.downloadUrl" target="_blank" download></a>
+                  <td [attr.data-th]="listData?.translations?.tabletitle" class="item-title">{{file.title}}</td>
+                  <td *ngIf="!+listData?.config?.hideSizeColumn" [attr.data-th]="listData?.translations?.tablesize">{{file.size}}</td>
+                  <td [attr.data-th]="listData?.translations?.tabletype"> <span *ngIf="!!+listData?.config?.showFileIconPreview" class="files file-{{file.extension}}"></span> {{file.fileType}} </td>
+                  <td [attr.data-th]="listData?.translations?.tabledownload" class="download">
+                    <a [href]="file.downloadUrl" target="_blank" [attr.download]="!!+listData?.config?.disableForceDownload?null:''"></a>
                   </td>
                 </tr>
               </tbody>
@@ -112,7 +112,7 @@
                 <a href="javascript:void(0);" (click)="p.setCurrent(page.label)">{{ page.label }}</a>
               </li>
               <li [class.disabled]="p.isLastPage()">
-                <a href="javascript:void(0);" (click)="p.next()">›</a>
+                <a href="javascript:void(0);" (click)="!p.isLastPage()&&p.next()">›</a>
               </li>
               <li [class.disabled]="p.isLastPage()">
                 <a href="javascript:void(0);" (click)="p.setCurrent(p.getLastPage())">&raquo;</a>
