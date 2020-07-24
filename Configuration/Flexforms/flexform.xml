@@ -70,6 +70,7 @@
             <TCEforms> <label>LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang.xlf:tx_pitsdownloadcenter_domain_model_download.filestoragepath</label>
                 <config>
                     <type>select</type>
+					<renderType>selectSingle</renderType>
                     <foreign_table>sys_file_storage</foreign_table>
                 </config>
             </TCEforms>

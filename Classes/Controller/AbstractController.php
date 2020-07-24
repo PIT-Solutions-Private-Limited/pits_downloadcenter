@@ -37,7 +37,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * downloadRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\DownloadRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $downloadRepository = NULL;
 
@@ -45,7 +45,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * fileTypeRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $fileTypeRepository = NULL;
 
@@ -75,7 +75,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 
     /**
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $persistenceManager = NULL;
 
@@ -109,7 +109,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * categoryRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\CategoryRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $categoryRepository = NULL;
 
@@ -117,7 +117,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * storageRepository
      *
      * @var \TYPO3\CMS\Core\Resource\StorageRepository 
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $storageRepository = NULL;
 

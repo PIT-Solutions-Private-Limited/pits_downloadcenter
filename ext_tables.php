@@ -4,12 +4,12 @@ if (!defined('TYPO3_MODE')) {
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-	$_EXTKEY,
+	'PITS.PitsDownloadcenter',
 	'Pitsdownloadcenter',
 	'Download Center'
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'Download Center');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile('pits_downloadcenter', 'Configuration/TypoScript', 'Download Center');
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_pitsdownloadcenter_domain_model_category');
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_pitsdownloadcenter_domain_model_filetype');
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(
@@ -21,18 +21,18 @@ if (!defined('TYPO3_MODE')) {
 	''
 );
 
-$pluginSignature = str_replace('_','',$_EXTKEY) . '_pitsdownloadcenter';
-$TCA['tt_content']['types']['list']['subtypes_addlist'][$pluginSignature] = 'pi_flexform';
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue($pluginSignature, 'FILE:EXT:' . $_EXTKEY . '/Configuration/Flexforms/flexform.xml');
+$pluginSignature = 'pitsdownloadcenter_pitsdownloadcenter';
+$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$pluginSignature] = 'pi_flexform';
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue($pluginSignature, 'FILE:EXT:pits_downloadcenter/Configuration/Flexforms/flexform.xml');
 
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
-	$_EXTKEY, 'Configuration/TypoScript/Themes/Red',
+	'pits_downloadcenter', 'Configuration/TypoScript/Themes/Red',
 	'Download Center Red Theme'
 );
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
-	$_EXTKEY, 'Configuration/TypoScript/Themes/Blue',
+	'pits_downloadcenter', 'Configuration/TypoScript/Themes/Blue',
 	'Download Center Blue Theme'
 );
 
