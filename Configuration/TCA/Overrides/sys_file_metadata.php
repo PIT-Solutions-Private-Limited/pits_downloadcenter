@@ -58,88 +58,53 @@ $tempColumns = array(
             )
         )
     ),
-    // 'tx_pitsdownloadcenter_domain_model_download_translate' => array(
-    //     'exclude' => 1,
-    //     'label' => 'LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download_translatedfile',
-    //     'config' => array(
-    //         'type' => 'group',
-    //         'default' => '',
-    //         'internal_type' => 'file',
-    //         'allowed' => 'jpeg,jpg,doc,docx,pdf',
-    //         'size' => '5',
-    //         'maxitems' => '1',
-    //         'minitems' => '0',
-    //         'foreign_table' => 'sys_file',
-    //         'foreign_table_where' => ' AND sys_file_metadata.sys_language_uid = sys_file.sys_language_uid ',
-    //         'show_thumbs' => '1',
-    //         'wizards' => array(
-    //             'suggest' => array(
-    //                 'type' => 'suggest',
-    //             ),
-    //         ),
-    //     ),
-    // )
-    'tx_pitsdownloadcenter_domain_model_download_translate' => array(
-        'exclude' => 1,
+    'tx_pitsdownloadcenter_domain_model_download_translate' => [
+        'exclude' => true,
         'label' => 'LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download_translatedfile',
-        'config' => array(
-            'type' => 'inline',
-            'size' => '5',
-            'maxitems' => '1',
-            'minitems' => '0',
-            'foreign_table' => 'sys_file_reference',
-            'foreign_field' => 'uid_foreign',
-            'foreign_sortby' => 'sorting_foreign',
-            'foreign_table_field' => 'tablenames',
-            'foreign_match_fields' => [
-                'sys_language_uid' => 'sys_language_uid'
-            ],
-            'foreign_label' => 'uid_local',
-            'foreign_selector' => 'uid_local',
-            'overrideChildTca' => [
-                'columns' => [
-                    'uid_local' => [
-                        'config' => [
-                            'appearance' => [
-                                'elementBrowserType' => 'file',
-                                'elementBrowserAllowed' => $allowedFileExtensions
-                            ],
-                        ],
+        'config' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getFileFieldTCAConfig(
+            'tx_pitsdownloadcenter_domain_model_download_translate',
+            [
+                'appearance' => [
+                    'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference'
+                ],
+                'foreign_types' => [
+                    '0' => [
+                        'showitem' => '
+                        --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                        --palette--;;filePalette'
                     ],
-                ],
-            ],
-            'filter' => [
-                [
-                    'userFunc' => 'TYPO3\\CMS\\Core\\Resource\\Filter\\FileExtensionFilter->filterInlineChildren',
-                    'parameters' => [
-                        'allowedFileExtensions' => $allowedFileExtensions
+                    \TYPO3\CMS\Core\Resource\File::FILETYPE_TEXT => [
+                        'showitem' => '
+                        --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                        --palette--;;filePalette'
+                    ],
+                    \TYPO3\CMS\Core\Resource\File::FILETYPE_IMAGE => [
+                        'showitem' => '
+                        --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                        --palette--;;filePalette'
+                    ],
+                    \TYPO3\CMS\Core\Resource\File::FILETYPE_AUDIO => [
+                        'showitem' => '
+                        --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                        --palette--;;filePalette'
+                    ],
+                    \TYPO3\CMS\Core\Resource\File::FILETYPE_VIDEO => [
+                        'showitem' => '
+                        --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                        --palette--;;filePalette'
+                    ],
+                    \TYPO3\CMS\Core\Resource\File::FILETYPE_APPLICATION => [
+                        'showitem' => '
+                        --palette--;LLL:EXT:lang/locallang_tca.xlf:sys_file_reference.imageoverlayPalette;imageoverlayPalette,
+                        --palette--;;filePalette'
                     ]
-                ]
-            ],
-            'appearance' => [
-                'useSortable' => true,
-                'headerThumbnail' => [
-                    'field' => 'uid_local',
-                    'width' => '45',
-                    'height' => '45c',
                 ],
-                'showPossibleLocalizationRecords' => true,
-                'showRemovedLocalizationRecords' => false,
-                'showSynchronizationLink' => false,
-                'showAllLocalizationLink' => false,
-        
-                'enabledControls' => [
-                    'info' => false,
-                    'new' => false,
-                    'dragdrop' => true,
-                    'sort' => false,
-                    'hide' => true,
-                    'delete' => true,
-                    'localize' => true,
-                ],
+                'maxitems' => 1,
+                'minitems' => 0
             ],
+            'jpeg,jpg,doc,docx,pdf'
         ),
-    )
+    ]
 
 );
 
