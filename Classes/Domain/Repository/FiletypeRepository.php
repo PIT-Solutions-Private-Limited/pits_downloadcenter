@@ -61,9 +61,8 @@ class FiletypeRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     public function findAll()
     {
         $query = $this->createQuery();
-        $query->setOrderings(
-            array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
-        );
+        $query->getQuerySettings()->setRespectSysLanguage(TRUE);
+        $query->getQuerySettings()->setLanguageOverlayMode(FALSE);
         return $query->execute();
     }
 	

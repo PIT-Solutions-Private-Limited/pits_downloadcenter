@@ -1,6 +1,9 @@
 <?php
 namespace PITS\PitsDownloadcenter\Domain\Repository;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Connection;
 
 /***************************************************************
  *
@@ -56,45 +59,51 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 
     /**
      * getSubCategories
-     *
+     * createQuery() changed to querybuilder to avoid phpDocumenter 5.2.0v exception
+     * 
      * @param $categoryID
      * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      */
 	public function getSubCategories($categoryID)
     {
-		$query = $this->createQuery();
-
-		// constraint for setting the Parent Category Uid
-		$query->matching(
-			$query->equals("parentcategory", "$categoryID") 
-		);
-
-		// set the sorting order ascending and field sorting for ordering
-		$query->setOrderings(
-		    array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
-        );
-		return $query->execute();
+        $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+        $sys_language_uid = $siteLanguageObj->getLanguageId();
+        $sys_language_ids = [-1,$sys_language_uid];
+		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
+        $statement = $queryBuilder
+                           ->select('*')
+                           ->from('tx_pitsdownloadcenter_domain_model_category')
+                        ->where(
+                            $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
+                            $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
+                            )
+                        ->execute()
+                        ->fetchAll();
+        return $statement;
 	}
 
     /**
      * getSubCategoriesCount
-     *
+     * createQuery() changed to querybuilder to avoid phpDocumenter 5.2.0v exception
+     * 
      * @param $categoryID
      * @return int
      */
 	public function getSubCategoriesCount($categoryID)
     {
-		$query = $this->createQuery();
-
-        // constraint for setting the Parent Category Uid
-		$query->matching(
-			$query->equals("parentcategory", "$categoryID") 
-		);
-
-        // set the sorting order ascending and field sorting for ordering
-		$query->setOrderings(
-		    array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
-        );
-		return $query->count();
+        $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+        $sys_language_uid = $siteLanguageObj->getLanguageId();
+        $sys_language_ids = [-1,$sys_language_uid];
+		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
+        $count = $queryBuilder
+                           ->count('uid')
+                           ->from('tx_pitsdownloadcenter_domain_model_category')
+                        ->where(
+                            $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
+                            $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
+                            )
+                        ->execute()
+                        ->fetchColumn(0);
+        return $count;
 	}
 }

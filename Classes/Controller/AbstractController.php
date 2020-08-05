@@ -37,7 +37,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * downloadRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\DownloadRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $downloadRepository = NULL;
 
@@ -45,7 +45,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * fileTypeRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $fileTypeRepository = NULL;
 
@@ -75,7 +75,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 
     /**
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $persistenceManager = NULL;
 
@@ -109,7 +109,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * categoryRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\CategoryRepository
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $categoryRepository = NULL;
 
@@ -117,7 +117,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * storageRepository
      *
      * @var \TYPO3\CMS\Core\Resource\StorageRepository 
-     * @inject
+     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $storageRepository = NULL;
 
@@ -144,7 +144,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         // Basic Configuration Variables
         $this->extensionName = $this->request->getControllerExtensionName();
         $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
-        $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)]);
+        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)];
 
         // Encryption Variables
         $this->initializationVector = $this->strToHex("12345678");
@@ -206,8 +206,8 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         $subCategories = $this->categoryRepository->getSubCategories($parentID);
         $i = 0;
         foreach ($subCategories as $key => $value) {
-            $catID = $value -> getUid();
-            $catName = $value -> getCategoryname();
+            $catID = $value['uid'];
+            $catName = $value['categoryname'];
             $categoryTree[$key]['id'] = $catID;
             $categoryTree[$key]['title'] = $catName;
 
@@ -267,13 +267,11 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                         )
                     );
                     $downloadArguments = [
-                        [
-                            'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
-                                'controller' => 'Download',
-                                'action' => 'forceDownload',
-                                'fileid' => $file_uid_secure
-                            )
-                        ]
+                        'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
+                            'controller' => 'Download',
+                            'action' => 'forceDownload',
+                            'fileid' => $file_uid_secure
+                        )
                     ];
                     $response[$key]['downloadUrl'] = $this->uriBuilder->reset()
                         ->setTargetPageUid($pageUid)

@@ -29,6 +29,7 @@ namespace PITS\PitsDownloadcenter\Controller;
 use PITS\PitsDownloadcenter\Handlers\ContentTypeHandler;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Core\Environment;
 
 /**
  * DownloadController
@@ -204,17 +205,25 @@ class DownloadController extends AbstractController
             $storageRepository  = $this->storageRepository->findByUid($storageUid);
             $sConfig = $storageRepository->getConfiguration();
             $fileName = (isset($fileDetails['name'])) ? $fileDetails['name'] : NULL;
-            $file = realpath(PATH_site.$sConfig['basePath'].$fileIdentifier);
+            $file = realpath(Environment::getPublicPath() . '/'.$sConfig['basePath'].$fileIdentifier);
             $fileObject = $storageRepository->getFile( $fileIdentifier );
-            $sys_language_uid = $GLOBALS['TSFE']->sys_language_uid;
+            $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+            $sys_language_uid = $siteLanguageObj->getLanguageId();
             $checkTranslations = $this->downloadRepository->checkTranslations($fileObject , $sys_language_uid);
+            
             if( $checkTranslations ) {
-                $file_identifier = isset($checkTranslations['translated_file']) ? $checkTranslations['translated_file'] : NULL;
-                if ($file_identifier && !empty( $file_identifier )) {
-                    $filePath = PATH_site.$file_identifier;
-                    if (!empty($filePath) && is_file($filePath)){
-                        $file = $filePath;
-                        $fileName = basename($file);
+                $file_uid = isset($checkTranslations['uid_local']) ? $checkTranslations['uid_local'] : NULL;
+                if(!is_null($file_uid)) {
+                    $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+                    $fileObj = $resourceFactory->getFileObject($file_uid);
+                    $storConf = $fileObj->getStorage()->getConfiguration();
+                    $file_identifier = $fileObj->getIdentifier();
+                    if ($file_identifier && !empty( $file_identifier )) {
+                        $filePath = Environment::getPublicPath(). '/'.$storConf['basePath'].$file_identifier;
+                        if (!empty($filePath) && is_file($filePath)){
+                            $file = $filePath;
+                            $fileName = basename($file);
+                        }
                     }
                 }
             }
