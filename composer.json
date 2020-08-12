@@ -17,7 +17,7 @@
     }
   },
   "replace": {
-        "pits/pits_downloadcenter": "self.version",
+        "pits_downloadcenter": "self.version",
         "typo3-ter/pits-download-center": "self.version"
     }
 }
