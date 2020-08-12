@@ -72,7 +72,6 @@ class DownloadController extends AbstractController
         $config = $this->settings;
         $storageUid = $this->settings['fileStorage'];
         $storageRepository = $this->storageRepository->findByUid($storageUid);
-
         if( $storageRepository instanceof \TYPO3\CMS\Core\Resource\ResourceStorage )
         {
             $storageConfiguration   = $storageRepository->getConfiguration();
@@ -205,10 +204,20 @@ class DownloadController extends AbstractController
             $storageRepository  = $this->storageRepository->findByUid($storageUid);
             $sConfig = $storageRepository->getConfiguration();
             $fileName = (isset($fileDetails['name'])) ? $fileDetails['name'] : NULL;
-            $file = realpath(Environment::getPublicPath() . '/'.$sConfig['basePath'].$fileIdentifier);
+            if(version_compare(TYPO3_version, '8.7.99', '<=')){
+                $file = realpath(PATH_site.$sConfig['basePath'].$fileIdentifier);             
+            }
+            else{
+                $file = realpath(Environment::getPublicPath() . '/'.$sConfig['basePath'].$fileIdentifier);
+            }
             $fileObject = $storageRepository->getFile( $fileIdentifier );
-            $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
-            $sys_language_uid = $siteLanguageObj->getLanguageId();
+            if(version_compare(TYPO3_version, '9.5.99', '<=')){
+                $sys_language_uid = $GLOBALS['TSFE']->sys_language_uid;
+            }
+            else{
+                $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+                $sys_language_uid = $siteLanguageObj->getLanguageId();
+            }
             $checkTranslations = $this->downloadRepository->checkTranslations($fileObject , $sys_language_uid);
             
             if( $checkTranslations ) {
@@ -219,7 +228,12 @@ class DownloadController extends AbstractController
                     $storConf = $fileObj->getStorage()->getConfiguration();
                     $file_identifier = $fileObj->getIdentifier();
                     if ($file_identifier && !empty( $file_identifier )) {
-                        $filePath = Environment::getPublicPath(). '/'.$storConf['basePath'].$file_identifier;
+                        if(version_compare(TYPO3_version, '8.7.99', '<=')){
+                            $filePath = PATH_site.$storConf['basePath'].$file_identifier;
+                        }
+                        else {
+                            $filePath = Environment::getPublicPath(). '/'.$storConf['basePath'].$file_identifier;
+                        }
                         if (!empty($filePath) && is_file($filePath)){
                             $file = $filePath;
                             $fileName = basename($file);

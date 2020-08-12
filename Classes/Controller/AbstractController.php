@@ -37,7 +37,6 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * downloadRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\DownloadRepository
-     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $downloadRepository = NULL;
 
@@ -45,7 +44,6 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * fileTypeRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository
-     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $fileTypeRepository = NULL;
 
@@ -75,7 +73,6 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 
     /**
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $persistenceManager = NULL;
 
@@ -109,15 +106,13 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * categoryRepository
      *
      * @var \PITS\PitsDownloadcenter\Domain\Repository\CategoryRepository
-     * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $categoryRepository = NULL;
 
     /**
      * storageRepository
      *
-     * @var \TYPO3\CMS\Core\Resource\StorageRepository 
-     * @TYPO3\CMS\Extbase\Annotation\Inject
+     * @var \TYPO3\CMS\Core\Resource\StorageRepository
      */
     protected $storageRepository = NULL;
 
@@ -127,6 +122,17 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * @var \DateTime
      */
     protected $dateTime = null;
+
+    public function __construct()
+    {
+        $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
+        $this->downloadRepository = $objectManager->get('PITS\\PitsDownloadcenter\\Domain\\Repository\\DownloadRepository');
+        $this->fileTypeRepository = $objectManager->get('PITS\\PitsDownloadcenter\\Domain\\Repository\\FiletypeRepository');
+        $this->categoryRepository = $objectManager->get('PITS\\PitsDownloadcenter\\Domain\\Repository\\CategoryRepository');
+        $this->persistenceManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\PersistenceManager');
+        $this->storageRepository = $objectManager->get('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
+
+    }
 
     /**
      * Initializes the controller before invoking an action method.
@@ -144,7 +150,12 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         // Basic Configuration Variables
         $this->extensionName = $this->request->getControllerExtensionName();
         $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
-        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)];
+        if(version_compare(TYPO3_version, '8.7.99', '<=')){
+            $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)]);
+        }
+        else{
+            $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)];
+        }
 
         // Encryption Variables
         $this->initializationVector = $this->strToHex("12345678");
@@ -206,8 +217,13 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         $subCategories = $this->categoryRepository->getSubCategories($parentID);
         $i = 0;
         foreach ($subCategories as $key => $value) {
-            $catID = $value['uid'];
-            $catName = $value['categoryname'];
+            if(version_compare(TYPO3_version, '9.5.99', '<=')){
+                $catID = $value -> getUid();
+                $catName = $value -> getCategoryname();
+            } else {
+                $catID = $value['uid'];
+                $catName = $value['categoryname'];
+            }
             $categoryTree[$key]['id'] = $catID;
             $categoryTree[$key]['title'] = $catName;
 
@@ -279,6 +295,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                         ->setArguments($downloadArguments)
                         ->build();
                     $response[$key]['url'] = $response[$key]['downloadUrl'];
+                    // $this->redirectToUri($response[$key]['url'], 0, 404);
                 } else {
                     $response[$key]['url'] = $this->request->getBaseUri() . $value->getPublicUrl();
                     $response[$key]['downloadUrl']= $this->request->getBaseUri() . $value->getPublicUrl();
