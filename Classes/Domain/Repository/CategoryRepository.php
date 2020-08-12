@@ -66,20 +66,36 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function getSubCategories($categoryID)
     {
-        $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
-        $sys_language_uid = $siteLanguageObj->getLanguageId();
-        $sys_language_ids = [-1,$sys_language_uid];
-		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
-        $statement = $queryBuilder
-                           ->select('*')
-                           ->from('tx_pitsdownloadcenter_domain_model_category')
-                        ->where(
-                            $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
-                            $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
-                            )
-                        ->execute()
-                        ->fetchAll();
-        return $statement;
+        if(version_compare(TYPO3_version, '9.5.99', '<=')){
+            $query = $this->createQuery();
+
+            // constraint for setting the Parent Category Uid
+            $query->matching(
+                $query->equals("parentcategory", "$categoryID") 
+            );
+    
+            // set the sorting order ascending and field sorting for ordering
+            $query->setOrderings(
+                array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
+            );
+            return $query->execute();
+        }
+        else{
+            $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+            $sys_language_uid = $siteLanguageObj->getLanguageId();
+            $sys_language_ids = [-1,$sys_language_uid];
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
+            $statement = $queryBuilder
+                            ->select('*')
+                            ->from('tx_pitsdownloadcenter_domain_model_category')
+                            ->where(
+                                $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
+                                $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
+                                )
+                            ->execute()
+                            ->fetchAll();
+            return $statement;
+        }        
 	}
 
     /**
@@ -91,19 +107,35 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function getSubCategoriesCount($categoryID)
     {
-        $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
-        $sys_language_uid = $siteLanguageObj->getLanguageId();
-        $sys_language_ids = [-1,$sys_language_uid];
-		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
-        $count = $queryBuilder
-                           ->count('uid')
-                           ->from('tx_pitsdownloadcenter_domain_model_category')
-                        ->where(
-                            $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
-                            $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
-                            )
-                        ->execute()
-                        ->fetchColumn(0);
-        return $count;
+        if(version_compare(TYPO3_version, '9.5.99', '<=')){
+            $query = $this->createQuery();
+
+            // constraint for setting the Parent Category Uid
+            $query->matching(
+                $query->equals("parentcategory", "$categoryID") 
+            );
+
+            // set the sorting order ascending and field sorting for ordering
+            $query->setOrderings(
+                array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
+            );
+		    return $query->count();
+        }
+        else{
+            $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+            $sys_language_uid = $siteLanguageObj->getLanguageId();
+            $sys_language_ids = [-1,$sys_language_uid];
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
+            $count = $queryBuilder
+                            ->count('uid')
+                            ->from('tx_pitsdownloadcenter_domain_model_category')
+                            ->where(
+                                $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
+                                $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
+                                )
+                            ->execute()
+                            ->fetchColumn(0);
+            return $count;
+        }
 	}
 }
