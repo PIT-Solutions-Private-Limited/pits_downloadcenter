@@ -7,12 +7,14 @@
       2015-03-31 19:5:7:
 
 **Changed**:
-      2020-08-05 09:50:00:00:
+      2020-08-12 08:10:00:00:
 
 **Classification**:
       pits_downloadcenter
 
 **Description**:
+
+From version 4.0.0 onwards, internal_type 'file' used as additional field for translated file in sys_file_metadata, has been replaced with FAL.
 
 From version 3.0 [Angular 7] of Download Center extension will work only with TYPO3 7.6 LTS or newer. For older version of TYPO3 Please download the version 1.1.0.
 
