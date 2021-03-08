@@ -38,5 +38,13 @@ Change Log
 
 - 3.0.1 BUG FIX: Removed empty loader from template
 
+- 4.0.0 Typo3 10 compatibility update
+
+- 4.0.1 Compatibility fix for typo3 v7, 8, 9 and 10
+
+- 4.0.2 typo3 v8 and v9 allowed in composer.json
+
+- 4.0.3 BUG FIX: category filter not working except in deafult language (typo3 v10) and settings of default language plugin overrides translated plugins
+
 
 
