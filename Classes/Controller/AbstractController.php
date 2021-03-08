@@ -221,7 +221,13 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                 $catID = $value -> getUid();
                 $catName = $value -> getCategoryname();
             } else {
-                $catID = $value['uid'];
+                if($value['l10n_parent'] != 0){
+                    $categoryTree[$key]['localized_uid'] = $value['uid'];
+                    $catID = $value['l10n_parent'];
+                }
+                else {
+                    $catID = $value['uid'];
+                }
                 $catName = $value['categoryname'];
             }
             $categoryTree[$key]['id'] = $catID;

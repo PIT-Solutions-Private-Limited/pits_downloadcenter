@@ -90,9 +90,12 @@ class DownloadController extends AbstractController
         if($isValid) {
             $baseUrl = $this->request->getBaseUri();
             // uri for JSON service
+            //if default language contentIdentifier = uid else _LOCALIZED_UID to get settings of translated plugin in ajax action
+            $cObject = $this->configurationManager->getContentObject()->data;
+            $contentIdentifier = ($cObject['_LOCALIZED_UID']) ? $cObject['_LOCALIZED_UID'] : $cObject['uid'];
             $urlArguments = [
                 'type'  => intval(preg_replace('/[^A-Za-z0-9\-]/', '', $this->settings['typeNum'])),
-                'contentIdentifier' => $this->configurationManager->getContentObject()->data['uid']
+                'contentIdentifier' => $contentIdentifier
             ];
             $actionUrl = $this->uriBuilder->reset()
                 ->setTargetPageUid($this->currentPageUid)
