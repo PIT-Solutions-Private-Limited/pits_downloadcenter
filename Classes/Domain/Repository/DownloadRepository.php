@@ -3,6 +3,7 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Information\Typo3Version;
 
 /***************************************************************
  *
@@ -62,6 +63,8 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         );
 		$querySettings->setRespectStoragePage(FALSE);
 		$this->setDefaultQuerySettings($querySettings);
+		$typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
+        $this->typo3Version = $typo3VersionObj->getVersion();
 	}
 
 	/**
@@ -119,7 +122,7 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function getFileDetails($storageUid , $fileID)
     {
-		if(version_compare(TYPO3_version, '8.7.99', '<=')){
+		if(version_compare($this->typo3Version, '8.7.99', '<=')){
 			$response = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 
 				"identifier,name",
 				"sys_file",
@@ -155,7 +158,7 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	public function checkTranslations($file , $sys_language_uid)
     {
 		$file_uid = $file->getUid();
-		if(version_compare(TYPO3_version, '8.7.99', '<=')){
+		if(version_compare($this->typo3Version, '8.7.99', '<=')){
 			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = 1;
 			$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 
 				"uid",

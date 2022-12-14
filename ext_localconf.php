@@ -1,4 +1,6 @@
 <?php
+use PITS\PitsDownloadcenter\Controller\DownloadController;
+
 if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
@@ -7,7 +9,7 @@ if (!defined('TYPO3_MODE')) {
 	'PITS.pitsDownloadcenter',
 	'Pitsdownloadcenter',
 	array(
-		'Download' => 'list, show , forceDownload '
+		DownloadController::class => 'list, show , forceDownload '
 		
 	),
 	// non-cacheable actions

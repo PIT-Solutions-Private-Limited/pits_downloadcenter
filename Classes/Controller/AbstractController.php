@@ -27,6 +27,13 @@ namespace PITS\PitsDownloadcenter\Controller;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use PITS\PitsDownloadcenter\Domain\Repository\CategoryRepository;
+use PITS\PitsDownloadcenter\Domain\Repository\DownloadRepository;
+use PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository;
+use TYPO3\CMS\Core\Resource\StorageRepository;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * AbstractController
@@ -123,15 +130,28 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      */
     protected $dateTime = null;
 
-    public function __construct()
-    {
-        $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\Extbase\\Object\\ObjectManager');
-        $this->downloadRepository = $objectManager->get('PITS\\PitsDownloadcenter\\Domain\\Repository\\DownloadRepository');
-        $this->fileTypeRepository = $objectManager->get('PITS\\PitsDownloadcenter\\Domain\\Repository\\FiletypeRepository');
-        $this->categoryRepository = $objectManager->get('PITS\\PitsDownloadcenter\\Domain\\Repository\\CategoryRepository');
-        $this->persistenceManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\PersistenceManager');
-        $this->storageRepository = $objectManager->get('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
+    /**
+     * Typo3 version
+     *
+     * @var integer
+     */
+    protected $typo3Version = null;
 
+    public function __construct(
+        DownloadRepository $downloadRepository,
+        FiletypeRepository $fileTypeRepository,
+        CategoryRepository $categoryRepository,
+        PersistenceManager $persistenceManager,
+        StorageRepository  $storageRepository
+    )
+    {
+        $this->downloadRepository = $downloadRepository;
+        $this->fileTypeRepository = $fileTypeRepository;
+        $this->categoryRepository = $categoryRepository;
+        $this->persistenceManager = $persistenceManager;
+        $this->storageRepository = $storageRepository;
+        $typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
+        $this->typo3Version = $typo3VersionObj->getVersion();
     }
 
     /**
@@ -150,7 +170,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         // Basic Configuration Variables
         $this->extensionName = $this->request->getControllerExtensionName();
         $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
-        if(version_compare(TYPO3_version, '8.7.99', '<=')){
+        if(version_compare($this->typo3Version, '8.7.99', '<=')){
             $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)]);
         }
         else{
@@ -176,7 +196,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * @param \TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
      * @return void
      */
-    protected function initializeView(\TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view)
+    protected function initializeView($view)
     {
         parent::initializeView($view);
         $this->view->assignMultiple(array(
@@ -217,7 +237,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         $subCategories = $this->categoryRepository->getSubCategories($parentID);
         $i = 0;
         foreach ($subCategories as $key => $value) {
-            if(version_compare(TYPO3_version, '9.5.99', '<=')){
+            if(version_compare($this->typo3Version, '9.5.99', '<=')){
                 $catID = $value -> getUid();
                 $catName = $value -> getCategoryname();
             } else {
@@ -271,10 +291,14 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                 $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
                 $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
 
+                $request = $GLOBALS['TYPO3_REQUEST'];
+                $normalizedParams = $request->getAttribute('normalizedParams');
+                $baseUri = $normalizedParams->getSiteUrl();
+                 
                 // for preview image
                 if ($showPreview) {
-                    $processed = $this->processImage($value, $pImgWidth, $pImgHeight);
-                    $response[$key]['imageUrl'] = ($processed == '' || !file_exists($processed)) ? $this->request->getBaseUri() .'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $this->request->getBaseUri() . $processed;
+                    $processed = $this->processImage($value, $pImgWidth, $pImgHeight); 
+                    $response[$key]['imageUrl'] = ($processed == '' || !file_exists(realpath(Environment::getPublicPath() . $processed))) ? $baseUri .'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $baseUri . $processed;
                 }
 
                 // check force download or direct download
@@ -303,8 +327,8 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                     $response[$key]['url'] = $response[$key]['downloadUrl'];
                     // $this->redirectToUri($response[$key]['url'], 0, 404);
                 } else {
-                    $response[$key]['url'] = $this->request->getBaseUri() . $value->getPublicUrl();
-                    $response[$key]['downloadUrl']= $this->request->getBaseUri() . $value->getPublicUrl();
+                    $response[$key]['url'] = $baseUri . $value->getPublicUrl();
+                    $response[$key]['downloadUrl']= $baseUri . $value->getPublicUrl();
                 }
             }
         }

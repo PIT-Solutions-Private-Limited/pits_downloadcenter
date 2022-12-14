@@ -123,9 +123,17 @@ return [
 		'hidden' => array(
 			'exclude' => 1,
 			'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.visible',
-			'config' => array(
+			'config' => [
 				'type' => 'check',
-			),
+				'renderType' => 'checkboxToggle',
+				'items' => [
+					[
+						0 => '',
+						1 => '',
+						'invertStateDisplay' => true
+					]
+				],
+			],
 		),
 		'starttime' => array(
 			'exclude' => 1,

@@ -30,6 +30,9 @@ use PITS\PitsDownloadcenter\Handlers\ContentTypeHandler;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 
 /**
  * DownloadController
@@ -50,6 +53,14 @@ class DownloadController extends AbstractController
     protected $typeNumConstant = null;
 
     /**
+     * Typo3 version
+     *
+     * @var integer
+     */
+    protected $typo3Version = null;
+    
+
+    /**
      * initialize Action
      *
      * @return void
@@ -59,6 +70,8 @@ class DownloadController extends AbstractController
     {
         // forward to ajax handler service if typeNum set in url
         $this->checkServiceCalledRoute();
+        $typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
+        $this->typo3Version = $typo3VersionObj->getVersion();
     }
 
     /**
@@ -88,7 +101,9 @@ class DownloadController extends AbstractController
 
         // Check Starts Here
         if($isValid) {
-            $baseUrl = $this->request->getBaseUri();
+            $request = $GLOBALS['TYPO3_REQUEST'];
+            $normalizedParams = $request->getAttribute('normalizedParams');
+            $baseUrl = $normalizedParams->getSiteUrl();
             // uri for JSON service
             //if default language contentIdentifier = uid else _LOCALIZED_UID to get settings of translated plugin in ajax action
             $cObject = $this->configurationManager->getContentObject()->data;
@@ -101,7 +116,6 @@ class DownloadController extends AbstractController
                 ->setTargetPageUid($this->currentPageUid)
                 ->setCreateAbsoluteUri(TRUE)
                 ->setArguments($urlArguments)
-                ->setUseCacheHash(false)
                 ->build();
             $filePreview = ($config['showFileIconPreview'] == 1) ? TRUE : FALSE;
             $this->view->assign('baseURL' , $baseUrl);
@@ -171,7 +185,9 @@ class DownloadController extends AbstractController
 
         // setting response variables
         $this->defaultViewObjectName = \TYPO3\CMS\Extbase\Mvc\View\JsonView::class;
-        $baseUrl = $this->request->getBaseUri();
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        $normalizedParams = $request->getAttribute('normalizedParams');
+        $baseUrl = $normalizedParams->getSiteUrl();
         $response = array(
             'baseURL' => $baseUrl ,
             'files' => $files,
@@ -207,14 +223,14 @@ class DownloadController extends AbstractController
             $storageRepository  = $this->storageRepository->findByUid($storageUid);
             $sConfig = $storageRepository->getConfiguration();
             $fileName = (isset($fileDetails['name'])) ? $fileDetails['name'] : NULL;
-            if(version_compare(TYPO3_version, '8.7.99', '<=')){
+            if(version_compare($this->typo3Version, '8.7.99', '<=')){
                 $file = realpath(PATH_site.$sConfig['basePath'].$fileIdentifier);             
             }
             else{
                 $file = realpath(Environment::getPublicPath() . '/'.$sConfig['basePath'].$fileIdentifier);
             }
             $fileObject = $storageRepository->getFile( $fileIdentifier );
-            if(version_compare(TYPO3_version, '9.5.99', '<=')){
+            if(version_compare($this->typo3Version, '9.5.99', '<=')){
                 $sys_language_uid = $GLOBALS['TSFE']->sys_language_uid;
             }
             else{
@@ -226,12 +242,12 @@ class DownloadController extends AbstractController
             if( $checkTranslations ) {
                 $file_uid = isset($checkTranslations['uid_local']) ? $checkTranslations['uid_local'] : NULL;
                 if(!is_null($file_uid)) {
-                    $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+                    $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
                     $fileObj = $resourceFactory->getFileObject($file_uid);
                     $storConf = $fileObj->getStorage()->getConfiguration();
                     $file_identifier = $fileObj->getIdentifier();
                     if ($file_identifier && !empty( $file_identifier )) {
-                        if(version_compare(TYPO3_version, '8.7.99', '<=')){
+                        if(version_compare($this->typo3Version, '8.7.99', '<=')){
                             $filePath = PATH_site.$storConf['basePath'].$file_identifier;
                         }
                         else {
@@ -251,7 +267,7 @@ class DownloadController extends AbstractController
                 $headers = array(
                     'Pragma'                    => 'public', 
                     'Expires'                   => 0, 
-                    'Cache-Control'             => 'must-revalidate, post-check=0, pre-check=0',
+                    // 'Cache-Control'             => 'must-revalidate, post-check=0, pre-check=0',
                     'Cache-Control'             => 'public',
                     'Content-Description'       => 'File Transfer',
                     'Content-Type'              => $cType,
@@ -259,9 +275,16 @@ class DownloadController extends AbstractController
                     'Content-Transfer-Encoding' => 'binary', 
                     'Content-Length'            => $fileLen         
                 );
-                foreach($headers as $header => $data)
-                $this->response->setHeader($header, $data); 
-                $this->response->sendHeaders();                 
+                if(version_compare($this->typo3Version, '10.4.99', '<=')){
+                    foreach($headers as $header => $data)
+                    $this->response->setHeader($header, $data); 
+                    $this->response->sendHeaders();
+                }
+                else {
+                    foreach($headers as $header => $data) {
+                        header($header . ': ' . $data);
+                    }
+                }
                 @readfile($file);die;
             }
         }
