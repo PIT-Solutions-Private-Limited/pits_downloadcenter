@@ -16,12 +16,9 @@
       "PITS\\PitsDownloadcenter\\": "Classes"
     }
   },
-  "replace": {
-    "pits-downloadcenter": "self.version"
-  },
   "extra": {
-      "typo3/cms": {
-          "extension-key": "pits_downloadcenter"
-      }
-    }
+        "typo3/cms": {
+            "extension-key": "pits_downloadcenter"
+        }
+  }
 }
