@@ -102,7 +102,7 @@ $tempColumns = array(
                 'maxitems' => 1,
                 'minitems' => 0
             ],
-            'jpeg,jpg,doc,docx,pdf'
+            'jpeg,jpg,png,doc,docx,pdf'
         ),
     ]
 

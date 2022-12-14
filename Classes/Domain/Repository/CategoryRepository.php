@@ -4,6 +4,7 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Information\Typo3Version;
 
 /***************************************************************
  *
@@ -55,6 +56,8 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         // don't add the pid constraint
         $querySettings->setRespectStoragePage(FALSE);
         $this->setDefaultQuerySettings($querySettings);
+        $typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
+        $this->typo3Version = $typo3VersionObj->getVersion();
     }
 
     /**
@@ -66,7 +69,7 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function getSubCategories($categoryID)
     {
-        if(version_compare(TYPO3_version, '9.5.99', '<=')){
+        if(version_compare($this->typo3Version, '9.5.99', '<=')){
             $query = $this->createQuery();
 
             // constraint for setting the Parent Category Uid
@@ -107,7 +110,7 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function getSubCategoriesCount($categoryID)
     {
-        if(version_compare(TYPO3_version, '9.5.99', '<=')){
+        if(version_compare($this->typo3Version, '9.5.99', '<=')){
             $query = $this->createQuery();
 
             // constraint for setting the Parent Category Uid
