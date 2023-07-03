@@ -33,6 +33,7 @@ use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * DownloadController
@@ -80,7 +81,7 @@ class DownloadController extends AbstractController
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
-    public function listAction()
+    public function listAction(): ResponseInterface
     {
         $config = $this->settings;
         $storageUid = $this->settings['fileStorage'];
@@ -124,10 +125,16 @@ class DownloadController extends AbstractController
             $this->view->assign('basePath'  , $basePath);
             $this->view->assign('showPreview', $showPreview);
             $this->view->assign('showFileIcon',$filePreview);
+            return $this->responseFactory->createResponse()
+                ->withAddedHeader('Content-Type', 'text/html; charset=utf-8')
+                ->withBody($this->streamFactory->createStream($this->view->render()));
         }
         else {
             $this->view->assign('showError',TRUE);
             // error will shown in frontend
+            return $this->responseFactory->createResponse()
+                ->withAddedHeader('Content-Type', 'text/html; charset=utf-8')
+                ->withBody($this->streamFactory->createStream($this->view->render()));
         }
     }
 

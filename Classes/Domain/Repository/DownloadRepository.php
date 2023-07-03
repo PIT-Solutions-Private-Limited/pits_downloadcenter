@@ -4,6 +4,7 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 
 /***************************************************************
  *
@@ -58,10 +59,8 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	*/
 	public function initializeObject()
     {
-		$querySettings = $this->objectManager->get(
-		    'TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings'
-        );
-		$querySettings->setRespectStoragePage(FALSE);
+		/** @var QuerySettingsInterface $querySettings */
+        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
 		$this->setDefaultQuerySettings($querySettings);
 		$typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
         $this->typo3Version = $typo3VersionObj->getVersion();
