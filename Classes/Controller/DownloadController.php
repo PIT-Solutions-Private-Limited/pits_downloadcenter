@@ -33,6 +33,7 @@ use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * DownloadController
@@ -80,7 +81,7 @@ class DownloadController extends AbstractController
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
-    public function listAction()
+    public function listAction(): ResponseInterface
     {
         $config = $this->settings;
         $storageUid = $this->settings['fileStorage'];
@@ -124,10 +125,16 @@ class DownloadController extends AbstractController
             $this->view->assign('basePath'  , $basePath);
             $this->view->assign('showPreview', $showPreview);
             $this->view->assign('showFileIcon',$filePreview);
+            return $this->responseFactory->createResponse()
+                ->withAddedHeader('Content-Type', 'text/html; charset=utf-8')
+                ->withBody($this->streamFactory->createStream($this->view->render()));
         }
         else {
             $this->view->assign('showError',TRUE);
             // error will shown in frontend
+            return $this->responseFactory->createResponse()
+                ->withAddedHeader('Content-Type', 'text/html; charset=utf-8')
+                ->withBody($this->streamFactory->createStream($this->view->render()));
         }
     }
 
@@ -223,20 +230,10 @@ class DownloadController extends AbstractController
             $storageRepository  = $this->storageRepository->findByUid($storageUid);
             $sConfig = $storageRepository->getConfiguration();
             $fileName = (isset($fileDetails['name'])) ? $fileDetails['name'] : NULL;
-            if(version_compare($this->typo3Version, '8.7.99', '<=')){
-                $file = realpath(PATH_site.$sConfig['basePath'].$fileIdentifier);             
-            }
-            else{
-                $file = realpath(Environment::getPublicPath() . '/'.$sConfig['basePath'].$fileIdentifier);
-            }
+            $file = realpath(Environment::getPublicPath() . '/'.$sConfig['basePath'].$fileIdentifier);
             $fileObject = $storageRepository->getFile( $fileIdentifier );
-            if(version_compare($this->typo3Version, '9.5.99', '<=')){
-                $sys_language_uid = $GLOBALS['TSFE']->sys_language_uid;
-            }
-            else{
-                $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
-                $sys_language_uid = $siteLanguageObj->getLanguageId();
-            }
+            $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+            $sys_language_uid = $siteLanguageObj->getLanguageId();
             $checkTranslations = $this->downloadRepository->checkTranslations($fileObject , $sys_language_uid);
             
             if( $checkTranslations ) {
@@ -247,12 +244,7 @@ class DownloadController extends AbstractController
                     $storConf = $fileObj->getStorage()->getConfiguration();
                     $file_identifier = $fileObj->getIdentifier();
                     if ($file_identifier && !empty( $file_identifier )) {
-                        if(version_compare($this->typo3Version, '8.7.99', '<=')){
-                            $filePath = PATH_site.$storConf['basePath'].$file_identifier;
-                        }
-                        else {
-                            $filePath = Environment::getPublicPath(). '/'.$storConf['basePath'].$file_identifier;
-                        }
+                        $filePath = Environment::getPublicPath(). '/'.$storConf['basePath'].$file_identifier;
                         if (!empty($filePath) && is_file($filePath)){
                             $file = $filePath;
                             $fileName = basename($file);
@@ -275,15 +267,8 @@ class DownloadController extends AbstractController
                     'Content-Transfer-Encoding' => 'binary', 
                     'Content-Length'            => $fileLen         
                 );
-                if(version_compare($this->typo3Version, '10.4.99', '<=')){
-                    foreach($headers as $header => $data)
-                    $this->response->setHeader($header, $data); 
-                    $this->response->sendHeaders();
-                }
-                else {
-                    foreach($headers as $header => $data) {
-                        header($header . ': ' . $data);
-                    }
+                foreach($headers as $header => $data) {
+                    header($header . ': ' . $data);
                 }
                 @readfile($file);die;
             }

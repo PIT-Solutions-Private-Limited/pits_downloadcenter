@@ -24,9 +24,9 @@ return [
 		'searchFields' => 'filetype',
 		'iconfile' => 'EXT:pits_downloadcenter/Resources/Public/Icons/tx_pitsdownloadcenter_domain_model_filetype.png'
 	),
-	'interface' => array(
-		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, filetype,hidden',
-	),
+	//'interface' => array(
+	//	'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, filetype,hidden',
+	//),
 	'types' => array(
 		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, filetype,hidden;;1, --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.access, starttime, endtime'),
 	),
@@ -38,23 +38,25 @@ return [
 		'sys_language_uid' => [
             'exclude' => true,
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'special' => 'languages',
-                'items' => [
-                    [
-                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages',
-                        -1,
-                        'flags-multiple'
-                    ]
-                ],
-                'default' => -1,
+            // 'config' => [
+            //     'type' => 'select',
+            //     'renderType' => 'selectSingle',
+            //     'special' => 'languages',
+            //     'items' => [
+            //         [
+            //             'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages',
+            //             -1,
+            //             'flags-multiple'
+            //         ]
+            //     ],
+            //     'default' => -1,
+            // ],
+			'config' => [
+                'type' => 'language',
             ],
         ],
 		'l10n_parent' => array(
 			'displayCond' => 'FIELD:sys_language_uid:>:0',
-			'exclude' => 1,
 			'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
 			'config' => array(
 				'type' => 'select',

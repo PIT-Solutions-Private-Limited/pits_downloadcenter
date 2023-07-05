@@ -4,6 +4,7 @@ namespace PITS\PitsDownloadcenter\Domain\Repository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 
 /***************************************************************
  *
@@ -58,10 +59,8 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	*/
 	public function initializeObject()
     {
-		$querySettings = $this->objectManager->get(
-		    'TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings'
-        );
-		$querySettings->setRespectStoragePage(FALSE);
+		/** @var QuerySettingsInterface $querySettings */
+        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
 		$this->setDefaultQuerySettings($querySettings);
 		$typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
         $this->typo3Version = $typo3VersionObj->getVersion();
@@ -122,28 +121,16 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function getFileDetails($storageUid , $fileID)
     {
-		if(version_compare($this->typo3Version, '8.7.99', '<=')){
-			$response = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 
-				"identifier,name",
-				"sys_file",
-				" storage = $storageUid AND uid = $fileID ",
-				$groupBy= '',
-				$orderBy= '',
-				$numIndex=FALSE
-			);
-		}
-		else {
-			$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file');
-			$response = $queryBuilder
-				->select('identifier','name')
-				->from('sys_file')
-				->where(
-					$queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($storageUid)),
-					$queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($fileID))
-					)
-				->execute()
-				->fetch();
-		}
+		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file');
+		$response = $queryBuilder
+			->select('identifier','name')
+			->from('sys_file')
+			->where(
+				$queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($storageUid)),
+				$queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($fileID))
+				)
+			->execute()
+			->fetch();
 		return $response;
 	}
 
@@ -158,62 +145,39 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 	public function checkTranslations($file , $sys_language_uid)
     {
 		$file_uid = $file->getUid();
-		if(version_compare($this->typo3Version, '8.7.99', '<=')){
-			$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = 1;
-			$record = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow ( 
-				"uid",
-				"sys_file_metadata",
-				" sys_language_uid = $sys_language_uid AND file = $file_uid ",
-				$groupBy= '',
-				$orderBy= '',
-				$numIndex=FALSE
-			);
-			if(!is_null($record['uid'])) {
-				$file_uid = $record['uid'];
-				$getTranslatedFile = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow (
-					"uid_foreign,uid_local",
-					"sys_file_reference",
-					"sys_language_uid = $sys_language_uid AND uid_foreign= $file_uid AND tablenames = 'sys_file_metadata' AND fieldname = 'tx_pitsdownloadcenter_domain_model_download_translate' AND deleted = '0' AND hidden = '0' ",
-					$groupBy= '',
-					$orderBy= '',
-					$numIndex=FALSE
-				);
-			}
-		}
-		else {
-			$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_metadata');
-			$record = $queryBuilder
-				->select('uid')
-				->from('sys_file_metadata')
-				->where(
-					$queryBuilder->expr()->eq('file', $queryBuilder->createNamedParameter($file_uid)),
-					$queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_uid))
+		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_metadata');
+		$record = $queryBuilder
+			->select('uid')
+			->from('sys_file_metadata')
+			->where(
+				$queryBuilder->expr()->eq('file', $queryBuilder->createNamedParameter($file_uid)),
+				$queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_uid))
+			)
+			->execute()
+			->fetch();
+		if(!is_null($record['uid'])) {
+			$file_uid = $record['uid'];
+			$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_reference');
+			$getTranslatedFile = $queryBuilder
+			->select('uid_foreign','uid_local')
+			->from('sys_file_reference')
+			->where(
+				$queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_uid)),
+				$queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($file_uid)),
+				$queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter('sys_file_metadata')),
+				$queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter('tx_pitsdownloadcenter_domain_model_download_translate'))
 				)
-				->execute()
-				->fetch();
-			if(!is_null($record['uid'])) {
-				$file_uid = $record['uid'];
-				$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_reference');
-				$getTranslatedFile = $queryBuilder
-				->select('uid_foreign','uid_local')
-				->from('sys_file_reference')
-				->where(
-					$queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_uid)),
-					$queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($file_uid)),
-					$queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter('sys_file_metadata')),
-					$queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter('tx_pitsdownloadcenter_domain_model_download_translate'))
-					)
-				->execute()
-				->fetch();
-			}
+			->execute()
+			->fetch();
 		}
 		
 		// Query
-		if (is_array( $getTranslatedFile )):
+		if (is_array( $getTranslatedFile )){
 			$response = (!empty(array_filter( $getTranslatedFile )))?$getTranslatedFile:false;
-		else:
+		}
+		else{
 			return  false;
-		endif;
+		}
 		return $response;
 	}
 }

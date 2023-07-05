@@ -1,4 +1,9 @@
 <?php
+namespace PITS\PitsDownloadcenter\Domain\Repository;
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 /***************************************************************
  *
  *  Copyright notice
@@ -37,8 +42,8 @@ class DocumentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
     public function initializeObject()
     {
-        $querySettings = $this->objectManager->create('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
-        $querySettings->setRespectStoragePage(FALSE);
+        /** @var QuerySettingsInterface $querySettings */
+        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         $this->setDefaultQuerySettings($querySettings);
     }
 

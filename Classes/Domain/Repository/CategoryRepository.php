@@ -5,6 +5,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 
 /***************************************************************
  *
@@ -51,8 +52,8 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
     public function initializeObject()
     {
-        /** @var $querySettings \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings */
-        $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        /** @var QuerySettingsInterface $querySettings */
+        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         // don't add the pid constraint
         $querySettings->setRespectStoragePage(FALSE);
         $this->setDefaultQuerySettings($querySettings);
@@ -69,36 +70,20 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function getSubCategories($categoryID)
     {
-        if(version_compare($this->typo3Version, '9.5.99', '<=')){
-            $query = $this->createQuery();
-
-            // constraint for setting the Parent Category Uid
-            $query->matching(
-                $query->equals("parentcategory", "$categoryID") 
-            );
-    
-            // set the sorting order ascending and field sorting for ordering
-            $query->setOrderings(
-                array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
-            );
-            return $query->execute();
-        }
-        else{
-            $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
-            $sys_language_uid = $siteLanguageObj->getLanguageId();
-            $sys_language_ids = [-1,$sys_language_uid];
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
-            $statement = $queryBuilder
-                            ->select('*')
-                            ->from('tx_pitsdownloadcenter_domain_model_category')
-                            ->where(
-                                $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
-                                $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
-                                )
-                            ->execute()
-                            ->fetchAll();
-            return $statement;
-        }        
+        $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+        $sys_language_uid = $siteLanguageObj->getLanguageId();
+        $sys_language_ids = [-1,$sys_language_uid];
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
+        $statement = $queryBuilder
+                        ->select('*')
+                        ->from('tx_pitsdownloadcenter_domain_model_category')
+                        ->where(
+                            $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
+                            $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
+                            )
+                        ->execute()
+                        ->fetchAll();
+        return $statement;
 	}
 
     /**
@@ -110,35 +95,19 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      */
 	public function getSubCategoriesCount($categoryID)
     {
-        if(version_compare($this->typo3Version, '9.5.99', '<=')){
-            $query = $this->createQuery();
-
-            // constraint for setting the Parent Category Uid
-            $query->matching(
-                $query->equals("parentcategory", "$categoryID") 
-            );
-
-            // set the sorting order ascending and field sorting for ordering
-            $query->setOrderings(
-                array('sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING)
-            );
-		    return $query->count();
-        }
-        else{
-            $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
-            $sys_language_uid = $siteLanguageObj->getLanguageId();
-            $sys_language_ids = [-1,$sys_language_uid];
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
-            $count = $queryBuilder
-                            ->count('uid')
-                            ->from('tx_pitsdownloadcenter_domain_model_category')
-                            ->where(
-                                $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
-                                $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
-                                )
-                            ->execute()
-                            ->fetchColumn(0);
-            return $count;
-        }
+        $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
+        $sys_language_uid = $siteLanguageObj->getLanguageId();
+        $sys_language_ids = [-1,$sys_language_uid];
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
+        $count = $queryBuilder
+                        ->count('uid')
+                        ->from('tx_pitsdownloadcenter_domain_model_category')
+                        ->where(
+                            $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
+                            $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
+                            )
+                        ->execute()
+                        ->fetchColumn(0);
+        return $count;
 	}
 }
