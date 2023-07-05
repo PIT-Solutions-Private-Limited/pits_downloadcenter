@@ -170,12 +170,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         // Basic Configuration Variables
         $this->extensionName = $this->request->getControllerExtensionName();
         $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
-        if(version_compare($this->typo3Version, '8.7.99', '<=')){
-            $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)]);
-        }
-        else{
-            $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)];
-        }
+        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)];
 
         // Encryption Variables
         $this->initializationVector = $this->strToHex("12345678");
@@ -237,19 +232,14 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         $subCategories = $this->categoryRepository->getSubCategories($parentID);
         $i = 0;
         foreach ($subCategories as $key => $value) {
-            if(version_compare($this->typo3Version, '9.5.99', '<=')){
-                $catID = $value -> getUid();
-                $catName = $value -> getCategoryname();
-            } else {
-                if($value['l10n_parent'] != 0){
-                    $categoryTree[$key]['localized_uid'] = $value['uid'];
-                    $catID = $value['l10n_parent'];
-                }
-                else {
-                    $catID = $value['uid'];
-                }
-                $catName = $value['categoryname'];
+            if($value['l10n_parent'] != 0){
+                $categoryTree[$key]['localized_uid'] = $value['uid'];
+                $catID = $value['l10n_parent'];
             }
+            else {
+                $catID = $value['uid'];
+            }
+            $catName = $value['categoryname'];
             $categoryTree[$key]['id'] = $catID;
             $categoryTree[$key]['title'] = $catName;
 
