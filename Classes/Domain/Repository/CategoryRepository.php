@@ -57,8 +57,6 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         // don't add the pid constraint
         $querySettings->setRespectStoragePage(FALSE);
         $this->setDefaultQuerySettings($querySettings);
-        $typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
-        $this->typo3Version = $typo3VersionObj->getVersion();
     }
 
     /**
@@ -107,7 +105,7 @@ class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
                             $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
                             )
                         ->execute()
-                        ->fetchColumn(0);
+                        ->fetchOne();
         return $count;
 	}
 }

@@ -9,7 +9,7 @@
   "homepage": "http://pitsolutions.ch/",
   "license": ["GPL-2.0-or-later"],
   "require": {
-    "typo3/cms-core": "^11.5"
+    "typo3/cms-core": "^12.4"
   },
   "autoload": {
     "psr-4": {
@@ -17,8 +17,8 @@
     }
   },
   "extra": {
-        "typo3/cms": {
-            "extension-key": "pits_downloadcenter"
-        }
-  }
+    "typo3/cms": {
+      "extension-key": "pits_downloadcenter"
+    }
+}
 }
