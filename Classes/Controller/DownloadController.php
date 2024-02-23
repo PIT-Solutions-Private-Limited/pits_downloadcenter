@@ -57,20 +57,6 @@ class DownloadController extends AbstractController
     protected $typeNumConstant = null;
     
 
-    // /**
-    //  * initialize Action
-    //  *
-    //  * @return void
-    //  * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-    //  */
-    // public function initializeListAction()
-    // {
-    //     // forward to ajax handler service if typeNum set in url
-    //     $possibleRedirect = $this->checkServiceCalledRoute();
-    //     if ($possibleRedirect) {
-    //         return $possibleRedirect;
-    //     }
-    // }
 
     /**
      * listAction
