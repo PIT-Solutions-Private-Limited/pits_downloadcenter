@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 defined('TYPO3') || die();
 
-// \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_pitsdownloadcenter_domain_model_category');
-// \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_pitsdownloadcenter_domain_model_filetype');
-
 /**
  * ContentElementWizard for Download Center Plugin
  */
