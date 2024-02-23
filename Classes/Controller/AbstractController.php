@@ -130,13 +130,6 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      */
     protected $dateTime = null;
 
-    /**
-     * Typo3 version
-     *
-     * @var integer
-     */
-    protected $typo3Version = null;
-
     public function __construct(
         DownloadRepository $downloadRepository,
         FiletypeRepository $fileTypeRepository,
@@ -150,8 +143,6 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         $this->categoryRepository = $categoryRepository;
         $this->persistenceManager = $persistenceManager;
         $this->storageRepository = $storageRepository;
-        $typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
-        $this->typo3Version = $typo3VersionObj->getVersion();
     }
 
     /**
@@ -176,10 +167,17 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
         $this->initializationVector = $this->strToHex("12345678");
         $this->encryptionKey = isset( $this->extConf['secure_encryption_key'] )? $this->extConf['secure_encryption_key'] : NULL;
         $this->encryptionMethod = isset( $this->extConf['secure_encryption_method'] ) ? $this->extConf['secure_encryption_method'] : NULL;
-        $this->controllerSettings = $this->settings['controllers'][$this->request->getControllerName()]; 
-        $this->actionSettings = $this->controllerSettings['actions'][$this->request->getControllerActionName()];
+        // if (!isset($this->settings['controllers'])) {
+        //     $this->settings['controllers'] = [];
+        // }
+        // $this->controllerSettings = $this->settings['controllers'][$this->request->getControllerName()];
+    
+        // if (!isset($this->settings['actions'])) {
+        //     $this->controllerSettings['actions'] = [];
+        // }
+        // $this->actionSettings = $this->controllerSettings['actions'][$this->request->getControllerActionName()];
         $this->currentPageUid = $GLOBALS['TSFE']->id;
-        $this->configurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
+        // $this->configurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
     }
 
     /**
@@ -188,12 +186,12 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
      * Override this method to solve assign variables common for all actions
      * or prepare the view in another way before the action is called.
      *
-     * @param \TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
+     * @param $view
      * @return void
      */
     protected function initializeView($view)
     {
-        parent::initializeView($view);
+        // parent::initializeView($view);
         $this->view->assignMultiple(array(
             'controllerSettings' => $this->controllerSettings,
             'actionSettings' => $this->actionSettings,

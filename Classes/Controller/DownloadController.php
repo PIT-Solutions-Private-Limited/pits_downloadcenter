@@ -34,6 +34,9 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Extbase\Http\ForwardResponse;
+use TYPO3\CMS\Extbase\Service\ImageService;
+
 
 /**
  * DownloadController
@@ -52,28 +55,23 @@ class DownloadController extends AbstractController
      * @var integer
      */
     protected $typeNumConstant = null;
-
-    /**
-     * Typo3 version
-     *
-     * @var integer
-     */
-    protected $typo3Version = null;
     
 
-    /**
-     * initialize Action
-     *
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-     */
-    public function initializeListAction()
-    {
-        // forward to ajax handler service if typeNum set in url
-        $this->checkServiceCalledRoute();
-        $typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
-        $this->typo3Version = $typo3VersionObj->getVersion();
-    }
+    // /**
+    //  * initialize Action
+    //  *
+    //  * @return void
+    //  * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+    //  */
+    // public function initializeListAction()
+    // {
+    //     // forward to ajax handler service if typeNum set in url
+    //     $possibleRedirect = $this->checkServiceCalledRoute();
+    //     debug($possibleRedirect);
+    //     if ($possibleRedirect) {
+    //         return $possibleRedirect;
+    //     }
+    // }
 
     /**
      * listAction
@@ -83,7 +81,14 @@ class DownloadController extends AbstractController
      */
     public function listAction(): ResponseInterface
     {
+        $possibleRedirect = $this->checkServiceCalledRoute();
+        // debug($possibleRedirect);
+        if ($possibleRedirect) {
+            return $possibleRedirect;
+        }
+
         $config = $this->settings;
+        // debug($this->settings);
         $storageUid = $this->settings['fileStorage'];
         $storageRepository = $this->storageRepository->findByUid($storageUid);
         if( $storageRepository instanceof \TYPO3\CMS\Core\Resource\ResourceStorage )
@@ -105,10 +110,22 @@ class DownloadController extends AbstractController
             $request = $GLOBALS['TYPO3_REQUEST'];
             $normalizedParams = $request->getAttribute('normalizedParams');
             $baseUrl = $normalizedParams->getSiteUrl();
+            
+            //ajax-loader gif relative url for typo3 12
+            $imageService = GeneralUtility::makeInstance(ImageService::class);
+            $loaderimage = $imageService->getImage('EXT:pits_downloadcenter/Resources/Public/Icons/ajax-loader.gif', null, false);
+            $loaderimageuri = $imageService->getImageUri($loaderimage, false);
+            $parsedUrl = parse_url($loaderimageuri);
+            if(isset($parsedUrl['host'])){
+                $loaderimageuri = $parsedUrl['path'];
+            }
+            // debug($loaderimageuri); exit;
+
             // uri for JSON service
             //if default language contentIdentifier = uid else _LOCALIZED_UID to get settings of translated plugin in ajax action
             $cObject = $this->configurationManager->getContentObject()->data;
-            $contentIdentifier = ($cObject['_LOCALIZED_UID']) ? $cObject['_LOCALIZED_UID'] : $cObject['uid'];
+            // debug($cObject);
+            $contentIdentifier = (isset($cObject['_LOCALIZED_UID'])) ? $cObject['_LOCALIZED_UID'] : $cObject['uid'];
             $urlArguments = [
                 'type'  => intval(preg_replace('/[^A-Za-z0-9\-]/', '', $this->settings['typeNum'])),
                 'contentIdentifier' => $contentIdentifier
@@ -120,8 +137,9 @@ class DownloadController extends AbstractController
                 ->build();
             $filePreview = ($config['showFileIconPreview'] == 1) ? TRUE : FALSE;
             $this->view->assign('baseURL' , $baseUrl);
+            $this->view->assign('loaderimageuri', $loaderimageuri);
             $this->view->assign('actionUrl' , $actionUrl);
-            $this->view->assign('downloadUrl' , $downloadUrl);
+            // $this->view->assign('downloadUrl' , $downloadUrl);
             $this->view->assign('basePath'  , $basePath);
             $this->view->assign('showPreview', $showPreview);
             $this->view->assign('showFileIcon',$filePreview);
@@ -144,8 +162,9 @@ class DownloadController extends AbstractController
      * @return void
      * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException
      */
-    public function showAction()
+    public function showAction(): ResponseInterface
     {
+        
         // to handle large requests
         ini_set( 'memory_limit', '-1' );
 
@@ -154,6 +173,7 @@ class DownloadController extends AbstractController
 
         // settings and required arguments for the json object
         $config = $this->settings;
+        // debug($this->settings);
         $translations = $this->getPageTranslations();
         $fileTypesObject = $this->fileTypeRepository->findAll();
         $fileTypes = $this->getFileTypes($fileTypesObject);
@@ -164,13 +184,14 @@ class DownloadController extends AbstractController
         $storageRepository = $this->storageRepository->findByUid( $storageUid );
         $storageConfiguration = $storageRepository->getConfiguration();
 
+        // debug($storageRepository);
+        // debug($storageConfiguration);
+
         // folder object
-        $folderObject = GeneralUtility::makeInstance(
-            'TYPO3\\CMS\\Core\\Resource\\Folder',
-            $storageRepository,
-            null,
-            null
-        );
+        /** @var Folder|InaccessibleFolder $folder */
+        // $folderObject = $this->storageRepository->getDefaultStorage()->getFolder('/data/');
+        $folderObject = $storageRepository->getFolder('');
+        // debug($folderObject);
 
         // getting files from the storage folder object
         $getFiles = $storageRepository->getFilesInFolder(
@@ -306,7 +327,7 @@ class DownloadController extends AbstractController
      */
     public function setExtensionSettingsForService()
     {
-        $contentObjectIdentifier = intval(GeneralUtility::_GET('contentIdentifier'));
+        $contentObjectIdentifier = intval($GLOBALS['TYPO3_REQUEST']->getQueryParams()['contentIdentifier']);
         $record = BackendUtility::getRecord('tt_content', $contentObjectIdentifier);
         $this->handleRedirectPolicyIfInvalidIdentifier($record);
         $this->configurationManager->getContentObject()->readFlexformIntoConf($record['pi_flexform'], $this->settings);
@@ -333,16 +354,22 @@ class DownloadController extends AbstractController
     /**
      * checkServiceCalledRoute
      *
-     * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
-    public function checkServiceCalledRoute()
+    public function checkServiceCalledRoute(): ?ForwardResponse
     {
         $this->typeNumConstant = $this->getTypeNumUsedForAjaxService();
-        if (intval(GeneralUtility::_GET('type')) === $this->typeNumConstant) {
-            // forward to show action
-            $this->forward('show');
+        // debug($this->typeNumConstant);
+        // debug($this->request->request->getQueryParams());
+        // debug($GLOBALS['TYPO3_REQUEST']);
+        // debug(intval($GLOBALS['TYPO3_REQUEST']->getQueryParams()['type']) === $this->typeNumConstant);
+        if(isset($GLOBALS['TYPO3_REQUEST']->getQueryParams()['type'])){
+            if (intval($GLOBALS['TYPO3_REQUEST']->getQueryParams()['type']) === $this->typeNumConstant) {
+                // forward to show action
+                return new ForwardResponse('show');
+            }
         }
+        return null;
     }
 
     /**

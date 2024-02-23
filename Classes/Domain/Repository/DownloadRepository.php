@@ -62,8 +62,6 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 		/** @var QuerySettingsInterface $querySettings */
         $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
 		$this->setDefaultQuerySettings($querySettings);
-		$typo3VersionObj = GeneralUtility::makeInstance(Typo3Version::class);
-        $this->typo3Version = $typo3VersionObj->getVersion();
 	}
 
 	/**
@@ -155,6 +153,8 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 			)
 			->execute()
 			->fetch();
+		if(!$record)
+			return false;
 		if(!is_null($record['uid'])) {
 			$file_uid = $record['uid'];
 			$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_reference');

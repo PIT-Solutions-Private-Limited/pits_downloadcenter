@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 return [
 	'ctrl' => array(
 		'title'	=> 'LLL:EXT:pits_downloadcenter/Resources/Private/Language/locallang_db.xlf:tx_pitsdownloadcenter_domain_model_download_filetype',
@@ -21,6 +21,9 @@ return [
 			'starttime' => 'starttime',
 			'endtime' => 'endtime',
 		),
+		'security' => [
+            'ignorePageTypeRestriction' => true,
+        ],
 		'searchFields' => 'filetype',
 		'iconfile' => 'EXT:pits_downloadcenter/Resources/Public/Icons/tx_pitsdownloadcenter_domain_model_filetype.png'
 	),

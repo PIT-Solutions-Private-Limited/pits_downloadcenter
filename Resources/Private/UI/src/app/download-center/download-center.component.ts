@@ -23,6 +23,7 @@ interface FilterConfig {
 })
 export class DownloadCenterComponent implements OnInit, OnDestroy {
   public baseURL = document.getElementById('baseURL');
+  public loaderimageuri = document.getElementById('loaderimageuri');
   public orderByField = '';
   public reverseSort = true;
   public listData = {};
