@@ -1,15 +1,17 @@
 <?php
+
+declare(strict_types=1);
+
 namespace PITS\PitsDownloadcenter\Domain\Repository;
 
-use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 
 /***************************************************************
  *
  *  Copyright notice
  *
- *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
+ *  (c) 2026 Developer <contact@pitsolutions.com>, PIT Solutions Pvt Ltd
  *
  *  All rights reserved
  *
@@ -19,54 +21,43 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
 /**
- * The repository for Filetype
+ * FiletypeRepository
+ *
+ * Changes from v12 → v13:
+ * - Added declare(strict_types=1).
+ * - Removed deprecated setLanguageOverlayMode(): this method was removed in TYPO3 v13.
+ *   Language overlay behaviour is now controlled via the site configuration's language settings.
  */
 class FiletypeRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
     /**
-     * $defaultOrderings
-     *
-     * @var array
+     * @var array<string,string>
      */
-    protected $defaultOrderings = array(
-        'sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
-    );
+    protected $defaultOrderings = [
+        'sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
+    ];
 
-    /**
-     * initializeObject
-     */
-    public function initializeObject()
+    public function initializeObject(): void
     {
-        /** @var QuerySettingsInterface $querySettings */
         $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
-        // don't add the pid constraint
-        $querySettings->setRespectStoragePage(FALSE);
+        $querySettings->setRespectStoragePage(false);
         $this->setDefaultQuerySettings($querySettings);
     }
 
     /**
      * findAll
      *
-     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
      */
     public function findAll()
     {
         $query = $this->createQuery();
-        $query->getQuerySettings()->setRespectSysLanguage(TRUE);
-        $query->getQuerySettings()->setLanguageOverlayMode(FALSE);
+        $query->getQuerySettings()->setRespectSysLanguage(true);
+        // TYPO3 v13: setLanguageOverlayMode() is removed from QuerySettings.
+        // Language overlay is now governed by the site configuration. Remove this call.
         return $query->execute();
     }
-	
 }

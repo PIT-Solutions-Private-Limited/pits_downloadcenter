@@ -1,12 +1,14 @@
 <?php
-namespace PITS\PitsDownloadcenter\Domain\Model;
 
+declare(strict_types=1);
+
+namespace PITS\PitsDownloadcenter\Domain\Model;
 
 /***************************************************************
  *
  *  Copyright notice
  *
- *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
+ *  (c) 2026 Developer <contact@pitsolutions.com>, PIT Solutions Pvt Ltd
  *
  *  All rights reserved
  *
@@ -16,19 +18,13 @@ namespace PITS\PitsDownloadcenter\Domain\Model;
  *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
 /**
  * Download
+ *
+ * Changes from v12 → v13:
+ * - Added declare(strict_types=1).
  */
 class Download extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {

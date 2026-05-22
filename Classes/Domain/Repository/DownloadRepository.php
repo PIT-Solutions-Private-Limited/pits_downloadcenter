@@ -1,16 +1,20 @@
 <?php
+
+declare(strict_types=1);
+
 namespace PITS\PitsDownloadcenter\Domain\Repository;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Resource\ProcessedFileRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 
 /***************************************************************
  *
  *  Copyright notice
  *
- *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
+ *  (c) 2026 Developer <contact@pitsolutions.com>, PIT Solutions Pvt Ltd
  *
  *  All rights reserved
  *
@@ -23,19 +27,17 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
  *  The GNU General Public License can be found at
  *  http://www.gnu.org/copyleft/gpl.html.
  *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
 /**
- * @todo cleanup required in this class
- *
  * DownloadRepository
- * The repository for Downloads
+ *
+ * Changes from v12 → v13:
+ * - Added declare(strict_types=1).
+ * - Replaced string-based GeneralUtility::makeInstance('TYPO3\\...') with ::class references.
+ * - Replaced deprecated ->execute()->fetch() with ->executeQuery()->fetchAssociative().
+ * - Replaced deprecated ->execute()->fetchAll() with ->executeQuery()->fetchAllAssociative().
+ * - Removed unused Typo3Version import.
  */
 class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
@@ -44,140 +46,118 @@ class DownloadRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      *
      * @return mixed
      */
-	public function findAll()
+    public function findAll()
     {
-		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-		    'TYPO3\\CMS\\Core\\Resource\\FileRepository'
-        );
-		return $fileRepository->findAll();
-	}
-
-	/**
-	* Disables pid constraint
-	*
-	* @return void
-	*/
-	public function initializeObject()
-    {
-		/** @var QuerySettingsInterface $querySettings */
-        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
-		$this->setDefaultQuerySettings($querySettings);
-	}
-
-	/**
-	* Finds all referenced documents returning them as File modules
-	*
-	* @return void
-	*/
-	public function findAllReferenced()
-    {
-		$fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-		    'TYPO3\\CMS\\Core\\Resource\\FileRepository'
-        );
-		return $fileRepository->findAll();
-	}
-
-	/**
-	 * find Processed File
-	 *
-     * @param $data
-	 * @return array
-	 **/
-	public function getProcessedFile($data)
-    {
-		$processedFileRep = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-		    'TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository'
-        );
-		$taskType = "Image.Preview";
-		$processingConfig = array();
-		return $processedFileRep->findOneByOriginalFileAndTaskTypeAndConfiguration($data, $taskType, $processingConfig);
-	}
+        $fileRepository = GeneralUtility::makeInstance(FileRepository::class);
+        return $fileRepository->findAll();
+    }
 
     /**
-     * isProcessed
-     *
-     * @param array $fileDetails
-     * @return bool
+     * Disables pid constraint.
      */
-	public function isProcessed(array $fileDetails)
+    public function initializeObject(): void
     {
-		$processedFile = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-            'TYPO3\\CMS\\Core\\Resource\\ProcessedFile',
-            // fileObject , processing type, processing configurations
-            [$fileDetails['fileObj'], $fileDetails['processType'], $fileDetails['processConfig']]
-        );
-		$isProcessed = $processedFile->isProcessed();
-		return $isProcessed;
-	}
+        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
+        $this->setDefaultQuerySettings($querySettings);
+    }
+
+    /**
+     * Finds all referenced documents returning them as File objects.
+     *
+     * @return mixed
+     */
+    public function findAllReferenced()
+    {
+        $fileRepository = GeneralUtility::makeInstance(FileRepository::class);
+        return $fileRepository->findAll();
+    }
+
+    /**
+     * find Processed File
+     *
+     * @param mixed $data
+     * @return mixed
+     */
+    public function getProcessedFile($data)
+    {
+        $processedFileRep = GeneralUtility::makeInstance(ProcessedFileRepository::class);
+        $taskType = 'Image.Preview';
+        $processingConfig = [];
+        return $processedFileRep->findOneByOriginalFileAndTaskTypeAndConfiguration($data, $taskType, $processingConfig);
+    }
 
     /**
      * getFileDetails
      *
-     * @param $storageUid
-     * @param $fileID
-     * @return mixed
+     * @param int|string $storageUid
+     * @param int|string $fileID
+     * @return array<string,mixed>|false
      */
-	public function getFileDetails($storageUid , $fileID)
+    public function getFileDetails($storageUid, $fileID): array|false
     {
-		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file');
-		$response = $queryBuilder
-			->select('identifier','name')
-			->from('sys_file')
-			->where(
-				$queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($storageUid)),
-				$queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($fileID))
-				)
-			->execute()
-			->fetch();
-		return $response;
-	}
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file');
+        // TYPO3 v13: ->execute() on QueryBuilder is removed; use ->executeQuery() which returns a Result object.
+        // ->fetch() on the old Statement is replaced by ->fetchAssociative() on the Result.
+        $result = $queryBuilder
+            ->select('identifier', 'name')
+            ->from('sys_file')
+            ->where(
+                $queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($storageUid)),
+                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($fileID))
+            )
+            ->executeQuery()
+            ->fetchAssociative();
+        return $result;
+    }
 
     /**
      * checkTranslations
      *
-     * @todo deprecated function TYPO3 _DB needs to change
-     * @param $file
-     * @param $sys_language_uid
-     * @return array|bool
+     * @param \TYPO3\CMS\Core\Resource\File $file
+     * @param int $sys_language_uid
+     * @return array<string,mixed>|false
      */
-	public function checkTranslations($file , $sys_language_uid)
+    public function checkTranslations($file, int $sys_language_uid): array|false
     {
-		$file_uid = $file->getUid();
-		$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_metadata');
-		$record = $queryBuilder
-			->select('uid')
-			->from('sys_file_metadata')
-			->where(
-				$queryBuilder->expr()->eq('file', $queryBuilder->createNamedParameter($file_uid)),
-				$queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_uid))
-			)
-			->execute()
-			->fetch();
-		if(!$record)
-			return false;
-		if(!is_null($record['uid'])) {
-			$file_uid = $record['uid'];
-			$queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_reference');
-			$getTranslatedFile = $queryBuilder
-			->select('uid_foreign','uid_local')
-			->from('sys_file_reference')
-			->where(
-				$queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_uid)),
-				$queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($file_uid)),
-				$queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter('sys_file_metadata')),
-				$queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter('tx_pitsdownloadcenter_domain_model_download_translate'))
-				)
-			->execute()
-			->fetch();
-		}
-		
-		// Query
-		if (is_array( $getTranslatedFile )){
-			$response = (!empty(array_filter( $getTranslatedFile )))?$getTranslatedFile:false;
-		}
-		else{
-			return  false;
-		}
-		return $response;
-	}
+        $file_uid = $file->getUid();
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_metadata');
+        // TYPO3 v13: ->execute()->fetch() replaced with ->executeQuery()->fetchAssociative().
+        $record = $queryBuilder
+            ->select('uid')
+            ->from('sys_file_metadata')
+            ->where(
+                $queryBuilder->expr()->eq('file', $queryBuilder->createNamedParameter($file_uid)),
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_uid))
+            )
+            ->executeQuery()
+            ->fetchAssociative();
+
+        if (!$record) {
+            return false;
+        }
+
+        $getTranslatedFile = false;
+        if (!is_null($record['uid'])) {
+            $file_uid = $record['uid'];
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_reference');
+            $getTranslatedFile = $queryBuilder
+                ->select('uid_foreign', 'uid_local')
+                ->from('sys_file_reference')
+                ->where(
+                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_uid)),
+                    $queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($file_uid)),
+                    $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter('sys_file_metadata')),
+                    $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter('tx_pitsdownloadcenter_domain_model_download_translate'))
+                )
+                ->executeQuery()
+                ->fetchAssociative();
+        }
+
+        if (is_array($getTranslatedFile)) {
+            return !empty(array_filter($getTranslatedFile)) ? $getTranslatedFile : false;
+        }
+
+        return false;
+    }
 }

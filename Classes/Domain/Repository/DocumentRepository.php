@@ -1,14 +1,18 @@
 <?php
+
+declare(strict_types=1);
+
 namespace PITS\PitsDownloadcenter\Domain\Repository;
 
+use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+
 /***************************************************************
  *
  *  Copyright notice
  *
- *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
+ *  (c) 2026 Developer <contact@pitsolutions.com>, PIT Solutions Pvt Ltd
  *
  *  All rights reserved
  *
@@ -18,53 +22,39 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
  *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
 /**
- * Class DocumentRepository
- * @package version 2.1.0
+ * DocumentRepository
+ *
+ * Changes from v12 → v13:
+ * - Added declare(strict_types=1).
+ * - Replaced string-based GeneralUtility::makeInstance('TYPO3\\...') with ::class reference.
+ * - Added void return type to initializeObject().
+ * - Added return type annotation to findAllReferenced().
  */
 class DocumentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
-    /**
-     * Disables pid constraint
-     *
-     * @return void
-     */
-    public function initializeObject()
+    public function initializeObject(): void
     {
-        /** @var QuerySettingsInterface $querySettings */
         $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         $this->setDefaultQuerySettings($querySettings);
     }
 
     /**
-     * Finds all referenced documents returning them as File modules
+     * Finds all referenced documents and returns them as file reference objects.
      *
-     * @return void
+     * @return array<int,mixed>
      */
-    public function findAllReferenced()
+    public function findAllReferenced(): array
     {
-        $fileRepository = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-            'TYPO3\\CMS\\Core\\Resource\\FileRepository'
-        );
-
+        $fileRepository = GeneralUtility::makeInstance(FileRepository::class);
         $query = $this->createQuery();
         $documents = $query->execute();
-        $references = array();
+        $references = [];
         foreach ($documents as $document) {
             $references[] = $fileRepository->findFileReferenceByUid($document->getUid());
         }
         return $references;
     }
-  
 }

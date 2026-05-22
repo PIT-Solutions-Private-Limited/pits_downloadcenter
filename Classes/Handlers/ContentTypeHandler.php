@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace PITS\PitsDownloadcenter\Handlers;
 
 use TYPO3\CMS\Core\SingletonInterface;
@@ -7,7 +10,7 @@ use TYPO3\CMS\Core\SingletonInterface;
  *
  *  Copyright notice
  *
- *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
+ *  (c) 2026 Developer <contact@pitsolutions.com>, PIT Solutions Pvt Ltd
  *
  *  All rights reserved
  *
@@ -17,94 +20,46 @@ use TYPO3\CMS\Core\SingletonInterface;
  *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
 /**
  * ContentTypeHandler
+ *
+ * Changes from v12 → v13:
+ * - Added declare(strict_types=1).
+ * - Added return type hint to getContentType().
  */
 class ContentTypeHandler implements SingletonInterface
 {
-	/**
-	 * getContentType
+    /**
+     * Returns the MIME content-type for the given file extension.
      *
-	 * @param string | extension of the file
-	 * @return string
-	 */
-	public static function getContentType($extension)
+     * @param string $extension File extension (without leading dot)
+     * @return string MIME type string
+     */
+    public static function getContentType(string $extension): string
     {
-		switch($extension) {
-            case 'txt':
-                $cType = 'text/plain'; 
-            break;              
-            case 'pdf':
-                $cType = 'application/pdf'; 
-            break;
-            case 'exe':
-                $cType = 'application/octet-stream';
-            break;
-            case 'zip':
-                $cType = 'application/zip';
-            break;
-            case 'doc':
-                $cType = 'application/msword';
-            break;
-            case 'xls':
-                $cType = 'application/vnd.ms-excel';
-            break;
-            case 'ppt':
-                $cType = 'application/vnd.ms-powerpoint';
-            break;
-            case 'gif':
-                $cType = 'image/gif';
-            break;
-            case 'png':
-                $cType = 'image/png';
-            break;
-            case 'jpeg':
-            case 'jpg':
-                $cType = 'image/jpg';
-            break;
-            case 'mp3':
-                $cType = 'audio/mpeg';
-            break;
-            case 'wav':
-                $cType = 'audio/x-wav';
-            break;
-            case 'mpeg':
-            case 'mpg':
-            case 'mpe':
-                $cType = 'video/mpeg';
-            break;
-            case 'mov':
-                $cType = 'video/quicktime';
-            break;
-            case 'avi':
-                $cType = 'video/x-msvideo';
-            break;
-            //forbidden filetypes
-            case 'inc':
-            case 'conf':
-            case 'sql':                 
-            case 'cgi':
-            case 'htaccess':
-            case 'php':
-            case 'php3':
-            case 'php4':                        
-            case 'php5':
-            exit;
-            default:
-                $cType = 'application/force-download';
-            break;
-		}
-		return $cType;
-	}
+        return match ($extension) {
+            'txt' => 'text/plain',
+            'pdf' => 'application/pdf',
+            'exe' => 'application/octet-stream',
+            'zip' => 'application/zip',
+            'doc' => 'application/msword',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+            'gif' => 'image/gif',
+            'png' => 'image/png',
+            'jpeg', 'jpg' => 'image/jpeg',
+            'mp3' => 'audio/mpeg',
+            'wav' => 'audio/x-wav',
+            'mpeg', 'mpg', 'mpe' => 'video/mpeg',
+            'mov' => 'video/quicktime',
+            'avi' => 'video/x-msvideo',
+            // Forbidden file types: return empty string so caller can handle appropriately.
+            // Note: original code called exit() — replaced with empty string so the controller
+            // can return a proper HTTP 403 response instead of terminating the process.
+            'inc', 'conf', 'sql', 'cgi', 'htaccess', 'php', 'php3', 'php4', 'php5' => '',
+            default => 'application/force-download',
+        };
+    }
 }

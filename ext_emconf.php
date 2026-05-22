@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /***************************************************************************
  * Extension Manager/Repository config file for ext "pits_downloadcenter".
  *********** ***************************************************************/
@@ -16,7 +19,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'constraints' => array (
 		'depends' =>
 		array (
-			'typo3' => '12.4.0 - 12.4.99',
+			'typo3' => '13.0.0-13.4.99',
 		),
 		'conflicts' => array (),
 		'suggests' => array (),

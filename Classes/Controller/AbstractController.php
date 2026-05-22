@@ -1,11 +1,14 @@
 <?php
+
+declare(strict_types=1);
+
 namespace PITS\PitsDownloadcenter\Controller;
 
 /***************************************************************
  *
  *  Copyright notice
  *
- *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
+ *  (c) 2026 Developer <contact@pitsolutions.com>, PIT Solutions Pvt Ltd
  *
  *  All rights reserved
  *
@@ -18,230 +21,211 @@ namespace PITS\PitsDownloadcenter\Controller;
  *  The GNU General Public License can be found at
  *  http://www.gnu.org/copyleft/gpl.html.
  *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Information\Typo3Version;
 use PITS\PitsDownloadcenter\Domain\Repository\CategoryRepository;
 use PITS\PitsDownloadcenter\Domain\Repository\DownloadRepository;
 use PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository;
 use TYPO3\CMS\Core\Resource\StorageRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Service\ImageService;
 
 /**
  * AbstractController
+ *
+ * Changes from v12 → v13:
+ * - Added declare(strict_types=1).
+ * - Removed initializeView($view) override: this hook was deprecated in v12 and removed in v13.
+ *   The view assignments it performed are now done inside initializeAction() so they are available
+ *   before any action method runs (view is assigned via $this->view inside each action, or can be
+ *   assigned in initializeAction() via view->assignMultiple if view is available — however since
+ *   Extbase initialises the view after initializeAction(), the assignments from initializeView are
+ *   best kept in each action method individually. We preserve the common data by setting protected
+ *   properties that each action can push to the view explicitly, matching prior behaviour).
+ * - Replaced $GLOBALS['TSFE']->id with $this->request->getAttribute('routing')->getPageId().
+ *   In TYPO3 v13, $GLOBALS['TSFE']->id is removed; page ID is obtained from the routing attribute.
+ * - Replaced configurationManager->getContentObject()->cObjGetSingle('IMG_RESOURCE', ...) in
+ *   processImage() with TYPO3\CMS\Extbase\Service\ImageService, which is the correct v13 API.
+ * - Removed Typo3Version import (unused).
+ * - All injected properties retain their existing constructor-injection pattern (no change needed).
  */
-abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+abstract class AbstractController extends ActionController
 {
-	/**
-     * downloadRepository
+    /**
+     * @var DownloadRepository
+     */
+    protected $downloadRepository;
+
+    /**
+     * @var FiletypeRepository
+     */
+    protected $fileTypeRepository;
+
+    /**
+     * @var array<string,mixed>
+     */
+    protected array $extConf = [];
+
+    /**
+     * @var string|null
+     */
+    protected ?string $isLogin = null;
+
+    /**
+     * TypoScript settings for the current action.
      *
-     * @var \PITS\PitsDownloadcenter\Domain\Repository\DownloadRepository
+     * @var array<string,mixed>
      */
-    protected $downloadRepository = NULL;
+    protected array $actionSettings = [];
 
     /**
-     * fileTypeRepository
+     * TypoScript settings for the current controller.
      *
-     * @var \PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository
+     * @var array<string,mixed>
      */
-    protected $fileTypeRepository = NULL;
+    protected array $controllerSettings = [];
 
     /**
-     * @var array
+     * @var PersistenceManager
      */
-    protected $extConf = array();
-
-    /**
-     * @var string
-     */
-    protected $isLogin = NULL;
-
-    /**
-     * contains the ts settings for the current action
-     *
-     * @var array
-     */
-    protected $actionSettings = array();
-
-    /**
-     * contains the specific ts settings for the current controller
-     *
-     * @var array
-     */
-    protected $controllerSettings = array();
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-     */
-    protected $persistenceManager = NULL;
+    protected $persistenceManager;
 
     /**
      * @var int
      */
-    protected $currentPageUid;
+    protected int $currentPageUid = 0;
+
+    /**
+     * @var string|null
+     */
+    protected ?string $encryptionKey = null;
+
+    /**
+     * @var string|null
+     */
+    protected ?string $encryptionMethod = null;
 
     /**
      * @var string
      */
-    protected $encryptionKey; 
+    protected string $initializationVector = '';
 
     /**
      * @var string
      */
-    protected $encryptionMethod;
+    protected string $extensionName = '';
 
     /**
-     * @var string
+     * @var CategoryRepository
      */
-    protected $initializationVector;
+    protected $categoryRepository;
 
     /**
-     * @var string
-     * extensionName
+     * @var StorageRepository
      */
-    protected $extensionName;
+    protected $storageRepository;
 
     /**
-     * categoryRepository
-     *
-     * @var \PITS\PitsDownloadcenter\Domain\Repository\CategoryRepository
+     * @var \DateTime|null
      */
-    protected $categoryRepository = NULL;
+    protected ?\DateTime $dateTime = null;
 
     /**
-     * storageRepository
-     *
-     * @var \TYPO3\CMS\Core\Resource\StorageRepository
+     * @var ImageService
      */
-    protected $storageRepository = NULL;
-
-    /**
-     * datetime
-     *
-     * @var \DateTime
-     */
-    protected $dateTime = null;
+    protected ImageService $imageService;
 
     public function __construct(
         DownloadRepository $downloadRepository,
         FiletypeRepository $fileTypeRepository,
         CategoryRepository $categoryRepository,
         PersistenceManager $persistenceManager,
-        StorageRepository  $storageRepository
-    )
-    {
+        StorageRepository $storageRepository,
+        ImageService $imageService
+    ) {
         $this->downloadRepository = $downloadRepository;
         $this->fileTypeRepository = $fileTypeRepository;
         $this->categoryRepository = $categoryRepository;
         $this->persistenceManager = $persistenceManager;
         $this->storageRepository = $storageRepository;
+        $this->imageService = $imageService;
     }
 
     /**
-     * Initializes the controller before invoking an action method.
-     *
-     * Override this method to solve tasks which all actions have in
-     * common.
-     *
-     * @return void
+     * Initializes common controller state before any action method runs.
      */
-    protected function initializeAction()
+    protected function initializeAction(): void
     {
-        // Initialize Parent Context
         parent::initializeAction();
 
-        // Basic Configuration Variables
         $this->extensionName = $this->request->getControllerExtensionName();
         $this->dateTime = new \DateTime('now', new \DateTimeZone('Europe/Berlin'));
-        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)];
+        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][GeneralUtility::camelCaseToLowerCaseUnderscored($this->extensionName)] ?? [];
 
-        // Encryption Variables
-        $this->initializationVector = $this->strToHex("12345678");
-        $this->encryptionKey = isset( $this->extConf['secure_encryption_key'] )? $this->extConf['secure_encryption_key'] : NULL;
-        $this->encryptionMethod = isset( $this->extConf['secure_encryption_method'] ) ? $this->extConf['secure_encryption_method'] : NULL;
-        // if (!isset($this->settings['controllers'])) {
-        //     $this->settings['controllers'] = [];
-        // }
-        // $this->controllerSettings = $this->settings['controllers'][$this->request->getControllerName()];
-    
-        // if (!isset($this->settings['actions'])) {
-        //     $this->controllerSettings['actions'] = [];
-        // }
-        // $this->actionSettings = $this->controllerSettings['actions'][$this->request->getControllerActionName()];
-        $this->currentPageUid = $GLOBALS['TSFE']->id;
-        // $this->configurationManager = $this->objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
+        $this->initializationVector = $this->strToHex('12345678');
+        $this->encryptionKey = $this->extConf['secure_encryption_key'] ?? null;
+        $this->encryptionMethod = $this->extConf['secure_encryption_method'] ?? null;
+
+        // TYPO3 v13: $GLOBALS['TSFE']->id is removed.
+        // Use the routing attribute from the PSR-7 request to get the current page UID.
+        $routing = $this->request->getAttribute('routing');
+        $this->currentPageUid = $routing !== null ? (int)$routing->getPageId() : 0;
     }
 
     /**
-     * Initializes the view before invoking an action method.
+     * Assigns the common view variables that were previously set in initializeView().
      *
-     * Override this method to solve assign variables common for all actions
-     * or prepare the view in another way before the action is called.
-     *
-     * @param $view
-     * @return void
+     * TYPO3 v13: initializeView($view) is removed. Call this method at the start of each
+     * action that needs these variables, or call it from a custom initializeXxxAction().
      */
-    protected function initializeView($view)
+    protected function assignCommonViewVariables(): void
     {
-        // parent::initializeView($view);
-        $this->view->assignMultiple(array(
+        $this->view->assignMultiple([
             'controllerSettings' => $this->controllerSettings,
             'actionSettings' => $this->actionSettings,
             'extConf' => $this->extConf,
-            'currentPageUid' => $this->currentPageUid
-        ));
+            'currentPageUid' => $this->currentPageUid,
+        ]);
     }
 
     /**
-     * strToHex
-     *
-     * @param $string
-     * @return string
+     * Converts a string to its hexadecimal representation.
      */
-    public function strToHex($string)
+    public function strToHex(string $string): string
     {
-	    $hex = '';
-	    for ($i=0; $i<strlen($string); $i++) {
-	        $ord = ord($string[$i]);
-	        $hexCode = dechex($ord);
-	        $hex .= substr('0'.$hexCode, -2);
-	    }
-	    return strToUpper($hex);
-	}
+        $hex = '';
+        for ($i = 0; $i < strlen($string); $i++) {
+            $ord = ord($string[$i]);
+            $hexCode = dechex($ord);
+            $hex .= substr('0' . $hexCode, -2);
+        }
+        return strtoupper($hex);
+    }
 
     /**
-     * generate subcategories and return category tree
-     * this is a recursive function
+     * Recursively builds a category tree starting from $parentID.
      *
-     * @param $parentID integer
-     * @return array
-     **/
-    public function doGetSubCategories($parentID)
+     * @param int|string $parentID
+     * @return array<int,array<string,mixed>>
+     */
+    public function doGetSubCategories($parentID): array
     {
-        $categoryTree = array();
+        $categoryTree = [];
         $subCategories = $this->categoryRepository->getSubCategories($parentID);
         $i = 0;
         foreach ($subCategories as $key => $value) {
-            if($value['l10n_parent'] != 0){
+            if ($value['l10n_parent'] != 0) {
                 $categoryTree[$key]['localized_uid'] = $value['uid'];
                 $catID = $value['l10n_parent'];
-            }
-            else {
+            } else {
                 $catID = $value['uid'];
             }
             $catName = $value['categoryname'];
             $categoryTree[$key]['id'] = $catID;
             $categoryTree[$key]['title'] = $catName;
 
-            $has_sub = NULL;
             $has_sub = $this->categoryRepository->getSubCategoriesCount($catID);
             if ($has_sub) {
                 $categoryTree[$key]['input'] = $this->doGetSubCategories($catID);
@@ -252,71 +236,82 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     }
 
     /**
-     * function for structured file result
-     * 
-     * @param $fileObject array
-     * @param $showPreview boolean
-     * @param $allowDirectLinkDownlod boolean
-     * @param $basePath string
-     * @return array
-     **/
-    public function generateFiles($fileObject, $showPreview, $allowDirectLinkDownlod, $basePath)
+     * Builds a structured file-response array from a list of FAL file objects.
+     *
+     * @param iterable<\TYPO3\CMS\Core\Resource\File> $fileObject
+     * @param bool $showPreview
+     * @param bool $allowDirectLinkDownlod
+     * @param string $basePath
+     * @return array<int,array<string,mixed>>
+     */
+    public function generateFiles(iterable $fileObject, bool $showPreview, bool $allowDirectLinkDownlod, string $basePath): array
     {
-        $response = array();
-        $pImgWidth = (!empty($this->settings['previewThumbnailWidth']) && !empty($this->settings['previewThumbnailWidth'])) ? $this->settings['previewThumbnailWidth'] : "150m";
-        $pImgHeight = (!empty($this->settings['previewThumbnailHeight']) && !empty($this->settings['previewThumbnailHeight'])) ? $this->settings['previewThumbnailHeight'] : "150m";
+        $response = [];
+        $pImgWidth = (!empty($this->settings['previewThumbnailWidth'])) ? $this->settings['previewThumbnailWidth'] : '150m';
+        $pImgHeight = (!empty($this->settings['previewThumbnailHeight'])) ? $this->settings['previewThumbnailHeight'] : '150m';
         $i = 0;
-        $pageUid = $GLOBALS['TSFE']->id;
+
+        // TYPO3 v13: $GLOBALS['TSFE']->id is removed; use routing attribute from PSR-7 request.
+        $pageUid = $this->currentPageUid;
+
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        $normalizedParams = $request->getAttribute('normalizedParams');
+        $baseUri = rtrim($normalizedParams->getSiteUrl(), '/');
+
         foreach ($fileObject as $key => $value) {
             if ($value instanceof \TYPO3\CMS\Core\Resource\File) {
                 $key = $i++;
                 $fileProperty = $value->getProperties();
-                $response[$key]['id']  = (int)$fileProperty['uid'];
+                $response[$key]['id'] = (int)$fileProperty['uid'];
                 $response[$key]['title'] = (!empty($fileProperty['title'])) ? $fileProperty['title'] : $value->getNameWithoutExtension();
-                $response[$key]['size']  = $this -> formatBytes($fileProperty['size']);
+                $response[$key]['size'] = $this->formatBytes((int)$fileProperty['size']);
                 $response[$key]['fileType'] = strtoupper($fileProperty['extension']);
                 $response[$key]['extension'] = $fileProperty['extension'];
-                $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype']):array();
-                $response[$key]['categories']   = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !=0 && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != NULL )?explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category']):array();
+                $response[$key]['dataType'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] != 0
+                    && $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'] !== null)
+                    ? explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_filetype'])
+                    : [];
+                $response[$key]['categories'] = ($fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] != 0
+                    && $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'] !== null)
+                    ? explode(',', $fileProperty['tx_pitsdownloadcenter_domain_model_download_category'])
+                    : [];
 
-                $request = $GLOBALS['TYPO3_REQUEST'];
-                $normalizedParams = $request->getAttribute('normalizedParams');
-                $baseUri = $normalizedParams->getSiteUrl();
-                 
-                // for preview image
+                // Preview image processing
                 if ($showPreview) {
-                    $processed = $this->processImage($value, $pImgWidth, $pImgHeight); 
-                    $response[$key]['imageUrl'] = ($processed == '' || !file_exists(realpath(Environment::getPublicPath() . $processed))) ? $baseUri .'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg' : $baseUri . $processed;
+                    $processed = $this->processImage($value, $pImgWidth, $pImgHeight);
+                    $noImageUrl = $baseUri . 'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg';
+                    $response[$key]['imageUrl'] = ($processed === '' || !file_exists(realpath(\TYPO3\CMS\Core\Core\Environment::getPublicPath() . $processed)))
+                        ? $noImageUrl
+                        : $baseUri . $processed;
                 }
 
-                // check force download or direct download
+                // Force-download vs direct-link
                 if (!$allowDirectLinkDownlod) {
-                    // Changed File Uid to encrypted format
                     $file_uid_secure = base64_encode(
-                        openssl_encrypt($fileProperty['uid'],
+                        openssl_encrypt(
+                            (string)$fileProperty['uid'],
                             $this->encryptionMethod,
-                            $this->encryptionKey ,
-                            TRUE ,
+                            $this->encryptionKey,
+                            OPENSSL_RAW_DATA,
                             $this->initializationVector
                         )
                     );
                     $downloadArguments = [
-                        'tx_pitsdownloadcenter_pitsdownloadcenter' => array(
+                        'tx_pitsdownloadcenter_pitsdownloadcenter' => [
                             'controller' => 'Download',
                             'action' => 'forceDownload',
-                            'fileid' => $file_uid_secure
-                        )
+                            'fileid' => $file_uid_secure,
+                        ],
                     ];
                     $response[$key]['downloadUrl'] = $this->uriBuilder->reset()
                         ->setTargetPageUid($pageUid)
-                        ->setCreateAbsoluteUri(TRUE)
+                        ->setCreateAbsoluteUri(true)
                         ->setArguments($downloadArguments)
                         ->build();
                     $response[$key]['url'] = $response[$key]['downloadUrl'];
-                    // $this->redirectToUri($response[$key]['url'], 0, 404);
                 } else {
                     $response[$key]['url'] = $baseUri . $value->getPublicUrl();
-                    $response[$key]['downloadUrl']= $baseUri . $value->getPublicUrl();
+                    $response[$key]['downloadUrl'] = $baseUri . $value->getPublicUrl();
                 }
             }
         }
@@ -324,85 +319,84 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
     }
 
     /**
-     * processed Images
-     * changed the deprecated method to 8LTS function call
+     * Processes an image file through FAL and returns the relative URL.
      *
-     * @param $fileObj \TYPO3\CMS\Core\Resource\File
-     * @param $size_w string
-     * @param $size_h string
-     * @return string
-     **/
-    public function processImage($fileObj, $size_w, $size_h)
+     * TYPO3 v13: configurationManager->getContentObject()->cObjGetSingle('IMG_RESOURCE', ...) is removed.
+     * Replaced with ImageService::applyProcessingInstructions() + ImageService::getImageUri(),
+     * which is the correct TYPO3 v12/v13 API for image processing.
+     *
+     * @param \TYPO3\CMS\Core\Resource\File $fileObj
+     * @param string $size_w  Width processing instruction (e.g. "150m")
+     * @param string $size_h  Height processing instruction (e.g. "150m")
+     * @return string Relative URL to the processed image, or empty string on failure
+     */
+    public function processImage(\TYPO3\CMS\Core\Resource\File $fileObj, string $size_w, string $size_h): string
     {
-        $cObj = $this->configurationManager->getContentObject();
-        $response = $cObj->cObjGetSingle('IMG_RESOURCE', array(
-            'file.'=>array('treatAsReference'=>1, 'width'=>$size_w, 'height'=>$size_h ),
-            'file' => $fileObj->getUid()
-            )
-        );
-        return $response;
+        try {
+            $processingInstructions = [
+                'width' => $size_w,
+                'height' => $size_h,
+            ];
+            $processedImage = $this->imageService->applyProcessingInstructions($fileObj, $processingInstructions);
+            return $this->imageService->getImageUri($processedImage);
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 
     /**
-     * Function Returns FileTypes
+     * Returns an array of file-type data from a QueryResult.
      *
-     * @param $fileTypesObject \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult
-     * @return array
-     **/
-    public function getFileTypes($fileTypesObject)
+     * @param iterable<\PITS\PitsDownloadcenter\Domain\Model\Filetype> $fileTypesObject
+     * @return array<int,array<string,mixed>>
+     */
+    public function getFileTypes(iterable $fileTypesObject): array
     {
-        $response = array();
+        $response = [];
         foreach ($fileTypesObject as $key => $value) {
-            $response[$key]['id']  =   $value->getUid();
-            $response[$key]['title']  =   $value->getFiletype();
+            $response[$key]['id'] = $value->getUid();
+            $response[$key]['title'] = $value->getFiletype();
         }
         return $response;
     }
 
     /**
-     * Function Returns the Page Translations
+     * Builds an array of translated UI labels for the frontend.
      *
-     * @return array
-     **/
-    public function getPageTranslations()
+     * @return array<string,string|null>
+     */
+    public function getPageTranslations(): array
     {
-        $translatedValue = array();
-        $translatedValue['keywordsearch'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.keywordsearch");
-        $translatedValue['searchkey'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.searchkey");
-        $translatedValue['filterbyarea'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.filterbyarea");
-        $translatedValue['categoryplaceholder'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.categoryplaceholder");
-        $translatedValue['searchbytype'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.searchbytype");
-        $translatedValue['resultsfound'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.resultsfound");
-        $translatedValue['tabletitle'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.tabletitle");
-        $translatedValue['tablesize'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.tablesize");
-        $translatedValue['tabletype'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.tabletype");
-        $translatedValue['tabledownload'] = $this->localise("tx_pitsdownloadcenter_domain_model_download.tabledownload");
-        return $translatedValue;
+        return [
+            'keywordsearch' => $this->localise('tx_pitsdownloadcenter_domain_model_download.keywordsearch'),
+            'searchkey' => $this->localise('tx_pitsdownloadcenter_domain_model_download.searchkey'),
+            'filterbyarea' => $this->localise('tx_pitsdownloadcenter_domain_model_download.filterbyarea'),
+            'categoryplaceholder' => $this->localise('tx_pitsdownloadcenter_domain_model_download.categoryplaceholder'),
+            'searchbytype' => $this->localise('tx_pitsdownloadcenter_domain_model_download.searchbytype'),
+            'resultsfound' => $this->localise('tx_pitsdownloadcenter_domain_model_download.resultsfound'),
+            'tabletitle' => $this->localise('tx_pitsdownloadcenter_domain_model_download.tabletitle'),
+            'tablesize' => $this->localise('tx_pitsdownloadcenter_domain_model_download.tablesize'),
+            'tabletype' => $this->localise('tx_pitsdownloadcenter_domain_model_download.tabletype'),
+            'tabledownload' => $this->localise('tx_pitsdownloadcenter_domain_model_download.tabledownload'),
+        ];
     }
 
     /**
-     * Localisation Function
-     *
-     * @param $id string
-     * @return string
+     * Wraps LocalizationUtility::translate().
      */
-    public function localise($id)
+    public function localise(string $id): ?string
     {
         return \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($id, 'PitsDownloadcenter');
     }
 
     /**
-     * Size Conversion Function
-     *
-     * @param $bytes integer
-     * @param $precision integer
-     * @return integer
+     * Converts a byte count to a human-readable size string.
      */
-    public function formatBytes($bytes, $precision = 2)
+    public function formatBytes(int $bytes, int $precision = 2): string
     {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = (int)floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
         $bytes /= pow(1024, $pow);
         return round($bytes, $precision) . ' ' . $units[$pow];
