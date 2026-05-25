@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PITS\PitsDownloadcenter\Domain\Repository;
 
-use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 
@@ -35,6 +35,9 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
  */
 class DocumentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
+    #[\TYPO3\CMS\Extbase\Annotation\Inject]
+    protected ResourceFactory $resourceFactory;
+
     public function initializeObject(): void
     {
         $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
@@ -47,13 +50,12 @@ class DocumentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
      * @return array<int,mixed>
      */
     public function findAllReferenced(): array
-    {
-        $fileRepository = GeneralUtility::makeInstance(FileRepository::class);
+    {        
         $query = $this->createQuery();
         $documents = $query->execute();
         $references = [];
         foreach ($documents as $document) {
-            $references[] = $fileRepository->findFileReferenceByUid($document->getUid());
+            $references[] = $this->resourceFactory->getFileReferenceObject($document->getUid());
         }
         return $references;
     }
