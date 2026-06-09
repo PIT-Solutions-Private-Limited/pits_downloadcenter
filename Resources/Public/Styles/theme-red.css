@@ -65,7 +65,7 @@
     margin-bottom: 5px;
 }
 .filter43 .chk-box .ng-scope .control-label, #content .filter43.ng-scope form label.control-label{
-    width: 100%;
+    width: auto;
     color:#666666;
 }
 #content  .filter43.ng-scope form:after{
@@ -295,8 +295,41 @@
     cursor: default;
     color:grey;
 }
+.filter43 .chk-box, #content .filter43 .chk-box{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 0;
+}
+.filter43 .chk-box > .subheading, #content .filter43 .chk-box > .subheading{
+    flex-basis: 100%;
+    width: 100%;
+}
 .filter43 .chk-box .ng-scope, #content .filter43 .chk-box .ng-scope{
-
+    width: auto;
+    margin: 0 8px 4px 0;
+}
+.filter43 .chk-box .ng-scope .control-label, #content .filter43 .chk-box .ng-scope .control-label{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 0;
+    cursor: pointer;
+    padding: 4px 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background: #f8f9fa;
+    white-space: nowrap;
+    font-weight: normal;
+    transition: background 0.15s, border-color 0.15s;
+}
+.filter43 .chk-box .ng-scope .control-label:hover, #content .filter43 .chk-box .ng-scope .control-label:hover{
+    background: #fdecea;
+    border-color: #b92025;
+}
+.filter43 .chk-box .ng-scope input[type="checkbox"], #content .filter43 .chk-box .ng-scope input[type="checkbox"]{
+    margin: 0;
+    cursor: pointer;
 }
 .filter43 .shadow {
 
@@ -382,7 +415,8 @@
         display: none;
     }
     .filter43 .chk-box .ng-scope,  #content .filter43 .chk-box .ng-scope{
-        width: 100%
+        width: 100%;
+        margin-right: 0
     }
     .filter43 tr:last-child td,  #content .filter43 tr:last-child td {
         border-top: 1px solid #dddddd;

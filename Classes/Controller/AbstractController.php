@@ -28,6 +28,7 @@ use PITS\PitsDownloadcenter\Domain\Repository\DownloadRepository;
 use PITS\PitsDownloadcenter\Domain\Repository\FiletypeRepository;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Service\ImageService;
@@ -279,10 +280,11 @@ abstract class AbstractController extends ActionController
                 // Preview image processing
                 if ($showPreview) {
                     $processed = $this->processImage($value, $pImgWidth, $pImgHeight);
-                    $noImageUrl = $baseUri . 'typo3conf/ext/pits_downloadcenter/Resources/Public/Icons/noimage.jpg';
-                    $response[$key]['imageUrl'] = ($processed === '' || !file_exists(realpath(\TYPO3\CMS\Core\Core\Environment::getPublicPath() . $processed)))
-                        ? $noImageUrl
-                        : $baseUri . $processed;
+                    $response[$key]['imageUrl'] = ($processed !== '' && file_exists(realpath(\TYPO3\CMS\Core\Core\Environment::getPublicPath() . $processed)))
+                        ? $baseUri . $processed
+                        : null;
+                    $iconSvg = 'EXT:pits_downloadcenter/Resources/Public/Icons/Mimetypes/' . $this->resolveFileTypeIconName((string)$fileProperty['extension']) . '.svg';
+                    $response[$key]['iconUrl'] = $baseUri . PathUtility::getPublicResourceWebPath($iconSvg);
                 }
 
                 // Force-download vs direct-link
@@ -332,16 +334,72 @@ abstract class AbstractController extends ActionController
      */
     public function processImage(\TYPO3\CMS\Core\Resource\File $fileObj, string $size_w, string $size_h): string
     {
+        if (!$fileObj->isImage()) {
+            return '';
+        }
         try {
             $processingInstructions = [
                 'width' => $size_w,
                 'height' => $size_h,
             ];
             $processedImage = $this->imageService->applyProcessingInstructions($fileObj, $processingInstructions);
+            // If FAL returned the original file (e.g. PDF without Ghostscript), no real thumbnail was generated.
+            if ($processedImage->usesOriginalFile()) {
+                return '';
+            }
             return $this->imageService->getImageUri($processedImage);
         } catch (\Exception $e) {
             return '';
         }
+    }
+
+    /**
+     * Maps a file extension to the TYPO3 core mimetype SVG icon filename (without .svg suffix).
+     * Falls back to mimetypes-other-other for unknown extensions.
+     */
+    private function resolveFileTypeIconName(string $extension): string
+    {
+        $map = [
+            // Documents
+            'doc' => 'mimetypes-word', 'docx' => 'mimetypes-word', 'dot' => 'mimetypes-word',
+            'dotx' => 'mimetypes-word', 'rtf' => 'mimetypes-text-text',
+            'odt' => 'mimetypes-open-document-text',
+            // Spreadsheets
+            'xls' => 'mimetypes-excel', 'xlsx' => 'mimetypes-excel', 'xlsm' => 'mimetypes-excel',
+            'ods' => 'mimetypes-open-document-spreadsheet',
+            'csv' => 'mimetypes-text-csv',
+            // Presentations
+            'ppt' => 'mimetypes-powerpoint', 'pptx' => 'mimetypes-powerpoint',
+            'pps' => 'mimetypes-powerpoint', 'ppsx' => 'mimetypes-powerpoint',
+            'odp' => 'mimetypes-open-document-presentation',
+            // PDF
+            'pdf' => 'mimetypes-pdf',
+            // Archives
+            'zip' => 'mimetypes-compressed', 'rar' => 'mimetypes-compressed',
+            'gz' => 'mimetypes-compressed', 'tar' => 'mimetypes-compressed',
+            '7z' => 'mimetypes-compressed', 'bz2' => 'mimetypes-compressed',
+            // Audio
+            'mp3' => 'mimetypes-media-audio', 'ogg' => 'mimetypes-media-audio',
+            'wav' => 'mimetypes-media-audio', 'flac' => 'mimetypes-media-audio',
+            'aac' => 'mimetypes-media-audio', 'wma' => 'mimetypes-media-audio',
+            // Video
+            'mp4' => 'mimetypes-media-video', 'avi' => 'mimetypes-media-video',
+            'mov' => 'mimetypes-media-video', 'mkv' => 'mimetypes-media-video',
+            'wmv' => 'mimetypes-media-video', 'flv' => 'mimetypes-media-video',
+            'webm' => 'mimetypes-media-video',
+            // Images (these normally get a real thumbnail, but listed as safety net)
+            'png' => 'mimetypes-media-image', 'jpg' => 'mimetypes-media-image',
+            'jpeg' => 'mimetypes-media-image', 'gif' => 'mimetypes-media-image',
+            'bmp' => 'mimetypes-media-image', 'webp' => 'mimetypes-media-image',
+            // Text / code
+            'txt' => 'mimetypes-text-text',
+            'html' => 'mimetypes-text-html', 'htm' => 'mimetypes-text-html',
+            'css' => 'mimetypes-text-css',
+            'js' => 'mimetypes-text-js',
+            'php' => 'mimetypes-text-php',
+        ];
+
+        return $map[strtolower($extension)] ?? 'mimetypes-other-other';
     }
 
     /**

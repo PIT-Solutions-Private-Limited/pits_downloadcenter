@@ -84,7 +84,8 @@
               <tbody>
                 <tr *ngFor="let file of listData?.files| paginate: config;trackBy: trackByFn">
                   <td *ngIf="!!+listData?.config?.showthumbnail" data-th="Image" class="item-image">
-                    <img class="img-thumbnail" style="min-width:45px;height:45px;" [src]="file.imageUrl" #img_preview>
+                    <img *ngIf="file.imageUrl" class="img-thumbnail" style="min-width:45px;height:45px;" [src]="file.imageUrl" #img_preview>
+                    <img *ngIf="!file.imageUrl && file.iconUrl" style="width:45px;height:45px;" [src]="file.iconUrl" [attr.alt]="file.fileType">
                   </td>
                   <td [attr.data-th]="listData?.translations?.tabletitle" class="item-title">{{file.title}}</td>
                   <td *ngIf="!+listData?.config?.hideSizeColumn" [attr.data-th]="listData?.translations?.tablesize">{{file.size}}</td>

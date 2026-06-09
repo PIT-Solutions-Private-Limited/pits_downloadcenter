@@ -291,9 +291,41 @@
 	cursor: default;
 	color:grey;
 }
+.filter43 .chk-box, #content .filter43 .chk-box{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 0;
+}
+.filter43 .chk-box > .subheading, #content .filter43 .chk-box > .subheading{
+	flex-basis: 100%;
+	width: 100%;
+}
 .filter43 .chk-box .ng-scope, #content .filter43 .chk-box .ng-scope{
-	float: left;
-	width: 100%
+	width: auto;
+	margin: 0 8px 4px 0;
+}
+.filter43 .chk-box .ng-scope .control-label, #content .filter43 .chk-box .ng-scope .control-label{
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	margin-bottom: 0;
+	cursor: pointer;
+	padding: 4px 10px;
+	border: 1px solid #d0d0d0;
+	border-radius: 4px;
+	background: #f8f9fa;
+	white-space: nowrap;
+	font-weight: normal;
+	transition: background 0.15s, border-color 0.15s;
+}
+.filter43 .chk-box .ng-scope .control-label:hover, #content .filter43 .chk-box .ng-scope .control-label:hover{
+	background: #e8f0fe;
+	border-color: #428bca;
+}
+.filter43 .chk-box .ng-scope input[type="checkbox"], #content .filter43 .chk-box .ng-scope input[type="checkbox"]{
+	margin: 0;
+	cursor: pointer;
 }
 .filter43 .shadow {
 	background: #F7F8F9;
@@ -369,7 +401,8 @@
 		display: none;
 	}
 	.filter43 .chk-box .ng-scope,  #content .filter43 .chk-box .ng-scope{
-		width: 100%
+		width: 100%;
+		margin-right: 0
 	}
 	.filter43 tr:last-child td,  #content .filter43 tr:last-child td {
 		border-top: 1px solid #dddddd;
