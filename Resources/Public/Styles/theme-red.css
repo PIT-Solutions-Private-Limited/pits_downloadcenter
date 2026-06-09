@@ -63,10 +63,11 @@
     font-weight: bold;
     display: block;
     margin-bottom: 5px;
+    color: inherit;
 }
 .filter43 .chk-box .ng-scope .control-label, #content .filter43.ng-scope form label.control-label{
     width: auto;
-    color:#666666;
+    color: inherit;
 }
 #content  .filter43.ng-scope form:after{
     display: none
@@ -187,7 +188,12 @@
 }
 .filter43 th a, #content .filter43 th a{
     text-decoration: none;
-    color: white;
+    /* Fix: Bootstrap Package .frame a:not([class]){color:var(--frame-link-color)} can override
+       this rule depending on CSS load order. On frame-background-none/light/dark the
+       --frame-link-color resolves to #577760 (dark green), making header links nearly invisible
+       against the #b92025 red thead background. !important guarantees white text on the red
+       header regardless of Bootstrap Package frame variable values. */
+    color: white !important;
 }
 .filter43 td, #content .filter43 td{
     text-align: center;
@@ -195,6 +201,7 @@
     border-top: 1px solid #dddddd;
     padding:10px;
     vertical-align: middle;
+    color: #333333;
 }
 .filter43 tr:last-child td, #content .filter43 tr:last-child td{
     border-top: 0px solid #dddddd;
@@ -207,6 +214,9 @@
 }
 .filter43 a:hover, #content .filter43 a:hover{
     color:#ffffff
+}
+.filter43 .preview-box a:hover, #content .filter43 .preview-box a:hover{
+    color: #7a151a
 }
 .filter43 .download, .filter43 .item-image, #content .filter43 .download, #content .filter43 .item-image{
     text-align: center;
@@ -318,13 +328,14 @@
     padding: 4px 10px;
     border: 1px solid #d0d0d0;
     border-radius: 4px;
-    background: #f8f9fa;
+    background: rgba(255,255,255,0.85);
     white-space: nowrap;
     font-weight: normal;
+    color: #333333;
     transition: background 0.15s, border-color 0.15s;
 }
 .filter43 .chk-box .ng-scope .control-label:hover, #content .filter43 .chk-box .ng-scope .control-label:hover{
-    background: #fdecea;
+    background: rgba(255,255,255,0.95);
     border-color: #b92025;
 }
 .filter43 .chk-box .ng-scope input[type="checkbox"], #content .filter43 .chk-box .ng-scope input[type="checkbox"]{
@@ -335,7 +346,10 @@
 
 }
 .filter43 .preview-box {
-
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #cccccc;
+    border-radius: 0;
+    padding: 15px;
 }
 .filter43 table, #content .filter43 table {
     margin: 0em 0;
@@ -351,6 +365,7 @@
 .filter43 table td, #content .filter43 table td {
     display: block;
     background: transparent;
+    color: #333333;
 }
 .filter43 table td:first-child, #content .filter43 table td:first-child {
     padding-top: .5em;
@@ -431,6 +446,7 @@
         padding: 10px;
         vertical-align: middle;
         border: 2px solid #ffffff;
+        color: #333333;
     }
     .filter43 table thead th, #content .filter43 table thead th {
         border-bottom: 0px solid #ddd;
@@ -442,7 +458,14 @@
     }
     .filter43 table th:last-child, .filter43 table td:last-child, #content .filter43 table th:last-child, #content .filter43 table td:last-child {
         padding-right: 0;
-        color:#ffffff;
+    }
+    /* Only data cells (td) in the last column get the dark body text color.
+       thead th:last-child must NOT get color:#333333 here because the earlier
+       .filter43 table thead th rule sets color:white — applying #333333 after
+       it (same specificity, later in cascade) would override white and make
+       the Download header text dark against the red background. */
+    .filter43 table tbody td:last-child, #content .filter43 table tbody td:last-child {
+        color: #333333;
     }
 }
 .clearfix:before,
