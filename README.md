@@ -1,13 +1,13 @@
 # Download Center extension for TYPO3 CMS Sponsored by TNT-Graphics AG
 
 **Author**:
-      Hoja MA, Sruthi K, Akhil K
+      PIT Solutions Ltd
 
 **Created**:
       2015-03-31 19:5:7:
 
 **Changed**:
-      2023-07-03 16:10:00:00:
+      2026-06-15 16:10:00:00:
 
 **Classification**:
       pits_downloadcenter
@@ -25,10 +25,10 @@ Repository, bug reporting, pull requests, etc is handled via https://github.com/
       FAL,Download Center,Download Manager,File Listing,Angular JS
 
 **Author**:
-      Hoja MA, Sruthi K, Akhil K
+      PIT Solutions Ltd
 
 **Email**:
-      sruthi.kg@pitsolutions.com
+      contact@pitsolutions.com
 
 **Language**:
       en
