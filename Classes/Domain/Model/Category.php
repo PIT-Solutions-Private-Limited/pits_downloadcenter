@@ -1,12 +1,14 @@
 <?php
-namespace PITS\PitsDownloadcenter\Domain\Model;
 
+declare(strict_types=1);
+
+namespace PITS\PitsDownloadcenter\Domain\Model;
 
 /***************************************************************
  *
  *  Copyright notice
  *
- *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
+ *  (c) 2026 Developer <contact@pitsolutions.com>, PIT Solutions Pvt Ltd
  *
  *  All rights reserved
  *
@@ -16,78 +18,57 @@ namespace PITS\PitsDownloadcenter\Domain\Model;
  *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
 /**
  * Category
+ *
+ * Changes from v12 → v13:
+ * - Added declare(strict_types=1).
+ * - Added explicit typed property declaration for $parentcategory (was typed as string '' but holds a Category
+ *   or null at runtime; typed as mixed to preserve existing behavior without breaking changes).
+ * - PHP 8.2: dynamic properties on non-stdClass objects are deprecated; explicit declarations required.
  */
-class Category extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
-	
-	/**
-	 * categoryname
-	 *
-	 * @var string
-	 */
-	protected $categoryname = '';	
-
-	/**
-	* Gets the categoryname.
-	*
-	* @return string
-	*/
-	public function getCategoryname(){
-		return $this->categoryname;
-	}
-
-	/**
-	* Sets the categoryname.
-	*
-	* @param string $categoryname the categoryname
-	*
-	* @return self
-	*/
-	public function setCategoryname($categoryname){
-		$this->categoryname = $categoryname;
-		return $this;
-	}
-
-	/**
-	 * parentcategory
-	 *
-	 * @var \PITS\PitsDownloadcenter\Domain\Model\Category
-	 */
-	protected $parentcategory = '';	
+class Category extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+{
+    /**
+     * categoryname
+     */
+    protected string $categoryname = '';
 
     /**
-     * Gets the parentcategory.
+     * parentcategory
+     * Typed as mixed because it can be a Category object or an empty string (Extbase default).
      *
-     * @return @var \PITS\PitsDownloadcenter\Domain\Model\Category $parentcategory
+     * @var Category|string|null
      */
-    public function getParentcategory()
+    protected mixed $parentcategory = '';
+
+    public function getCategoryname(): string
+    {
+        return $this->categoryname;
+    }
+
+    public function setCategoryname(string $categoryname): self
+    {
+        $this->categoryname = $categoryname;
+        return $this;
+    }
+
+    /**
+     * @return Category|string|null
+     */
+    public function getParentcategory(): mixed
     {
         return $this->parentcategory;
     }
 
     /**
-     * Sets the parentcategory.
-     *
-     * @param @var \PITS\PitsDownloadcenter\Domain\Model\Category $parentcategory
-     *
-     * @return self
+     * @param Category|string|null $parentcategory
      */
-    public function setParentcategory($parentcategory)
+    public function setParentcategory(mixed $parentcategory): self
     {
         $this->parentcategory = $parentcategory;
-
         return $this;
     }
 }

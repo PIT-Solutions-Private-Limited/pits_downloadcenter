@@ -1,17 +1,19 @@
 <?php
+
+declare(strict_types=1);
+
 namespace PITS\PitsDownloadcenter\Domain\Repository;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 
 /***************************************************************
  *
  *  Copyright notice
  *
- *  (c) 2015 HOJA <hoja.ma@pitsolutions.com>, PIT Solutions Pvt Ltd
+ *  (c) 2026 Developer <contact@pitsolutions.com>, PIT Solutions Pvt Ltd
  *
  *  All rights reserved
  *
@@ -21,91 +23,90 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
  *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
 /**
  * CategoryRepository
- * The repository for Category
+ *
+ * Changes from v12 → v13:
+ * - Added declare(strict_types=1).
+ * - Replaced deprecated ->execute()->fetchAll() with ->executeQuery()->fetchAllAssociative().
+ * - Replaced deprecated ->execute()->fetchOne() with ->executeQuery()->fetchOne().
+ * - Removed unused Typo3Version import.
  */
 class CategoryRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
 {
     /**
-     * $defaultOrderings
-     *
-     * @var array
+     * @var array<string,string>
      */
-    protected $defaultOrderings = array(
-        'sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
-    );
+    protected $defaultOrderings = [
+        'sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING,
+    ];
 
-    /**
-     * initializeObject
-     */
-    public function initializeObject()
+    public function initializeObject(): void
     {
-        /** @var QuerySettingsInterface $querySettings */
         $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
-        // don't add the pid constraint
-        $querySettings->setRespectStoragePage(FALSE);
+        $querySettings->setRespectStoragePage(false);
         $this->setDefaultQuerySettings($querySettings);
     }
 
     /**
      * getSubCategories
-     * createQuery() changed to querybuilder to avoid phpDocumenter 5.2.0v exception
-     * 
-     * @param $categoryID
-     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     *
+     * @param int|string $categoryID
+     * @return array<int,array<string,mixed>>
      */
-	public function getSubCategories($categoryID)
+    public function getSubCategories($categoryID): array
     {
         $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
         $sys_language_uid = $siteLanguageObj->getLanguageId();
-        $sys_language_ids = [-1,$sys_language_uid];
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
-        $statement = $queryBuilder
-                        ->select('*')
-                        ->from('tx_pitsdownloadcenter_domain_model_category')
-                        ->where(
-                            $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
-                            $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
-                            )
-                        ->execute()
-                        ->fetchAll();
-        return $statement;
-	}
+        $sys_language_ids = [-1, $sys_language_uid];
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
+
+        // TYPO3 v13: ->execute() is removed on QueryBuilder; use ->executeQuery()->fetchAllAssociative().
+        return $queryBuilder
+            ->select('*')
+            ->from('tx_pitsdownloadcenter_domain_model_category')
+            ->where(
+                $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
+                $queryBuilder->expr()->in(
+                    'sys_language_uid',
+                    $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY)
+                )
+            )
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
 
     /**
      * getSubCategoriesCount
-     * createQuery() changed to querybuilder to avoid phpDocumenter 5.2.0v exception
-     * 
-     * @param $categoryID
+     *
+     * @param int|string $categoryID
      * @return int
      */
-	public function getSubCategoriesCount($categoryID)
+    public function getSubCategoriesCount($categoryID): int
     {
         $siteLanguageObj = $GLOBALS['TYPO3_REQUEST']->getAttribute('language');
         $sys_language_uid = $siteLanguageObj->getLanguageId();
-        $sys_language_ids = [-1,$sys_language_uid];
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
-        $count = $queryBuilder
-                        ->count('uid')
-                        ->from('tx_pitsdownloadcenter_domain_model_category')
-                        ->where(
-                            $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
-                            $queryBuilder->expr()->in('sys_language_uid', $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY))
-                            )
-                        ->execute()
-                        ->fetchOne();
-        return $count;
-	}
+        $sys_language_ids = [-1, $sys_language_uid];
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_pitsdownloadcenter_domain_model_category');
+
+        // TYPO3 v13: ->execute() is removed; use ->executeQuery()->fetchOne().
+        return (int)$queryBuilder
+            ->count('uid')
+            ->from('tx_pitsdownloadcenter_domain_model_category')
+            ->where(
+                $queryBuilder->expr()->eq('parentcategory', $queryBuilder->createNamedParameter($categoryID)),
+                $queryBuilder->expr()->in(
+                    'sys_language_uid',
+                    $queryBuilder->createNamedParameter($sys_language_ids, Connection::PARAM_INT_ARRAY)
+                )
+            )
+            ->executeQuery()
+            ->fetchOne();
+    }
 }

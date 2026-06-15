@@ -4,13 +4,6 @@ declare(strict_types=1);
 
 defined('TYPO3') || die();
 
-/**
- * ContentElementWizard for Download Center Plugin
- */
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-	'<INCLUDE_TYPOSCRIPT: source="FILE:EXT:pits_downloadcenter/Configuration/TSConfig/ContentElementWizard.typoscript">'
-);
-
 
 /**
  * Register icons

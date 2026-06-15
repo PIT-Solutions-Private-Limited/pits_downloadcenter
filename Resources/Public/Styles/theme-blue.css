@@ -62,12 +62,12 @@
 	font-size: 14px;
 	font-weight: bold;
 	display: block;
-	margin-bottom: 5px; 
-	color: #666666
+	margin-bottom: 5px;
+	color: inherit
 }
 .filter43 .chk-box .ng-scope .control-label, #content .filter43.ng-scope form label.control-label{
 	width: auto;
-	color:#666666;
+	color: inherit;
 }
 #content  .filter43.ng-scope form:after{
 	display: none
@@ -182,6 +182,12 @@
 }
 .filter43 th a, #content .filter43 th a{
 	text-decoration: none;
+	/* Fix: Bootstrap Package .frame a:not([class]){color:var(--frame-link-color)} loads AFTER this
+	   file alphabetically ('theme' > 'file70001'), so its --frame-link-color:#ffffff (white) beats
+	   our 0,2,1 specificity rule at equal specificity. !important is required to guarantee dark
+	   anchor text inside th regardless of frame background (primary/secondary/quaternary all set
+	   --frame-link-color to #ffffff, making links invisible on the white thead background). */
+	color: #0062a9 !important;
 }
 .filter43 td, #content .filter43 td{
 	text-align: center;
@@ -190,6 +196,7 @@
 	padding:10px;
 	vertical-align: middle;
 	background: transparent;
+	color: #333333;
 }
 .filter43 tr:last-child td, #content .filter43 tr:last-child td{
 	border-top: 0px solid #dddddd;
@@ -291,12 +298,45 @@
 	cursor: default;
 	color:grey;
 }
+.filter43 .chk-box, #content .filter43 .chk-box{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px 0;
+}
+.filter43 .chk-box > .subheading, #content .filter43 .chk-box > .subheading{
+	flex-basis: 100%;
+	width: 100%;
+}
 .filter43 .chk-box .ng-scope, #content .filter43 .chk-box .ng-scope{
-	float: left;
-	width: 100%
+	width: auto;
+	margin: 0 8px 4px 0;
+}
+.filter43 .chk-box .ng-scope .control-label, #content .filter43 .chk-box .ng-scope .control-label{
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	margin-bottom: 0;
+	cursor: pointer;
+	padding: 4px 10px;
+	border: 1px solid rgba(0,0,0,0.25);
+	border-radius: 4px;
+	background: rgba(255,255,255,0.85);
+	white-space: nowrap;
+	font-weight: normal;
+	color: #333333;
+	transition: background 0.15s, border-color 0.15s;
+}
+.filter43 .chk-box .ng-scope .control-label:hover, #content .filter43 .chk-box .ng-scope .control-label:hover{
+	background: rgba(255,255,255,0.95);
+	border-color: #428bca;
+}
+.filter43 .chk-box .ng-scope input[type="checkbox"], #content .filter43 .chk-box .ng-scope input[type="checkbox"]{
+	margin: 0;
+	cursor: pointer;
 }
 .filter43 .shadow {
-	background: #F7F8F9;
+	background: transparent;
 	padding: 3px;
 	margin: 0px 0 10px;
 }
@@ -304,7 +344,7 @@
 	padding: 15px;
 	cursor: pointer;
 	overflow: hidden;
-	background: #FFFFFF;
+	background: rgba(255,255,255,0.9);
 	border: 1px solid #cccccc;
 	border-radius: 5px;
 
@@ -322,6 +362,7 @@
 }
 .filter43 table td, #content .filter43 table td {
 	display: block;
+	color: #333333;
 }
 .filter43 table td:first-child, #content .filter43 table td:first-child {
 	padding-top: .5em;
@@ -369,7 +410,8 @@
 		display: none;
 	}
 	.filter43 .chk-box .ng-scope,  #content .filter43 .chk-box .ng-scope{
-		width: 100%
+		width: 100%;
+		margin-right: 0
 	}
 	.filter43 tr:last-child td,  #content .filter43 tr:last-child td {
 		border-top: 1px solid #dddddd;
@@ -386,17 +428,30 @@
 		border-bottom: 1px solid #ddd;
 		border-left: 0;
 		border-right: 0;
+		color: #333333;
 	}
 	.filter43 table thead th, #content .filter43 table thead th {
 		border-bottom: 2px solid #ddd;
-		background: white
+		background: white;
+		/* Fix: Bootstrap Package theme CSS loads after this file ('theme' > 'file70001'
+		   alphabetically), so --frame-link-color and --frame-color overrides on .frame elements
+		   would make text invisible on the white thead background without !important.
+		   Color is set to #0062a9 (the blue link colour) so plain-text th cells (e.g. the
+		   Download column header, which has no <a> element) render identically to the sortable
+		   link headers (Title/Size/Type), which get #0062a9 from .filter43 th a. */
+		color: #0062a9 !important;
 	}
 	.filter43 table th:first-child, .filter43 table td:first-child, #content .filter43 table th:first-child, #content .filter43 table td:first-child {
 		padding-left: 0;
 	}
 	.filter43 table th:last-child, .filter43 table td:last-child, #content .filter43 table th:last-child, #content .filter43 table td:last-child {
 		padding-right: 0;
-		color:#0062a9;
+	}
+	/* tbody td:last-child keeps the download icon/link in the body rows at #0062a9.
+	   thead th:last-child inherits #0062a9 from the .filter43 table thead th rule above,
+	   so no separate colour override is needed here for the Download column header. */
+	.filter43 table tbody td:last-child, #content .filter43 table tbody td:last-child {
+		color: #0062a9;
 	}
 }
 .clearfix:before,
