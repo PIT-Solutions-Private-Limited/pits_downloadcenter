@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /***************************************************************************
  * Extension Manager/Repository config file for ext "pits_downloadcenter".
  *********** ***************************************************************/
