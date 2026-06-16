@@ -1,11 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 /***************************************************************************
  * Extension Manager/Repository config file for ext "pits_downloadcenter".
  *********** ***************************************************************/
-$EM_CONF[$_EXTKEY] = array (
+$EM_CONF[$_EXTKEY] = [
 	'title' => 'Download Center',
 	'description' => 'Download Center Sponsored by TNT-Graphics AG',
 	'category' => 'plugin',
@@ -16,13 +14,13 @@ $EM_CONF[$_EXTKEY] = array (
 	'author' => 'PIT Solutions Ltd',
 	'author_email' => 'contact@pitsolutions.com',
 	'author_company' => NULL,
-	'constraints' => array (
+	'constraints' => [
 		'depends' =>
-		array (
+		[
 			'typo3' => '13.0.0-13.4.99',
-		),
-		'conflicts' => array (),
-		'suggests' => array (),
-	),
-);
+		],
+		'conflicts' => [],
+		'suggests' => [],
+	],
+];
 
