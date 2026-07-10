@@ -5,9 +5,9 @@
  *********** ***************************************************************/
 $EM_CONF[$_EXTKEY] = [
 	'title' => 'Download Center',
-	'description' => 'Download Center Sponsored by TNT-Graphics AG',
+	'description' => 'Frontend download center that lists FAL file collections in a fast Angular-based interface with keyword search, hierarchical category and file type filters, sorting and pagination. Editors manage downloadable documents with categories and thumbnails; visitors filter, sort and share deep-linked file lists.',
 	'category' => 'plugin',
-	'version' => '7.0.0',
+	'version' => '7.0.1',
 	'state' => 'stable',
 	'uploadfolder' => false,
 	'createDirs' => '',

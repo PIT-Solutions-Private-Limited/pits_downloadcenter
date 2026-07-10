@@ -1,43 +1,43 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormGroup, FormBuilder, FormArray, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { PaginationInstance } from 'ngx-pagination';
+import { NgxPaginationModule, PaginationInstance } from 'ngx-pagination';
 
 import { DownloadCenterService } from './download-center.service';
 
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 
-import * as _ from 'lodash';
-
 interface FilterConfig {
   keyword_search: string;
-  category: object[];
+  category: any[];
   file_types: string[];
   cPage: string;
 }
 
 @Component({
   selector: 'app-download-center',
+  imports: [CommonModule, ReactiveFormsModule, NgxPaginationModule],
   templateUrl: './download-center.component.html'
 })
 export class DownloadCenterComponent implements OnInit, OnDestroy {
-  public baseURL = document.getElementById('baseURL');
-  public loaderimageuri = document.getElementById('loaderimageuri');
+  public baseURL: any = document.getElementById('baseURL');
+  public loaderimageuri: any = document.getElementById('loaderimageuri');
   public orderByField = '';
   public reverseSort = true;
-  public listData = {};
+  public listData: any = {};
   public loading = false;
-  public filterFormGroup: FormGroup;
+  public filterFormGroup!: FormGroup;
   public filterConfig: FilterConfig = { keyword_search: '', category: [], file_types: [], cPage: '1' };
   public config: PaginationInstance = { id: 'custom', itemsPerPage: 10, currentPage: 1 };
 
-  private _categoryList = {};
+  private _categoryList: any = {};
   private _initialListData = '[]';
-  private _ids = [];
-  private _traverseObj = {};
+  private _ids: any[] = [];
+  private _traverseObj: any = {};
 
-  private _unsubscribe$ = new Subject();
+  private _unsubscribe$ = new Subject<void>();
 
   constructor(
     private _downloadCenterService: DownloadCenterService,
@@ -50,6 +50,10 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this._initFilterFormGroup();
     this._fetchData();
     this._listenFilterFormValueChanges();
+  }
+
+  get categoryControls() {
+    return (this.filterFormGroup.get('category') as FormArray).controls;
   }
 
   private _initFilterFormGroup(): void {
@@ -69,15 +73,18 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this.loading = true;
     this._downloadCenterService.getData()
       .pipe(takeUntil(this._unsubscribe$))
-      .subscribe((data) => {
-        this.loading = false;
-        this.listData = data;
-        this._categoryList[0] = data['categories'];
-        this._initialListData = JSON.stringify(this.listData);
-        this.config.itemsPerPage = data['config']['paginationcount'];
-        this._listenActivatedRoute();
-      }, err => {
-        throw err;
+      .subscribe({
+        next: (data: any) => {
+          this.loading = false;
+          this.listData = data;
+          this._categoryList[0] = data['categories'];
+          this._initialListData = JSON.stringify(this.listData);
+          this.config.itemsPerPage = data['config']['paginationcount'];
+          this._listenActivatedRoute();
+        },
+        error: (err) => {
+          throw err;
+        }
       });
   }
 
@@ -85,11 +92,11 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this._activatedRoute.queryParams
       .pipe(take(1))
       .subscribe((params) => {
-        let categories = [];
+        let categories: any[] = [];
         if (params['category']) {
           const categoryArray = params['category'].split(',');
-          categories = categoryArray.map(id => ({ categoryId: id }));
-          categoryArray.forEach((id, i) => {
+          categories = categoryArray.map((id: any) => ({ categoryId: id }));
+          categoryArray.forEach((id: any, i: number) => {
             this.onCategoryChange(id, i);
           });
         }
@@ -112,7 +119,7 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
       });
   }
 
-  public onCategoryChange(id: number, index: number): void {
+  public onCategoryChange(id: any, index: number): void {
     const items = this.filterFormGroup.get('category') as FormArray;
     const itemControls = items.controls;
     while (itemControls.length !== (index + 1)) {
@@ -133,7 +140,7 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     const category = config['category'].filter(data => !!data['categoryId']).map(data => data['categoryId']);
     if (category.length) {
       this._ids = [];
-      this._setTraverseObj(this.listData['categories'].filter((d) => d.id === +category[0])[0], +category[category.length - 1]);
+      this._setTraverseObj(this.listData['categories'].filter((d: any) => d.id === +category[0])[0], +category[category.length - 1]);
       this._traverse(this._traverseObj);
     }
     this.listData['files'] = JSON.parse(this._initialListData)['files']
@@ -141,12 +148,28 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
       .filter(this._categoryFilter.bind(this))
       .filter(this._fileTypeFilter.bind(this));
     !!this.orderByField && this.sortFileList(this.orderByField, true);
+    this._clampCurrentPage();
+  }
+
+  // Filtering can shrink the list below the current page (e.g. searching while
+  // on page 4, or a deep link like ?cPage=4&keyword_search=...), which would
+  // render an empty page while still announcing results. Clamp to the last
+  // available page and reflect it in the URL.
+  private _clampCurrentPage(): void {
+    const total = (this.listData['files'] || []).length;
+    const perPage = +this.config.itemsPerPage || 1;
+    const lastPage = Math.max(1, Math.ceil(total / perPage));
+    if (+this.config.currentPage > lastPage) {
+      this.config.currentPage = lastPage;
+      this.filterConfig.cPage = `${lastPage}`;
+      this._setRouting(this.filterConfig);
+    }
   }
 
   private _setRouting(filterConfig: FilterConfig): void {
-    const config = Object.assign({}, filterConfig);
-    config['category'] = config['category'].filter(data => !!data['categoryId']).map(data => data['categoryId']);
-    const params = Object.assign({}, this._activatedRoute.snapshot.queryParams, config);
+    const config: any = Object.assign({}, filterConfig);
+    config['category'] = config['category'].filter((data: any) => !!data['categoryId']).map((data: any) => data['categoryId']);
+    const params: any = Object.assign({}, this._activatedRoute.snapshot.queryParams, config);
     Object.keys(params)
       .forEach((key) => {
         params[key] = key in config ? `${config[key]}` : params[key];
@@ -155,42 +178,52 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this._router.navigate([], { relativeTo: this._activatedRoute, queryParams: params });
   }
 
-  private _setTraverseObj(obj: object, id: number): void {
-    const that = this;
-    _.forIn(obj, (val, key) => {
-      (obj['id'] === id) && (that._traverseObj = obj);
-      if (_.isArray(val)) {
-        val.forEach((el) => _.isObject(el) && ((el['id'] === id) ? (that._traverseObj = el) : that._setTraverseObj(el, id)));
+  private _setTraverseObj(obj: any, id: number): void {
+    if (obj && obj['id'] === id) {
+      this._traverseObj = obj;
+    }
+    Object.values(obj || {}).forEach((val) => {
+      if (Array.isArray(val)) {
+        val.forEach((el: any) => {
+          if (el && typeof el === 'object') {
+            (el['id'] === id) ? (this._traverseObj = el) : this._setTraverseObj(el, id);
+          }
+        });
       }
     });
   }
 
-  private _traverse(obj: object): void {
-    const that = this;
-    _.forIn(obj, (val, key) => {
-      (key === 'id') && that._ids.push(val);
-      _.isArray(val) && val.forEach((el) => _.isObject(el) && that._traverse(el));
+  private _traverse(obj: any): void {
+    Object.entries(obj || {}).forEach(([key, val]) => {
+      (key === 'id') && this._ids.push(val);
+      if (Array.isArray(val)) {
+        val.forEach((el: any) => {
+          if (el && typeof el === 'object') {
+            this._traverse(el);
+          }
+        });
+      }
     });
   }
 
-  private _keyWordFilter(data: object): boolean {
+  private _keyWordFilter(data: any): boolean {
     const keyword_search = this.filterConfig.keyword_search;
     const searchKeys = ['title', ...(!+this.listData['config']['hideSizeColumn'] ? ['size'] : []), 'extension'];
     const searchString = searchKeys.map(key => data[key]).join('').toLowerCase();
     return !keyword_search || searchString.indexOf(keyword_search.toLowerCase().trim()) !== -1;
   }
 
-  private _categoryFilter(data: object): boolean {
+  private _categoryFilter(data: any): boolean {
     const category = this.filterConfig.category.filter(res => !!res['categoryId']).map(res => res['categoryId']);
     if (category.length) {
-      const dataCat = data['categories'].map(id => +id);
+      const dataCat = data['categories'].map((id: any) => +id);
       const categories = [...dataCat, ...this._ids];
       return Array.from(new Set(categories)).length !== categories.length;
     }
     return true;
   }
 
-  private _fileTypeFilter(data: object): boolean {
+  private _fileTypeFilter(data: any): boolean {
     const fileTypes = this.filterConfig.file_types;
     const mergedTypes = [...fileTypes, ...data['dataType']];
     return !fileTypes.length || Array.from(new Set(mergedTypes)).length !== mergedTypes.length;
@@ -212,11 +245,11 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this.filterFormGroup.patchValue(formValue);
   }
 
-  public getCategoryList(i): object[] {
+  public getCategoryList(i: number): any[] {
     return this._categoryList[i] || [];
   }
 
-  public trackByFn(index, item): void {
+  public trackByFn(index: number, item: any): any {
     return item.id;
   }
 
@@ -224,7 +257,19 @@ export class DownloadCenterComponent implements OnInit, OnDestroy {
     this.orderByField = order_by;
     !skip && (this.reverseSort = !this.reverseSort);
     const sort_order = !this.reverseSort ? 'asc' : 'desc';
-    this.listData['files'] = _.orderBy(this.listData['files'], order_by, sort_order);
+    this.listData['files'] = this._orderBy(this.listData['files'], order_by, sort_order);
+  }
+
+  private _orderBy(list: any[], key: string, order: 'asc' | 'desc'): any[] {
+    const dir = order === 'asc' ? 1 : -1;
+    return [...(list || [])].sort((a, b) => {
+      const av = a && a[key];
+      const bv = b && b[key];
+      if (av === bv) {
+        return 0;
+      }
+      return (av < bv ? -1 : 1) * dir;
+    });
   }
 
   public onPageChange(page: number): void {

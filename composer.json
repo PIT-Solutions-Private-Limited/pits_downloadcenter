@@ -1,10 +1,22 @@
 {
   "name": "pits/downloadcenter",
   "type": "typo3-cms-extension",
-  "description": "Download Center for TYPO3 (FAL files can be shown in frontend with several filters)",
+  "description": "Frontend download center that lists FAL file collections in a fast Angular-based interface with keyword search, hierarchical category and file type filters, sorting and pagination. Editors manage downloadable documents with categories and thumbnails; visitors filter, sort and share deep-linked file lists.",
   "keywords": [
     "TYPO3",
-    "extension"
+    "TYPO3 CMS",
+    "extension",
+    "download",
+    "download center",
+    "downloads",
+    "documents",
+    "files",
+    "FAL",
+    "file list",
+    "file download",
+    "category filter",
+    "search",
+    "angular"
   ],
   "homepage": "http://pitsolutions.ch/",
   "license": ["GPL-2.0-or-later"],
@@ -20,5 +32,5 @@
     "typo3/cms": {
       "extension-key": "pits_downloadcenter"
     }
-}
+  }
 }
