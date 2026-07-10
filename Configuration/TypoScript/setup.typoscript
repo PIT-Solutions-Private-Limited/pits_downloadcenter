@@ -44,12 +44,14 @@ page.includeCSS {
     file70003.title = Default CSS
 }
 
-# Angular scripts
+# Angular scripts (ES modules, built by @angular/build — no runtime.js anymore)
 page.includeJSFooter {
-    file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/runtime.js
-    file70001.type = text/javascript
-    file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.js
-    file70002.type = text/javascript
-    file70003 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/main.js
-    file70003.type = text/javascript
+    file70001 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/polyfills.js
+    file70001.type = module
+    file70001.disableCompression = 1
+    file70001.excludeFromConcatenation = 1
+    file70002 = EXT:pits_downloadcenter/Resources/Public/Scripts/angular/main.js
+    file70002.type = module
+    file70002.disableCompression = 1
+    file70002.excludeFromConcatenation = 1
 }

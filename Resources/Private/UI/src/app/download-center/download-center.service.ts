@@ -11,7 +11,7 @@ export class DownloadCenterService {
 
   getData(): Observable<object> {
     const el = document.getElementById('actionURL');
-    const actionURL = el ? el['value'] : 'assets/json/data.json';
+    const actionURL = el ? (el as HTMLInputElement).value : 'assets/json/data.json';
     return this._http.get(`${actionURL}`);
   }
 }

@@ -22,4 +22,6 @@ ngapp
 /Resources/Public/Scripts/angular/*.html
 /Resources/Public/Scripts/angular/*.txt
 /Resources/Public/Scripts/angular/*.ico
+/Resources/Public/Scripts/angular/*.json
+/Resources/Public/Scripts/angular/*.css
 /Resources/Public/Scripts/angular/assets
